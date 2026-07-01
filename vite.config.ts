@@ -21,16 +21,15 @@ export default defineConfig({
         ]
       },
       manifest: {
-        name: 'Habit Tracker',
-        short_name: 'Habits',
+        name: 'Gridify',
+        short_name: 'Gridify',
         description: 'A high-density habit tracker with contribution grid',
         theme_color: '#111827',
         background_color: '#111827',
         display: 'standalone',
         icons: [
           { src: '/favicon.svg', sizes: '192x192', type: 'image/svg+xml' },
-          { src: '/favicon.svg', sizes: '512x512', type: 'image/svg+xml' },
-          { src: '/favicon.svg', sizes: '512x512', type: 'image/svg+xml', purpose: 'maskable' }
+          { src: '/favicon.svg', sizes: '512x512', type: 'image/svg+xml' }
         ]
       }
     })

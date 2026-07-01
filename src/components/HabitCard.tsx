@@ -1,21 +1,38 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ContributionGrid } from './ContributionGrid';
-import { getHabitLogs, logCheckIn, removeCheckIn, archiveHabit } from '../db';
+import { Confetti } from './Confetti';
+import { Toast } from './Toast';
+import { AchievementToast } from './AchievementToast';
+import { getHabitLogs, logCheckIn, removeCheckIn, applyStreakFreeze, getHabit } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
-import { calculateStreak } from '../utils/streak';
+import { calculateStreak, calculateMomentum, getMilestone } from '../utils/streak';
+import { processCheckIn, type Achievement } from '../utils/gamification';
 import type { Habit } from '../types';
 
 interface HabitCardProps {
   habit: Habit;
   onArchived: (id: string) => void;
+  onCheckIn?: () => void;
 }
 
-export function HabitCard({ habit, onArchived }: HabitCardProps) {
+function triggerHaptic() {
+  if (navigator.vibrate) {
+    navigator.vibrate(10);
+  }
+}
+
+export function HabitCard({ habit, onArchived, onCheckIn }: HabitCardProps) {
   const [logs, setLogs] = useState<Map<string, number>>(new Map());
   const [todayChecked, setTodayChecked] = useState(false);
   const [streak, setStreak] = useState(0);
-  const [showArchive, setShowArchive] = useState(false);
+  const [momentum, setMomentum] = useState({ completed: 0, total: 14 });
+  const [freezesUsed, setFreezesUsed] = useState(0);
+  const [maxFreezes, setMaxFreezes] = useState(2);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [milestone, setMilestone] = useState<number | null>(null);
+  const [toast, setToast] = useState<{ message: string; action?: { label: string; onClick: () => void } } | null>(null);
+  const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
 
   const todayStr = formatDate(new Date());
 
@@ -32,7 +49,22 @@ export function HabitCard({ habit, onArchived }: HabitCardProps) {
       }
       setLogs(map);
       setTodayChecked((map.get(todayStr) ?? 0) > 0);
-      setStreak(calculateStreak(map));
+
+      const newStreak = calculateStreak(map);
+      setStreak(newStreak);
+      setMomentum(calculateMomentum(map));
+
+      const habitData = await getHabit(habit.id);
+      if (habitData && !cancelled) {
+        setFreezesUsed(habitData.freezesUsed);
+        setMaxFreezes(habitData.maxFreezes);
+      }
+
+      const m = getMilestone(newStreak);
+      if (m) {
+        setMilestone(m);
+        setShowConfetti(true);
+      }
     }
     load();
     return () => { cancelled = true; };
@@ -40,7 +72,8 @@ export function HabitCard({ habit, onArchived }: HabitCardProps) {
 
   const toggleToday = useCallback(async () => {
     const newChecked = !todayChecked;
-    // Optimistic update
+    triggerHaptic();
+
     setTodayChecked(newChecked);
     const newLogs = new Map(logs);
     if (newChecked) {
@@ -49,26 +82,72 @@ export function HabitCard({ habit, onArchived }: HabitCardProps) {
       newLogs.delete(todayStr);
     }
     setLogs(newLogs);
-    setStreak(calculateStreak(newLogs));
+
+    const newStreak = calculateStreak(newLogs);
+    setStreak(newStreak);
+    setMomentum(calculateMomentum(newLogs));
+
+    const m = getMilestone(newStreak);
+    if (m) {
+      setMilestone(m);
+      setShowConfetti(true);
+    }
+
+    setToast({
+      message: newChecked ? 'Checked in!' : 'Unchecked',
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          setTodayChecked(todayChecked);
+          setLogs(logs);
+          setStreak(calculateStreak(logs));
+          setMomentum(calculateMomentum(logs));
+          if (todayChecked) {
+            removeCheckIn(habit.id, todayStr).catch(console.error);
+          } else {
+            logCheckIn(habit.id, todayStr, 1).catch(console.error);
+          }
+          onCheckIn?.();
+        },
+      },
+    });
 
     try {
       if (newChecked) {
         await logCheckIn(habit.id, todayStr, 1);
+        const result = await processCheckIn(newStreak);
+        if (result.newAchievements.length > 0) {
+          setCurrentAchievement(result.newAchievements[0]);
+          setShowConfetti(true);
+        }
+        if (result.leveledUp) {
+          setToast({
+            message: `Level up! You're now level ${result.newLevel}`,
+          });
+        }
       } else {
         await removeCheckIn(habit.id, todayStr);
       }
     } catch (err) {
       console.error('Failed to toggle check-in:', err);
-      // Revert on failure
       setTodayChecked(todayChecked);
       setLogs(logs);
       setStreak(calculateStreak(logs));
+      setMomentum(calculateMomentum(logs));
     }
-  }, [todayChecked, logs, todayStr, habit.id]);
+    onCheckIn?.();
+  }, [todayChecked, logs, todayStr, habit.id, onCheckIn]);
+
+  const handleFreeze = useCallback(async () => {
+    if (freezesUsed >= maxFreezes) return;
+    const success = await applyStreakFreeze(habit.id);
+    if (success) {
+      setFreezesUsed((prev) => prev + 1);
+    }
+  }, [habit.id, freezesUsed, maxFreezes]);
 
   const handleArchive = useCallback(async () => {
     try {
-      await archiveHabit(habit.id);
       onArchived(habit.id);
     } catch (err) {
       console.error('Failed to archive habit:', err);
@@ -76,52 +155,83 @@ export function HabitCard({ habit, onArchived }: HabitCardProps) {
   }, [habit.id, onArchived]);
 
   return (
-    <div
-      className="flex items-center gap-3 rounded bg-gray-800 px-3 py-2"
-      onMouseEnter={() => setShowArchive(true)}
-      onMouseLeave={() => setShowArchive(false)}
-    >
-      <div className="flex min-w-0 flex-1 items-center gap-3">
-        <button
-          onClick={toggleToday}
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-            todayChecked
-              ? 'border-emerald-500 bg-emerald-500 text-white'
-              : 'border-gray-600 bg-transparent text-gray-500 hover:border-emerald-600 hover:text-emerald-500'
-          }`}
-          title={todayChecked ? 'Uncheck in' : 'Check in'}
-        >
-          {todayChecked ? (
-            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-          ) : (
-            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="10" cy="10" r="7" />
-            </svg>
-          )}
-        </button>
-        <div className="min-w-0">
-          <div className="truncate text-sm font-medium text-gray-200">{habit.name}</div>
-          <div className="text-xs text-gray-500">
-            {streak > 0 ? `${streak} day streak` : 'No streak'}
+    <>
+      <Confetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />
+      <AchievementToast achievement={currentAchievement} onDismiss={() => setCurrentAchievement(null)} />
+      {toast && (
+        <Toast
+          message={toast.message}
+          action={toast.action}
+          onDismiss={() => setToast(null)}
+        />
+      )}
+      <div
+        className="rounded-lg bg-surface-card p-4 border border-border transition-all hover:border-primary/30"
+        style={{ borderLeft: '3px solid #2BA8A2', boxShadow: '0 4px 20px rgba(43, 168, 162, 0.06)' }}
+      >
+        <div className="flex items-center gap-3">
+          <button
+            onClick={toggleToday}
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 transition-all active:scale-90 ${
+              todayChecked
+                ? 'border-primary bg-primary text-surface-base'
+                : 'border-border bg-transparent text-text-muted hover:border-primary hover:text-primary'
+            }`}
+            style={todayChecked ? { boxShadow: '0 4px 16px rgba(43, 168, 162, 0.25)' } : undefined}
+            title={todayChecked ? 'Uncheck in' : 'Check in'}
+          >
+            {todayChecked ? (
+              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="10" cy="10" r="7" />
+              </svg>
+            )}
+          </button>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-sm font-bold text-text-primary">{habit.name}</div>
+            <div className="flex items-center gap-2 text-xs font-medium">
+              {streak > 0 ? (
+                <span className="text-primary">{streak} day streak</span>
+              ) : (
+                <span className="text-text-muted">{momentum.completed} of last {momentum.total} days</span>
+              )}
+              {milestone && (
+                <span className="inline-flex items-center rounded-full bg-accent-gold/20 px-2 py-0.5 text-[10px] font-bold text-accent-gold">
+                  {milestone} days!
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            {freezesUsed < maxFreezes && (
+              <button
+                onClick={handleFreeze}
+                className="shrink-0 rounded-md p-1.5 text-text-muted hover:bg-sky-blue/10 hover:text-sky-blue transition-colors"
+                title={`Use streak freeze (${maxFreezes - freezesUsed} remaining)`}
+              >
+                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M10 2v16M2 10h16M4.93 4.93l10.14 10.14M15.07 4.93L4.93 15.07" strokeLinecap="round" />
+                </svg>
+              </button>
+            )}
+            <button
+              onClick={handleArchive}
+              className="shrink-0 rounded-md p-1.5 text-text-muted hover:bg-coral/10 hover:text-coral transition-colors"
+              title="Archive habit"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M5 5h10M8 5V3h4v2M6 5v10h8V5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </div>
         </div>
-        {showArchive && (
-          <button
-            onClick={handleArchive}
-            className="ml-auto shrink-0 rounded p-1 text-gray-500 hover:bg-gray-700 hover:text-gray-300 transition-colors"
-            title="Archive habit"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M5 5h10M8 5V3h4v2M6 5v10h8V5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        )}
+        <div className="mt-3 overflow-x-auto">
+          <ContributionGrid logs={logs} cellSize={10} cellGap={2} showLabels={false} showLegend={false} />
+        </div>
       </div>
-      <div className="shrink-0">
-        <ContributionGrid logs={logs} cellSize={8} cellGap={1} />
-      </div>
-    </div>
+    </>
   );
 }

@@ -22,11 +22,12 @@ export function AddHabitForm({ onAdd }: AddHabitFormProps) {
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="New habit..."
-        className="flex-1 rounded bg-gray-800 px-3 py-2 text-sm text-gray-200 placeholder-gray-500 outline-none focus:ring-1 focus:ring-emerald-500"
+        className="flex-1 rounded-md bg-surface-elevated px-4 py-2.5 text-sm text-text-primary placeholder-text-muted outline-none border border-border focus:border-primary transition-colors"
       />
       <button
         type="submit"
-        className="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 transition-colors"
+        className="rounded-full bg-accent-gold px-5 py-2.5 text-sm font-bold text-surface-base hover:bg-accent-light active:scale-95 transition-all"
+        style={{ boxShadow: '0 4px 20px rgba(255, 210, 63, 0.30)' }}
       >
         Add
       </button>

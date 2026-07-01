@@ -15,10 +15,10 @@ export function OnlineStatus() {
   }, []);
 
   return (
-    <div className="flex items-center gap-1.5 text-xs text-gray-400">
+    <div className="flex items-center gap-1.5 text-xs font-medium text-text-muted">
       <span
         className={`inline-block h-2 w-2 rounded-full ${
-          online ? 'bg-emerald-400' : 'bg-red-400'
+          online ? 'bg-success' : 'bg-error'
         }`}
       />
       {online ? 'Online' : 'Offline'}
