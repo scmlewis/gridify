@@ -60,7 +60,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-lg max-h-[85vh] rounded-t-2xl bg-surface-card animate-slide-up overflow-hidden flex flex-col">
+      <div className="relative w-full max-w-lg max-h-[85vh] rounded-t-2xl bg-surface-card animate-slide-up overflow-hidden flex flex-col mx-auto">
         <div className="flex items-center justify-between p-5 pb-3 border-b border-border shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
