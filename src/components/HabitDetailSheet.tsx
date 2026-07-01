@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { ContributionGrid } from './ContributionGrid';
 import { StatsCard } from './StatsCard';
 import { DayOfWeekHeatmap } from './DayOfWeekHeatmap';
+import { TrendSparkline } from './TrendSparkline';
 import { getHabitLogs, deleteHabit } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
@@ -87,6 +88,11 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
                 <div className="overflow-x-auto">
                   <ContributionGrid logs={logs} cellSize={10} cellGap={2} showLabels={false} showLegend={false} />
                 </div>
+              </div>
+
+              <div className="rounded-lg bg-surface-elevated p-4 border border-border">
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">Trend</div>
+                <TrendSparkline logs={logs} color={color} />
               </div>
 
               <div>
