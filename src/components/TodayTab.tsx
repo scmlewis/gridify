@@ -4,6 +4,8 @@ import { getUserProfile } from '../db';
 import { SummaryCard } from './SummaryCard';
 import { CategoryGroup } from './CategoryGroup';
 import { OnboardingFlow } from './OnboardingFlow';
+import { AddHabitSheet } from './AddHabitSheet';
+import type { CreateHabitOptions } from '../db';
 
 interface TodayTabProps {
   onRefresh: React.Dispatch<React.SetStateAction<number>>;
@@ -11,8 +13,9 @@ interface TodayTabProps {
 }
 
 export function TodayTab({ onRefresh: _onRefresh, refreshKey }: TodayTabProps) {
-  const { habits, isLoading } = useHabits();
+  const { habits, isLoading, addHabit } = useHabits();
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
+  const [showAddSheet, setShowAddSheet] = useState(false);
 
   useEffect(() => {
     getUserProfile().then(p => setOnboardingCompleted(p.onboardingCompleted));
@@ -20,6 +23,11 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey }: TodayTabProps) {
 
   function handleOnboardingComplete() {
     setOnboardingCompleted(true);
+    _onRefresh(n => n + 1);
+  }
+
+  function handleAddHabit(options: CreateHabitOptions) {
+    addHabit(options);
     _onRefresh(n => n + 1);
   }
 
@@ -62,6 +70,21 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey }: TodayTabProps) {
           habits={catHabits}
         />
       ))}
+      <button
+        onClick={() => setShowAddSheet(true)}
+        className="fixed bottom-24 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-lg transition-all hover:scale-105 active:scale-95 md:hidden"
+        style={{ boxShadow: '0 4px 20px rgba(255, 210, 63, 0.4)' }}
+        title="Add new habit"
+      >
+        <svg className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+        </svg>
+      </button>
+      <AddHabitSheet
+        isOpen={showAddSheet}
+        onClose={() => setShowAddSheet(false)}
+        onAdd={handleAddHabit}
+      />
     </div>
   );
 }

@@ -84,24 +84,38 @@ db.version(4).stores({
 
 export { db };
 
-export async function createHabit(name: string): Promise<string> {
+export interface CreateHabitOptions {
+  name: string;
+  category?: string;
+  valueType?: 'boolean' | 'numeric';
+  unit?: string;
+  targetFrequency?: 'daily' | 'weekly' | 'monthly';
+  targetValue?: number;
+  color?: string;
+}
+
+export async function createHabit(nameOrOptions: string | CreateHabitOptions): Promise<string> {
+  const options = typeof nameOrOptions === 'string'
+    ? { name: nameOrOptions }
+    : nameOrOptions;
+
   const id = nanoid();
   const createdAt = new Date().toISOString();
   const count = await db.table('habits').count();
   await db.table('habits').add({
     id,
-    name,
+    name: options.name,
     createdAt,
     archived: false,
     sortOrder: count,
     freezesUsed: 0,
     maxFreezes: 2,
-    category: 'uncategorized',
-    valueType: 'boolean',
-    unit: '',
-    targetFrequency: 'daily',
-    targetValue: 1,
-    color: '#6366f1'
+    category: options.category ?? 'uncategorized',
+    valueType: options.valueType ?? 'boolean',
+    unit: options.unit ?? '',
+    targetFrequency: options.targetFrequency ?? 'daily',
+    targetValue: options.targetValue ?? 1,
+    color: options.color ?? '#6366f1'
   });
   return id;
 }

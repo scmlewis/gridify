@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getHabits, createHabit, deleteHabit, archiveHabit } from '../db';
 import type { Habit } from '../types';
+import type { CreateHabitOptions } from '../db';
 
 export function useHabits() {
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -22,9 +23,9 @@ export function useHabits() {
     return () => { cancelled = true; };
   }, []);
 
-  const addHabit = useCallback(async (name: string) => {
+  const addHabit = useCallback(async (nameOrOptions: string | CreateHabitOptions) => {
     try {
-      await createHabit(name);
+      await createHabit(nameOrOptions);
       const updated = await getHabits();
       setHabits(updated);
     } catch (err) {
