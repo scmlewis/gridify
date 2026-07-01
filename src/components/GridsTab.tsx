@@ -42,6 +42,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
   const [habitGrids, setHabitGrids] = useState<HabitGridData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string>('All');
 
   useEffect(() => {
     let cancelled = false;
@@ -106,6 +107,11 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
     );
   }
 
+  const categories = Array.from(new Set(habits.map(h => h.category || 'uncategorized'))).sort();
+  const filteredGrids = activeCategory === 'All'
+    ? habitGrids
+    : habitGrids.filter(g => (g.habit.category || 'uncategorized') === activeCategory);
+
   return (
     <div className="space-y-6">
       <div className="rounded-lg bg-surface-card p-4 border border-border" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
@@ -115,7 +121,33 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
         </div>
       </div>
 
-      {habitGrids.map(({ habit, logs, streak }) => (
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => setActiveCategory('All')}
+          className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+            activeCategory === 'All'
+              ? 'bg-primary text-white'
+              : 'bg-surface-elevated text-text-muted hover:text-text-primary'
+          }`}
+        >
+          All
+        </button>
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              activeCategory === cat
+                ? 'bg-primary text-white'
+                : 'bg-surface-elevated text-text-muted hover:text-text-primary'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {filteredGrids.map(({ habit, logs, streak }) => (
         <div key={habit.id} onClick={() => setSelectedHabit(habit)} className="rounded-lg bg-surface-card p-4 border border-border cursor-pointer hover:border-primary/30 transition-all" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
