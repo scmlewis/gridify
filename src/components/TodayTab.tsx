@@ -1,6 +1,9 @@
+import { useState, useEffect } from 'react';
 import { useHabits } from '../hooks/useHabits';
+import { getUserProfile } from '../db';
 import { SummaryCard } from './SummaryCard';
 import { CategoryGroup } from './CategoryGroup';
+import { OnboardingFlow } from './OnboardingFlow';
 
 interface TodayTabProps {
   onRefresh: React.Dispatch<React.SetStateAction<number>>;
@@ -9,8 +12,22 @@ interface TodayTabProps {
 
 export function TodayTab({ onRefresh: _onRefresh, refreshKey }: TodayTabProps) {
   const { habits, isLoading } = useHabits();
+  const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
 
-  if (isLoading) {
+  useEffect(() => {
+    getUserProfile().then(p => setOnboardingCompleted(p.onboardingCompleted));
+  }, []);
+
+  function handleOnboardingComplete() {
+    setOnboardingCompleted(true);
+    _onRefresh(n => n + 1);
+  }
+
+  if (onboardingCompleted === false) {
+    return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+  }
+
+  if (isLoading || onboardingCompleted === null) {
     return (
       <div className="py-12 text-center">
         <p className="text-sm text-text-secondary">Loading...</p>
