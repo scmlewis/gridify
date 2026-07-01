@@ -13,11 +13,11 @@
 ## Phase 2: Depth
 - [x] Task 9: Numeric Check-in (commit 0226a3e, build clean)
 - [x] Task 10: Goal Setting (commit f23a67d, build clean)
-- [ ] Task 11: Habit Detail Sheet
-- [ ] Task 12: Category Filters
+- [x] Task 11: Habit Detail Sheet (commit c83ca28, build clean)
+- [x] Task 12: Category Filters (commit 60fd5f9, build clean) — Phase 2 Complete!
 
 ## Phase 3: Analytics
-- [ ] Task 13: Trend Sparkline
+- [x] Task 13: Trend Sparkline (commit 68524b7, build clean)
 - [ ] Task 14: Analytics Utilities
 - [ ] Task 15: Insights Panel
 - [ ] Task 16: New Achievements

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ContributionGrid } from './ContributionGrid';
 import { EmptyState } from './EmptyState';
 import { HabitDetailSheet } from './HabitDetailSheet';
+import { InsightsPanel } from './InsightsPanel';
 import { getHabits, getHabitLogs, getAllLogsForDateRange } from '../db';
 import type { Habit } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
@@ -114,6 +115,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
 
   return (
     <div className="space-y-6">
+      <InsightsPanel habits={habits} habitGrids={habitGrids} globalLogs={globalLogs} />
       <div className="rounded-lg bg-surface-card p-4 border border-border" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
         <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">Overall Activity</div>
         <div className="overflow-x-auto">
