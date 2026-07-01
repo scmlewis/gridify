@@ -29,35 +29,32 @@ export function TrendSparkline({ logs, color = '#2BA8A2', days = 30 }: TrendSpar
   const height = 60;
   const padding = 4;
 
-  const pathData = useMemo(() => {
-    if (data.length === 0) return '';
+  const points = useMemo(() => {
+    if (data.length === 0) return [];
 
     const xStep = (width - padding * 2) / (data.length - 1);
     const yScale = (height - padding * 2) / maxValue;
 
-    const points = data.map((p, i) => ({
+    return data.map((p, i) => ({
+      date: p.date,
+      value: p.value,
       x: padding + i * xStep,
       y: height - padding - p.value * yScale,
     }));
-
-    return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
   }, [data, maxValue, width, height, padding]);
+
+  const pathData = useMemo(() => {
+    if (points.length === 0) return '';
+    return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+  }, [points]);
 
   const areaPath = useMemo(() => {
-    if (!pathData) return '';
-
-    const xStep = (width - padding * 2) / (data.length - 1);
-    const yScale = (height - padding * 2) / maxValue;
-
-    const points = data.map((p, i) => ({
-      x: padding + i * xStep,
-      y: height - padding - p.value * yScale,
-    }));
-
+    if (points.length === 0) return '';
     const path = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-    const lastX = padding + (data.length - 1) * xStep;
-    return `${path} L ${lastX} ${height - padding} L ${padding} ${height - padding} Z`;
-  }, [data, maxValue, width, height, padding]);
+    const lastPoint = points[points.length - 1];
+    const bottomY = height - padding;
+    return `${path} L ${lastPoint.x} ${bottomY} L ${padding} ${bottomY} Z`;
+  }, [points, height, padding]);
 
   const avgValue = useMemo(() => {
     if (data.length === 0) return 0;
@@ -99,17 +96,13 @@ export function TrendSparkline({ logs, color = '#2BA8A2', days = 30 }: TrendSpar
             strokeLinejoin="round"
           />
         )}
-        {data.map((p, i) => {
+        {points.map((p) => {
           if (p.value === 0) return null;
-          const xStep = (width - padding * 2) / (data.length - 1);
-          const yScale = (height - padding * 2) / maxValue;
-          const x = padding + i * xStep;
-          const y = height - padding - p.value * yScale;
           return (
             <circle
               key={p.date}
-              cx={x}
-              cy={y}
+              cx={p.x}
+              cy={p.y}
               r="2"
               fill={color}
               opacity="0.8"
