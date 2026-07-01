@@ -167,7 +167,7 @@ export function HabitCard({ habit, onArchived, onCheckIn }: HabitCardProps) {
       )}
       <div
         className="rounded-lg bg-surface-card p-4 border border-border transition-all hover:border-primary/30"
-        style={{ borderLeft: '3px solid #2BA8A2', boxShadow: '0 4px 20px rgba(43, 168, 162, 0.06)' }}
+        style={{ borderLeft: `3px solid ${habit.color ?? '#2BA8A2'}`, boxShadow: '0 4px 20px rgba(43, 168, 162, 0.06)' }}
       >
         <div className="flex items-center gap-3">
           <button
