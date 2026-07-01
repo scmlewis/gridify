@@ -1,12 +1,22 @@
-import { Dashboard } from './components/Dashboard';
+import { useState } from 'react';
+import { Header } from './components/Header';
+import { TabBar } from './components/TabBar';
+import { TodayTab } from './components/TodayTab';
+import { GridsTab } from './components/GridsTab';
 import { UpdatePrompt } from './components/UpdatePrompt';
 
 function App() {
+  const [activeTab, setActiveTab] = useState<'today' | 'grids'>('today');
+
   return (
-    <>
-      <Dashboard />
+    <div className="min-h-screen bg-surface-base px-4 py-6">
+      <div className="mx-auto max-w-4xl space-y-4">
+        <Header />
+        <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+        {activeTab === 'today' ? <TodayTab /> : <GridsTab />}
+      </div>
       <UpdatePrompt />
-    </>
+    </div>
   );
 }
 
