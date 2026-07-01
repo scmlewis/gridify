@@ -14,7 +14,7 @@ function App() {
       <div className="mx-auto max-w-4xl space-y-4">
         <Header refreshTrigger={refreshTrigger} />
         <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
-        {activeTab === 'today' ? <TodayTab onRefresh={setRefreshTrigger} /> : <GridsTab onRefresh={setRefreshTrigger} />}
+        {activeTab === 'today' ? <TodayTab onRefresh={setRefreshTrigger} refreshKey={refreshTrigger} /> : <GridsTab onRefresh={setRefreshTrigger} />}
       </div>
       <UpdatePrompt />
     </div>
