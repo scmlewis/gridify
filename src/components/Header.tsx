@@ -1,40 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
-import { ContributionGrid } from './ContributionGrid';
+import { useState, useRef } from 'react';
 import { OnlineStatus } from './OnlineStatus';
 import { ThemeToggle } from './ThemeToggle';
 import { WeeklyReview } from './WeeklyReview';
-import { getAllLogsForDateRange } from '../db';
 import { exportCSV, exportJSON, importCSV } from '../utils/export';
-import { getGridStartDate } from '../utils/grid-math';
-import { formatDate, addDays } from '../utils/date-utils';
 
 interface HeaderProps {
-  refreshTrigger?: number;
+  onImport?: () => void;
 }
 
-export function Header({ refreshTrigger }: HeaderProps) {
-  const [globalLogs, setGlobalLogs] = useState<Map<string, number>>(new Map());
+export function Header({ onImport }: HeaderProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [showReview, setShowReview] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      const start = getGridStartDate();
-      const end = addDays(new Date(), 1);
-      const logs = await getAllLogsForDateRange(formatDate(start), formatDate(end));
-      if (cancelled) return;
-      const totals = new Map<string, number>();
-      for (const log of logs) {
-        totals.set(log.date, (totals.get(log.date) ?? 0) + log.value);
-      }
-      setGlobalLogs(totals);
-    }
-    load();
-    return () => { cancelled = true; };
-  }, [refreshTrigger]);
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -54,6 +32,10 @@ export function Header({ refreshTrigger }: HeaderProps) {
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+    
+    if (onImport) {
+      onImport();
     }
   };
 
@@ -142,12 +124,6 @@ export function Header({ refreshTrigger }: HeaderProps) {
         {importStatus && (
           <div className="rounded-md bg-primary/10 px-3 py-2 text-sm text-primary">{importStatus}</div>
         )}
-        <div className="rounded-lg bg-surface-card p-4 border border-border" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">Overall Activity</div>
-          <div className="overflow-x-auto">
-            <ContributionGrid logs={globalLogs} cellSize={11} cellGap={2} />
-          </div>
-        </div>
       </header>
       {showReview && <WeeklyReview onClose={() => setShowReview(false)} />}
     </>

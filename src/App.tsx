@@ -12,9 +12,9 @@ function App() {
   return (
     <div className="min-h-screen bg-surface-base px-4 py-6">
       <div className="mx-auto max-w-4xl space-y-4">
-        <Header refreshTrigger={refreshTrigger} />
+        <Header onImport={() => setRefreshTrigger(r => r + 1)} />
         <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
-        {activeTab === 'today' ? <TodayTab onRefresh={setRefreshTrigger} refreshKey={refreshTrigger} /> : <GridsTab onRefresh={setRefreshTrigger} />}
+        {activeTab === 'today' ? <TodayTab onRefresh={setRefreshTrigger} refreshKey={refreshTrigger} /> : <GridsTab refreshTrigger={refreshTrigger} onRefresh={setRefreshTrigger} />}
       </div>
       <UpdatePrompt />
     </div>
