@@ -124,13 +124,20 @@ export async function updateHabit(id: string, updates: Partial<Omit<Habit, 'id' 
   await db.table('habits').update(id, updates);
 }
 
-export async function deleteHabit(id: string): Promise<void> {
-  await db.table('habitLogs').where('habitId').equals(id).delete();
-  await db.table('habits').delete(id);
-}
-
 export async function archiveHabit(id: string): Promise<void> {
   await db.table('habits').update(id, { archived: true });
+}
+
+export async function reorderHabits(updates: {id: string, sortOrder: number}[]): Promise<void> {
+  await db.transaction('rw', db.table('habits'), async () => {
+    for (const update of updates) {
+      await db.table('habits').update(update.id, { sortOrder: update.sortOrder });
+    }
+  });
+}
+
+export async function deleteHabit(id: string): Promise<void> {
+  await db.table('habits').delete(id);
 }
 
 export async function applyStreakFreeze(id: string): Promise<boolean> {

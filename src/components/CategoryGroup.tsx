@@ -22,9 +22,20 @@ interface CategoryGroupProps {
   habits: Habit[];
   onCheckIn?: () => void;
   onHabitTap?: (habit: Habit) => void;
+  onDragStart?: (e: React.DragEvent, habitId: string) => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent, habitId: string) => void;
 }
 
-export function CategoryGroup({ categoryName, habits, onCheckIn, onHabitTap }: CategoryGroupProps) {
+export function CategoryGroup({ 
+  categoryName, 
+  habits, 
+  onCheckIn, 
+  onHabitTap,
+  onDragStart,
+  onDragOver,
+  onDrop 
+}: CategoryGroupProps) {
   const [collapsed, setCollapsed] = useState<boolean>(() => getCollapsedCategories().has(categoryName));
 
   const toggle = useCallback(() => {
@@ -64,7 +75,15 @@ export function CategoryGroup({ categoryName, habits, onCheckIn, onHabitTap }: C
       {!collapsed && (
         <div className="space-y-1.5 pb-2">
           {habits.map((habit) => (
-            <HabitRow key={habit.id} habit={habit} onCheckIn={onCheckIn} onTap={onHabitTap} />
+            <HabitRow 
+              key={habit.id} 
+              habit={habit} 
+              onCheckIn={onCheckIn} 
+              onTap={onHabitTap}
+              onDragStart={onDragStart}
+              onDragOver={onDragOver}
+              onDrop={onDrop}
+            />
           ))}
         </div>
       )}

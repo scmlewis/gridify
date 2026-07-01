@@ -19,9 +19,9 @@
 ## Phase 3: Analytics
 - [x] Task 13: Trend Sparkline (commit 68524b7, build clean)
 - [ ] Task 14: Analytics Utilities
-- [ ] Task 15: Insights Panel
-- [ ] Task 16: New Achievements
-- [ ] Task 17: Habit Colors in Grid Cards
+- [x] Task 15: Insights Panel (commit feat: add Insights Panel, build clean)
+- [x] Task 16: New Achievements (commit 0a7afbf, build clean)
+- [x] Task 17: Habit Colors in Grid Cards (commit dafe3b3, build clean) — Phase 3 Complete!
 
 ## Phase 4: Polish
 - [ ] Task 18: Long-Press Reorder

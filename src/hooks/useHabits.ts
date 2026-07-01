@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getHabits, createHabit, deleteHabit, archiveHabit } from '../db';
+import { getHabits, createHabit, deleteHabit, archiveHabit, reorderHabits } from '../db';
 import type { Habit } from '../types';
 import type { CreateHabitOptions } from '../db';
 
@@ -51,5 +51,15 @@ export function useHabits() {
     }
   }, []);
 
-  return { habits, addHabit, deleteHabit: removeHabit, archiveHabit: archive, isLoading };
+  const reorder = useCallback(async (updates: {id: string, sortOrder: number}[]) => {
+    try {
+      await reorderHabits(updates);
+      const updated = await getHabits();
+      setHabits(updated);
+    } catch (err) {
+      console.error('Failed to reorder habits:', err);
+    }
+  }, []);
+
+  return { habits, addHabit, deleteHabit: removeHabit, archiveHabit: archive, reorder, isLoading };
 }

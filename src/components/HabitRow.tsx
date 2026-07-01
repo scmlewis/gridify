@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getHabitLogs, logCheckIn, removeCheckIn } from '../db';
 import { formatDate, addDays } from '../utils/date-utils';
 import { calculateStreak } from '../utils/streak';
@@ -9,18 +9,24 @@ interface HabitRowProps {
   habit: Habit;
   onCheckIn?: () => void;
   onTap?: (habit: Habit) => void;
+  onDragStart?: (e: React.DragEvent, habitId: string) => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent, habitId: string) => void;
 }
 
 function triggerHaptic() {
   if (navigator.vibrate) navigator.vibrate(10);
 }
 
-export function HabitRow({ habit, onCheckIn, onTap }: HabitRowProps) {
+export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onDrop }: HabitRowProps) {
   const [checked, setChecked] = useState(false);
   const [numericValue, setNumericValue] = useState(0);
   const [streak, setStreak] = useState(0);
   const todayStr = formatDate(new Date());
   const isNumeric = habit.valueType === 'numeric';
+  const [isDraggable, setIsDraggable] = useState(false);
+  const [isLongPress, setIsLongPress] = useState(false);
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -65,10 +71,69 @@ export function HabitRow({ habit, onCheckIn, onTap }: HabitRowProps) {
 
   const color = habit.color || '#6366f1';
 
+  const handleTouchStart = (_e: React.TouchEvent) => {
+    setIsLongPress(false);
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current);
+    }
+    timerRef.current = window.setTimeout(() => {
+      setIsLongPress(true);
+      setIsDraggable(true);
+      triggerHaptic();
+    }, 600);
+  };
+
+  const handleTouchEnd = () => {
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const handleDragStart = (e: React.DragEvent) => {
+    if (!isDraggable) {
+      e.preventDefault();
+      return;
+    }
+    onDragStart?.(e, habit.id);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    onDragOver?.(e);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    onDrop?.(e, habit.id);
+    setIsDraggable(false);
+    setIsLongPress(false);
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (isLongPress) {
+      e.preventDefault();
+      return;
+    }
+    onTap?.(habit);
+  };
+
   return (
     <div
-      onClick={() => onTap?.(habit)}
-      className="flex items-center gap-3 rounded-md bg-surface-card px-3 py-2.5 border border-border transition-all hover:border-primary/20 cursor-pointer"
+      draggable={isDraggable}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      onClick={handleClick}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+className={`flex items-center gap-3 rounded-md bg-surface-card px-3 py-2.5 border transition-all ${
+    isDraggable
+      ? 'border-primary/50 cursor-grabbing scale-[1.02] shadow-lg'
+      : 'border-border hover:border-primary/20 cursor-pointer'
+  }`}
       style={{ borderLeft: `3px solid ${color}` }}
     >
       {isNumeric ? (
@@ -81,7 +146,13 @@ export function HabitRow({ habit, onCheckIn, onTap }: HabitRowProps) {
         />
       ) : (
         <button
-          onClick={toggle}
+          onClick={(e) => {
+            if (isLongPress) {
+              e.stopPropagation();
+              return;
+            }
+            toggle();
+          }}
           className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 transition-all active:scale-90 ${
             checked
               ? 'border-primary bg-primary text-surface-base'
