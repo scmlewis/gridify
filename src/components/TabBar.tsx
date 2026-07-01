@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 interface TabBarProps {
   activeTab: 'today' | 'grids';
   onTabChange: (tab: 'today' | 'grids') => void;

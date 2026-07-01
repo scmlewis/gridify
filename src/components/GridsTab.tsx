@@ -1,4 +1,8 @@
-export function GridsTab() {
+interface GridsTabProps {
+  onRefresh: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export function GridsTab({ onRefresh: _onRefresh }: GridsTabProps) {
   return (
     <div className="py-12 text-center">
       <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">

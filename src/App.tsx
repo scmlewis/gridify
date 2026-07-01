@@ -7,13 +7,14 @@ import { UpdatePrompt } from './components/UpdatePrompt';
 
 function App() {
   const [activeTab, setActiveTab] = useState<'today' | 'grids'>('today');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   return (
     <div className="min-h-screen bg-surface-base px-4 py-6">
       <div className="mx-auto max-w-4xl space-y-4">
-        <Header />
+        <Header refreshTrigger={refreshTrigger} />
         <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
-        {activeTab === 'today' ? <TodayTab /> : <GridsTab />}
+        {activeTab === 'today' ? <TodayTab onRefresh={setRefreshTrigger} /> : <GridsTab onRefresh={setRefreshTrigger} />}
       </div>
       <UpdatePrompt />
     </div>
