@@ -81,35 +81,19 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
     const newChecked = !todayChecked;
     triggerHaptic();
 
-    // Optimistically update UI state using functional updates to avoid stale closures
-    setTodayChecked((prev) => newChecked);
-    setLogs((prev) => {
-      const updated = new Map(prev);
-      if (newChecked) {
-        updated.set(todayStr, 1);
-      } else {
-        updated.delete(todayStr);
-      }
-      return updated;
-    });
-
-    // Compute new streak and momentum based on the updated logs
-    setStreak((prev) => {
-      const updatedLogs = new Map(logs);
-      if (newChecked) {
-        updatedLogs.set(todayStr, 1);
-      } else {
-        updatedLogs.delete(todayStr);
-      }
-      return calculateStreak(updatedLogs);
-    });
-    setMomentum((prev) => {
-      const updatedLogs = new Map(logs);
-      if (newChecked) {
-        updatedLogs.set(todayStr, 1);
-      } else {
-        updatedLogs.delete(todayStr);
-      }
+    // Optimistically update UI state
+    setTodayChecked(newChecked);
+    // Update logs map
+    const updatedLogs = new Map(logs);
+    if (newChecked) {
+      updatedLogs.set(todayStr, 1);
+    } else {
+      updatedLogs.delete(todayStr);
+    }
+    setLogs(updatedLogs);
+    // Derive streak and momentum from updated logs
+    setStreak(calculateStreak(updatedLogs));
+    setMomentum(calculateMomentum(updatedLogs));
       return calculateMomentum(updatedLogs);
     });
 
