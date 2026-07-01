@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ContributionGrid } from './ContributionGrid';
 import { EmptyState } from './EmptyState';
 import { HabitDetailSheet } from './HabitDetailSheet';
+import { HabitCard } from './HabitCard';
 import { InsightsPanel } from './InsightsPanel';
 import { getHabits, getHabitLogs, getAllLogsForDateRange } from '../db';
 import type { Habit } from '../db';
@@ -149,30 +150,17 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
         ))}
       </div>
 
-      {filteredGrids.map(({ habit, logs, streak }) => (
-        <div key={habit.id} onClick={() => setSelectedHabit(habit)} className="rounded-lg bg-surface-card p-4 border border-border cursor-pointer hover:border-primary/30 transition-all" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
-          <div className="mb-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2">
-                <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: habit.color || '#6366f1' }} />
-                <span className="text-sm font-bold text-text-primary">{habit.name}</span>
-              </div>
-              <span className="rounded-full bg-surface-elevated px-2 py-0.5 text-[10px] font-medium text-text-muted">
-                {habit.category || 'uncategorized'}
-              </span>
-            </div>
-            {streak > 0 && (
-              <div className="flex items-center gap-1 rounded-full bg-accent-gold/10 px-2 py-0.5">
-                <span className="text-[10px] text-accent-gold">🔥</span>
-                <span className="text-xs font-bold text-accent-gold">{streak}d</span>
-              </div>
-            )}
-          </div>
-          <div className="overflow-x-auto">
-            <ContributionGrid logs={logs} cellSize={10} cellGap={2} />
-          </div>
-        </div>
-      ))}
+      <div className="space-y-4">
+        {filteredGrids.map(({ habit }) => (
+          <HabitCard
+            key={habit.id}
+            habit={habit}
+            onArchived={() => _onRefresh(n => n + 1)}
+            onCheckIn={() => _onRefresh(n => n + 1)}
+            onTap={setSelectedHabit}
+          />
+        ))}
+      </div>
       <HabitDetailSheet
         habit={selectedHabit}
         isOpen={selectedHabit !== null}

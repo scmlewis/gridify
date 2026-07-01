@@ -147,8 +147,8 @@ className={`flex items-center gap-3 rounded-md bg-surface-card px-3 py-2.5 borde
       ) : (
         <button
           onClick={(e) => {
+            e.stopPropagation();
             if (isLongPress) {
-              e.stopPropagation();
               return;
             }
             toggle();

@@ -14,6 +14,7 @@ interface HabitCardProps {
   habit: Habit;
   onArchived: (id: string) => void;
   onCheckIn?: () => void;
+  onTap?: (habit: Habit) => void;
 }
 
 function triggerHaptic() {
@@ -22,7 +23,7 @@ function triggerHaptic() {
   }
 }
 
-export function HabitCard({ habit, onArchived, onCheckIn }: HabitCardProps) {
+export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProps) {
   const [logs, setLogs] = useState<Map<string, number>>(new Map());
   const [todayChecked, setTodayChecked] = useState(false);
   const [streak, setStreak] = useState(0);
@@ -166,12 +167,16 @@ export function HabitCard({ habit, onArchived, onCheckIn }: HabitCardProps) {
         />
       )}
       <div
-        className="rounded-lg bg-surface-card p-4 border border-border transition-all hover:border-primary/30"
+        onClick={() => onTap?.(habit)}
+        className={`rounded-lg bg-surface-card p-4 border border-border transition-all hover:border-primary/30 ${onTap ? 'cursor-pointer' : ''}`}
         style={{ borderLeft: `3px solid ${habit.color ?? '#2BA8A2'}`, boxShadow: '0 4px 20px rgba(43, 168, 162, 0.06)' }}
       >
         <div className="flex items-center gap-3">
           <button
-            onClick={toggleToday}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleToday();
+            }}
             className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 transition-all active:scale-90 ${
               todayChecked
                 ? 'border-primary bg-primary text-surface-base'
@@ -208,7 +213,10 @@ export function HabitCard({ habit, onArchived, onCheckIn }: HabitCardProps) {
           <div className="flex items-center gap-1">
             {freezesUsed < maxFreezes && (
               <button
-                onClick={handleFreeze}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFreeze();
+                }}
                 className="shrink-0 rounded-md p-1.5 text-text-muted hover:bg-sky-blue/10 hover:text-sky-blue transition-colors"
                 title={`Use streak freeze (${maxFreezes - freezesUsed} remaining)`}
               >
@@ -218,7 +226,10 @@ export function HabitCard({ habit, onArchived, onCheckIn }: HabitCardProps) {
               </button>
             )}
             <button
-              onClick={handleArchive}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleArchive();
+              }}
               className="shrink-0 rounded-md p-1.5 text-text-muted hover:bg-coral/10 hover:text-coral transition-colors"
               title="Archive habit"
             >

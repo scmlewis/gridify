@@ -33,7 +33,10 @@ export function NumericInput({ habitId, value, unit, targetValue, onChange }: Nu
   return (
     <div className="flex items-center gap-1">
       <button
-        onClick={() => handleChange(Math.max(0, value - 1))}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleChange(Math.max(0, value - 1));
+        }}
         className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-transparent text-text-muted transition-all hover:border-primary hover:text-primary active:scale-90"
         aria-label="Decrease"
       >
@@ -46,7 +49,10 @@ export function NumericInput({ habitId, value, unit, targetValue, onChange }: Nu
         {unit && <span className="ml-0.5 text-xs font-normal text-text-muted">{unit}</span>}
       </span>
       <button
-        onClick={() => handleChange(value + 1)}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleChange(value + 1);
+        }}
         className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-transparent text-text-muted transition-all hover:border-primary hover:text-primary active:scale-90"
         aria-label="Increase"
       >

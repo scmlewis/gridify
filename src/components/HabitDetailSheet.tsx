@@ -78,7 +78,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
 
         <div className="overflow-y-auto flex-1 p-5 space-y-5">
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
+            <div className="flex items-center justify-center py-12 min-h-[400px]">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
             </div>
           ) : (
