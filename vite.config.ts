@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  base: '/gridify/',
   plugins: [
     react(),
     VitePWA({
@@ -28,8 +29,8 @@ export default defineConfig({
         background_color: '#111827',
         display: 'standalone',
         icons: [
-          { src: '/favicon.svg', sizes: '192x192', type: 'image/svg+xml' },
-          { src: '/favicon.svg', sizes: '512x512', type: 'image/svg+xml' }
+          { src: '/gridify/favicon.svg', sizes: '192x192', type: 'image/svg+xml' },
+          { src: '/gridify/favicon.svg', sizes: '512x512', type: 'image/svg+xml' }
         ]
       }
     })
