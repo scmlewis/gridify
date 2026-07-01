@@ -6,9 +6,10 @@ import { exportCSV, exportJSON, importCSV } from '../utils/export';
 
 interface HeaderProps {
   onImport?: () => void;
+  onShowCategories?: () => void;
 }
 
-export function Header({ onImport }: HeaderProps) {
+export function Header({ onImport, onShowCategories }: HeaderProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [showReview, setShowReview] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
@@ -63,9 +64,21 @@ export function Header({ onImport }: HeaderProps) {
                     <button
                       onClick={() => {
                         setShowMenu(false);
-                        setShowReview(true);
+                        onShowCategories?.();
                       }}
                       className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-primary hover:bg-surface-card transition-colors rounded-t-lg"
+                    >
+                      <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M4 6h16M4 10h16M4 14h16" strokeLinecap="round" />
+                      </svg>
+                      Manage Categories
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        setShowReview(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-primary hover:bg-surface-card transition-colors"
                     >
                       <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" strokeLinecap="round" />

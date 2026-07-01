@@ -12,9 +12,10 @@ import type { Habit } from '../types';
 interface TodayTabProps {
   onRefresh: React.Dispatch<React.SetStateAction<number>>;
   refreshKey?: number;
+  onShowCategories?: () => void;
 }
 
-export function TodayTab({ onRefresh: _onRefresh, refreshKey }: TodayTabProps) {
+export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }: TodayTabProps) {
   const { habits, isLoading, addHabit, reorder } = useHabits();
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [showAddSheet, setShowAddSheet] = useState(false);
@@ -133,6 +134,7 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey }: TodayTabProps) {
         isOpen={showAddSheet}
         onClose={() => setShowAddSheet(false)}
         onAdd={handleAddHabit}
+        onShowCategories={onShowCategories}
       />
       <HabitDetailSheet
         habit={selectedHabit}

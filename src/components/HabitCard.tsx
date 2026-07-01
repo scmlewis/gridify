@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ContributionGrid } from './ContributionGrid';
 import { Confetti } from './Confetti';
 import { Toast } from './Toast';
@@ -26,8 +26,8 @@ function triggerHaptic() {
 export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProps) {
   const [logs, setLogs] = useState<Map<string, number>>(new Map());
   const [todayChecked, setTodayChecked] = useState(false);
-  const [streak, setStreak] = useState(0);
-  const [momentum, setMomentum] = useState({ completed: 0, total: 14 });
+  const streak = useMemo(() => calculateStreak(logs), [logs]);
+  const momentum = useMemo(() => calculateMomentum(logs), [logs]);
   const [freezesUsed, setFreezesUsed] = useState(0);
   const [maxFreezes, setMaxFreezes] = useState(2);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -60,9 +60,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       setTodayChecked((map.get(todayStr) ?? 0) > 0);
 
       // Derive streak and momentum from the loaded logs
-      const newStreak = calculateStreak(map);
-      setStreak(newStreak);
-      setMomentum(calculateMomentum(map));
+      // streak & momentum are now derived via useMemo
 
       // Load habit meta data
       const habitData = await getHabit(habit.id);
@@ -91,11 +89,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       updatedLogs.delete(todayStr);
     }
     setLogs(updatedLogs);
-    // Derive streak and momentum from updated logs
-    setStreak(calculateStreak(updatedLogs));
-    setMomentum(calculateMomentum(updatedLogs));
-      return calculateMomentum(updatedLogs);
-    });
+    // No additional calculations needed
 
     setToast({
       message: newChecked ? 'Checked in!' : 'Unchecked',

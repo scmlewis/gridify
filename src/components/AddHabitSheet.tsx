@@ -14,9 +14,10 @@ interface AddHabitSheetProps {
     targetValue: number;
     color: string;
   }) => void;
+  onShowCategories?: () => void;
 }
 
-export function AddHabitSheet({ isOpen, onClose, onAdd }: AddHabitSheetProps) {
+export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddHabitSheetProps) {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('uncategorized');
   const [valueType, setValueType] = useState<'boolean' | 'numeric'>('boolean');
@@ -57,7 +58,7 @@ export function AddHabitSheet({ isOpen, onClose, onAdd }: AddHabitSheetProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-lg rounded-t-2xl bg-surface-card p-6 pb-8 animate-slide-up">
+      <div className="relative w-full max-w-lg rounded-t-2xl bg-surface-card p-6 pb-8 animate-slide-up mx-auto">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-bold text-text-primary">New Habit</h2>
           <button
@@ -87,9 +88,16 @@ export function AddHabitSheet({ isOpen, onClose, onAdd }: AddHabitSheetProps) {
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
-              Category
-            </label>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label className="text-sm font-medium text-text-secondary">Category</label>
+              <button
+                type="button"
+                onClick={() => { onClose(); onShowCategories?.(); }}
+                className="text-xs text-primary hover:opacity-80 transition-opacity"
+              >
+                + Manage categories
+              </button>
+            </div>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
