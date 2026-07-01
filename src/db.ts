@@ -9,6 +9,12 @@ export interface Habit {
   sortOrder: number;
   freezesUsed: number;
   maxFreezes: number;
+  category?: string;
+  valueType?: 'boolean' | 'numeric';
+  unit?: string;
+  targetFrequency?: 'daily' | 'weekly' | 'monthly';
+  targetValue?: number;
+  color?: string;
 }
 
 export interface HabitLog {
@@ -18,12 +24,21 @@ export interface HabitLog {
   value: number;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  color: string;
+  icon?: string;
+}
+
 export interface UserProfile {
   id: string;
   xp: number;
   level: number;
   achievements: string[];
   createdAt: string;
+  onboardingCompleted: boolean;
+  categories: Category[];
 }
 
 const db = new Dexie('HabitTrackerDB');
@@ -48,6 +63,25 @@ db.version(3).stores({
   }
 });
 
+db.version(4).stores({
+  habits: 'id, archived, sortOrder, category',
+  habitLogs: 'id, habitId, date',
+  userProfile: 'id'
+}).upgrade(async (tx) => {
+  await tx.table('habits').toCollection().modify((habit: any) => {
+    habit.category = habit.category ?? 'uncategorized';
+    habit.valueType = habit.valueType ?? 'boolean';
+    habit.unit = habit.unit ?? '';
+    habit.targetFrequency = habit.targetFrequency ?? 'daily';
+    habit.targetValue = habit.targetValue ?? 1;
+    habit.color = habit.color ?? '#6366f1';
+  });
+  await tx.table('userProfile').toCollection().modify((profile: any) => {
+    profile.onboardingCompleted = profile.onboardingCompleted ?? false;
+    profile.categories = profile.categories ?? [];
+  });
+});
+
 export { db };
 
 export async function createHabit(name: string): Promise<string> {
@@ -61,9 +95,19 @@ export async function createHabit(name: string): Promise<string> {
     archived: false,
     sortOrder: count,
     freezesUsed: 0,
-    maxFreezes: 2
+    maxFreezes: 2,
+    category: 'uncategorized',
+    valueType: 'boolean',
+    unit: '',
+    targetFrequency: 'daily',
+    targetValue: 1,
+    color: '#6366f1'
   });
   return id;
+}
+
+export async function updateHabit(id: string, updates: Partial<Omit<Habit, 'id' | 'createdAt'>>): Promise<void> {
+  await db.table('habits').update(id, updates);
 }
 
 export async function deleteHabit(id: string): Promise<void> {
@@ -144,7 +188,9 @@ export async function getUserProfile(): Promise<UserProfile> {
       xp: 0,
       level: 1,
       achievements: [],
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      onboardingCompleted: false,
+      categories: []
     };
     await db.table('userProfile').add(newProfile);
     return newProfile;
@@ -175,6 +221,22 @@ export async function unlockAchievement(achievementId: string): Promise<boolean>
   });
 
   return true;
+}
+
+export async function getCategories(): Promise<Category[]> {
+  const profile = await getUserProfile();
+  return profile.categories;
+}
+
+export async function updateCategories(categories: Category[]): Promise<void> {
+  await db.table('userProfile').update('default', { categories });
+}
+
+export async function completeOnboarding(categories: Category[]): Promise<void> {
+  await db.table('userProfile').update('default', {
+    onboardingCompleted: true,
+    categories
+  });
 }
 
 function getLevelForXP(xp: number): number {

@@ -1,1 +1,1 @@
-export type { Habit, HabitLog } from './db';
+export type { Habit, HabitLog, Category, UserProfile } from './db';
