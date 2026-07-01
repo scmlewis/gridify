@@ -32,11 +32,21 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
   const [maxFreezes, setMaxFreezes] = useState(2);
   const [showConfetti, setShowConfetti] = useState(false);
   const [milestone, setMilestone] = useState<number | null>(null);
+
+  // Effect to handle milestone detection and trigger confetti when streak reaches a new milestone
+  useEffect(() => {
+    const m = getMilestone(streak);
+    if (m && m !== milestone) {
+      setMilestone(m);
+      setShowConfetti(true);
+    }
+  }, [streak, milestone]);
   const [toast, setToast] = useState<{ message: string; action?: { label: string; onClick: () => void } } | null>(null);
   const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
 
   const todayStr = formatDate(new Date());
 
+  // Load habit logs once on mount or when habit.id changes
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -45,68 +55,85 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       const raw = await getHabitLogs(habit.id, formatDate(start), formatDate(end));
       if (cancelled) return;
       const map = new Map<string, number>();
-      for (const log of raw) {
-        map.set(log.date, log.value);
-      }
+      raw.forEach((log) => map.set(log.date, log.value));
       setLogs(map);
       setTodayChecked((map.get(todayStr) ?? 0) > 0);
 
+      // Derive streak and momentum from the loaded logs
       const newStreak = calculateStreak(map);
       setStreak(newStreak);
       setMomentum(calculateMomentum(map));
 
+      // Load habit meta data
       const habitData = await getHabit(habit.id);
       if (habitData && !cancelled) {
         setFreezesUsed(habitData.freezesUsed);
         setMaxFreezes(habitData.maxFreezes);
       }
-
-      const m = getMilestone(newStreak);
-      if (m) {
-        setMilestone(m);
-        setShowConfetti(true);
-      }
     }
     load();
-    return () => { cancelled = true; };
-  }, [habit.id, todayStr]);
+    return () => {
+      cancelled = true;
+    };
+  }, [habit.id, todayStr, getGridStartDate, addDays, formatDate]);
 
   const toggleToday = useCallback(async () => {
     const newChecked = !todayChecked;
     triggerHaptic();
 
-    setTodayChecked(newChecked);
-    const newLogs = new Map(logs);
-    if (newChecked) {
-      newLogs.set(todayStr, 1);
-    } else {
-      newLogs.delete(todayStr);
-    }
-    setLogs(newLogs);
+    // Optimistically update UI state using functional updates to avoid stale closures
+    setTodayChecked((prev) => newChecked);
+    setLogs((prev) => {
+      const updated = new Map(prev);
+      if (newChecked) {
+        updated.set(todayStr, 1);
+      } else {
+        updated.delete(todayStr);
+      }
+      return updated;
+    });
 
-    const newStreak = calculateStreak(newLogs);
-    setStreak(newStreak);
-    setMomentum(calculateMomentum(newLogs));
-
-    const m = getMilestone(newStreak);
-    if (m) {
-      setMilestone(m);
-      setShowConfetti(true);
-    }
+    // Compute new streak and momentum based on the updated logs
+    setStreak((prev) => {
+      const updatedLogs = new Map(logs);
+      if (newChecked) {
+        updatedLogs.set(todayStr, 1);
+      } else {
+        updatedLogs.delete(todayStr);
+      }
+      return calculateStreak(updatedLogs);
+    });
+    setMomentum((prev) => {
+      const updatedLogs = new Map(logs);
+      if (newChecked) {
+        updatedLogs.set(todayStr, 1);
+      } else {
+        updatedLogs.delete(todayStr);
+      }
+      return calculateMomentum(updatedLogs);
+    });
 
     setToast({
       message: newChecked ? 'Checked in!' : 'Unchecked',
       action: {
         label: 'Undo',
-        onClick: () => {
-          setTodayChecked(todayChecked);
-          setLogs(logs);
-          setStreak(calculateStreak(logs));
-          setMomentum(calculateMomentum(logs));
+        onClick: async () => {
+          // Revert UI state first
+          setTodayChecked((prev) => !prev);
+          setLogs((prev) => {
+            const reverted = new Map(prev);
+            if (todayChecked) {
+              reverted.delete(todayStr);
+            } else {
+              reverted.set(todayStr, 1);
+            }
+            return reverted;
+          });
+          // Sync with DB
           if (todayChecked) {
-            removeCheckIn(habit.id, todayStr).catch(console.error);
+            await removeCheckIn(habit.id, todayStr);
           } else {
-            logCheckIn(habit.id, todayStr, 1).catch(console.error);
+            await logCheckIn(habit.id, todayStr, 1);
           }
           onCheckIn?.();
         },
@@ -116,10 +143,9 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
     try {
       if (newChecked) {
         await logCheckIn(habit.id, todayStr, 1);
-        const result = await processCheckIn(newStreak);
+        const result = await processCheckIn(calculateStreak(new Map(logs).set(todayStr, 1)));
         if (result.newAchievements.length > 0) {
           setCurrentAchievement(result.newAchievements[0]);
-          setShowConfetti(true);
         }
         if (result.leveledUp) {
           setToast({
@@ -131,10 +157,6 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       }
     } catch (err) {
       console.error('Failed to toggle check-in:', err);
-      setTodayChecked(todayChecked);
-      setLogs(logs);
-      setStreak(calculateStreak(logs));
-      setMomentum(calculateMomentum(logs));
     }
     onCheckIn?.();
   }, [todayChecked, logs, todayStr, habit.id, onCheckIn]);
@@ -169,7 +191,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       <div
         onClick={() => onTap?.(habit)}
         className={`rounded-lg bg-surface-card p-4 border border-border transition-all hover:border-primary/30 ${onTap ? 'cursor-pointer' : ''}`}
-        style={{ borderLeft: `3px solid ${habit.color ?? '#2BA8A2'}`, boxShadow: '0 4px 20px rgba(43, 168, 162, 0.06)' }}
+        style={{ borderLeft: `3px solid ${habit.color ?? '#6366f1'}`, boxShadow: '0 4px 20px rgba(43, 168, 162, 0.06)' }}
       >
         <div className="flex items-center gap-3">
           <button
