@@ -11,8 +11,8 @@
 - [x] Task 8: Grids Tab (commit 7ddfc06, build clean) — Phase 1 Complete!
 
 ## Phase 2: Depth
-- [ ] Task 9: Numeric Check-in
-- [ ] Task 10: Goal Setting
+- [x] Task 9: Numeric Check-in (commit 0226a3e, build clean)
+- [x] Task 10: Goal Setting (commit f23a67d, build clean)
 - [ ] Task 11: Habit Detail Sheet
 - [ ] Task 12: Category Filters
 

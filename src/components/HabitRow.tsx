@@ -8,13 +8,14 @@ import type { Habit } from '../types';
 interface HabitRowProps {
   habit: Habit;
   onCheckIn?: () => void;
+  onTap?: (habit: Habit) => void;
 }
 
 function triggerHaptic() {
   if (navigator.vibrate) navigator.vibrate(10);
 }
 
-export function HabitRow({ habit, onCheckIn }: HabitRowProps) {
+export function HabitRow({ habit, onCheckIn, onTap }: HabitRowProps) {
   const [checked, setChecked] = useState(false);
   const [numericValue, setNumericValue] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -66,7 +67,8 @@ export function HabitRow({ habit, onCheckIn }: HabitRowProps) {
 
   return (
     <div
-      className="flex items-center gap-3 rounded-md bg-surface-card px-3 py-2.5 border border-border transition-all hover:border-primary/20"
+      onClick={() => onTap?.(habit)}
+      className="flex items-center gap-3 rounded-md bg-surface-card px-3 py-2.5 border border-border transition-all hover:border-primary/20 cursor-pointer"
       style={{ borderLeft: `3px solid ${color}` }}
     >
       {isNumeric ? (

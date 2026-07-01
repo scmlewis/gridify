@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ContributionGrid } from './ContributionGrid';
 import { EmptyState } from './EmptyState';
+import { HabitDetailSheet } from './HabitDetailSheet';
 import { getHabits, getHabitLogs, getAllLogsForDateRange } from '../db';
 import type { Habit } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
@@ -40,6 +41,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
   const [globalLogs, setGlobalLogs] = useState<Map<string, number>>(new Map());
   const [habitGrids, setHabitGrids] = useState<HabitGridData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -114,7 +116,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
       </div>
 
       {habitGrids.map(({ habit, logs, streak }) => (
-        <div key={habit.id} className="rounded-lg bg-surface-card p-4 border border-border" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
+        <div key={habit.id} onClick={() => setSelectedHabit(habit)} className="rounded-lg bg-surface-card p-4 border border-border cursor-pointer hover:border-primary/30 transition-all" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2">
@@ -137,6 +139,13 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
           </div>
         </div>
       ))}
+      <HabitDetailSheet
+        habit={selectedHabit}
+        isOpen={selectedHabit !== null}
+        onClose={() => setSelectedHabit(null)}
+        onDelete={() => _onRefresh(n => n + 1)}
+        onRefresh={() => _onRefresh(n => n + 1)}
+      />
     </div>
   );
 }

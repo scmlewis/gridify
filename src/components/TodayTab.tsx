@@ -5,7 +5,9 @@ import { SummaryCard } from './SummaryCard';
 import { CategoryGroup } from './CategoryGroup';
 import { OnboardingFlow } from './OnboardingFlow';
 import { AddHabitSheet } from './AddHabitSheet';
+import { HabitDetailSheet } from './HabitDetailSheet';
 import type { CreateHabitOptions } from '../db';
+import type { Habit } from '../types';
 
 interface TodayTabProps {
   onRefresh: React.Dispatch<React.SetStateAction<number>>;
@@ -16,6 +18,7 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey }: TodayTabProps) {
   const { habits, isLoading, addHabit } = useHabits();
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [showAddSheet, setShowAddSheet] = useState(false);
+  const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
 
   useEffect(() => {
     getUserProfile().then(p => setOnboardingCompleted(p.onboardingCompleted));
@@ -68,6 +71,7 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey }: TodayTabProps) {
           key={category}
           categoryName={category}
           habits={catHabits}
+          onHabitTap={setSelectedHabit}
         />
       ))}
       <button
@@ -84,6 +88,13 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey }: TodayTabProps) {
         isOpen={showAddSheet}
         onClose={() => setShowAddSheet(false)}
         onAdd={handleAddHabit}
+      />
+      <HabitDetailSheet
+        habit={selectedHabit}
+        isOpen={selectedHabit !== null}
+        onClose={() => setSelectedHabit(null)}
+        onDelete={() => _onRefresh(n => n + 1)}
+        onRefresh={() => _onRefresh(n => n + 1)}
       />
     </div>
   );

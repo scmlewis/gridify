@@ -21,9 +21,10 @@ interface CategoryGroupProps {
   categoryName: string;
   habits: Habit[];
   onCheckIn?: () => void;
+  onHabitTap?: (habit: Habit) => void;
 }
 
-export function CategoryGroup({ categoryName, habits, onCheckIn }: CategoryGroupProps) {
+export function CategoryGroup({ categoryName, habits, onCheckIn, onHabitTap }: CategoryGroupProps) {
   const [collapsed, setCollapsed] = useState<boolean>(() => getCollapsedCategories().has(categoryName));
 
   const toggle = useCallback(() => {
@@ -63,7 +64,7 @@ export function CategoryGroup({ categoryName, habits, onCheckIn }: CategoryGroup
       {!collapsed && (
         <div className="space-y-1.5 pb-2">
           {habits.map((habit) => (
-            <HabitRow key={habit.id} habit={habit} onCheckIn={onCheckIn} />
+            <HabitRow key={habit.id} habit={habit} onCheckIn={onCheckIn} onTap={onHabitTap} />
           ))}
         </div>
       )}
