@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { Check, Circle } from 'lucide-react';
 import { getHabitLogs, logCheckIn, removeCheckIn } from '../db';
 import { formatDate, addDays } from '../utils/date-utils';
 import { calculateStreak } from '../utils/streak';
@@ -173,13 +174,9 @@ className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3
           title={checked ? 'Uncheck' : 'Check in'}
         >
           {checked ? (
-            <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
+            <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
           ) : (
-            <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="10" cy="10" r="7" />
-            </svg>
+            <Circle className="h-3.5 w-3.5" strokeWidth={1.8} />
           )}
         </button>
       )}

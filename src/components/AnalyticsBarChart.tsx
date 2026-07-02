@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatDate, addDays, getSunday, parseDate } from '../utils/date-utils';
 import type { Habit, HabitLog } from '../types';
 
@@ -124,9 +125,7 @@ export function AnalyticsBarChart({ habits, logs }: AnalyticsBarChartProps) {
             onClick={() => setOffset(o => o - 1)}
             className="flex h-7 w-7 items-center justify-center rounded-md bg-surface-elevated text-text-muted hover:text-text-primary transition-colors"
           >
-            <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
+            <ChevronLeft className="h-3.5 w-3.5" />
           </button>
           <span className="text-xs font-semibold text-text-primary min-w-[140px] text-center">{label}</span>
           <button
@@ -134,9 +133,7 @@ export function AnalyticsBarChart({ habits, logs }: AnalyticsBarChartProps) {
             disabled={offset >= 0}
             className="flex h-7 w-7 items-center justify-center rounded-md bg-surface-elevated text-text-muted hover:text-text-primary transition-colors disabled:opacity-30"
           >
-            <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-            </svg>
+            <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { X } from 'lucide-react';
 import { ContributionGrid } from './ContributionGrid';
 import { StatsCard } from './StatsCard';
 import { DayOfWeekHeatmap } from './DayOfWeekHeatmap';
@@ -70,9 +71,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
             onClick={onClose}
             className="rounded-full p-1.5 text-text-muted hover:text-text-primary transition-colors shrink-0"
           >
-            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
+            <X className="h-5 w-5" />
           </button>
         </div>
 

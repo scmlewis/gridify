@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { getCategories, updateCategories } from '../db';
 import type { Category } from '../db';
@@ -67,9 +68,7 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
             onClick={onClose}
             className="rounded-md p-1.5 text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors"
           >
-            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M6 6l8 8M14 6l-8 8" strokeLinecap="round" />
-            </svg>
+            <X className="h-5 w-5" />
           </button>
         </div>
 

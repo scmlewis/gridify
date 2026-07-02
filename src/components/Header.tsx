@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { Menu, FolderOpen, FileText, Download, Upload, CheckCircle } from 'lucide-react';
 import { OnlineStatus } from './OnlineStatus';
 import { ThemeToggle } from './ThemeToggle';
 import { WeeklyReview } from './WeeklyReview';
@@ -54,24 +55,20 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
                 className="rounded-full p-2.5 text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Menu"
               >
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M3 5h14M3 10h14M3 15h14" strokeLinecap="round" />
-                </svg>
+                <Menu className="h-5 w-5" />
               </button>
               {showMenu && (
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setShowMenu(false)} />
-                  <div className="absolute right-0 top-full z-40 mt-1 w-48 rounded-lg bg-surface-elevated border border-border shadow-lg">
+                  <div className="absolute right-0 top-full z-40 mt-1 w-48 rounded-xl bg-surface-elevated border border-border shadow-lg overflow-hidden">
                     <button
                       onClick={() => {
                         setShowMenu(false);
                         onShowCategories?.();
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-primary hover:bg-surface-card transition-colors rounded-t-lg"
+                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm text-text-primary hover:bg-surface-card transition-colors"
                     >
-                      <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M4 6h16M4 10h16M4 14h16" strokeLinecap="round" />
-                      </svg>
+                      <FolderOpen className="h-4 w-4 text-text-muted" />
                       Manage Categories
                     </button>
                     <button
@@ -79,23 +76,20 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
                         setShowMenu(false);
                         setShowReview(true);
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-primary hover:bg-surface-card transition-colors"
+                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm text-text-primary hover:bg-surface-card transition-colors"
                     >
-                      <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" strokeLinecap="round" />
-                      </svg>
+                      <FileText className="h-4 w-4 text-text-muted" />
                       Weekly Review
                     </button>
+                    <div className="mx-2 border-t border-border/50" />
                     <button
                       onClick={() => {
                         setShowMenu(false);
                         exportCSV();
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-primary hover:bg-surface-card transition-colors"
+                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm text-text-primary hover:bg-surface-card transition-colors"
                     >
-                      <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                      <Download className="h-4 w-4 text-text-muted" />
                       Export CSV
                     </button>
                     <button
@@ -103,23 +97,20 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
                         setShowMenu(false);
                         exportJSON();
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-primary hover:bg-surface-card transition-colors"
+                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm text-text-primary hover:bg-surface-card transition-colors"
                     >
-                      <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                      <Download className="h-4 w-4 text-text-muted" />
                       Export JSON
                     </button>
+                    <div className="mx-2 border-t border-border/50" />
                     <button
                       onClick={() => {
                         setShowMenu(false);
                         fileInputRef.current?.click();
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-primary hover:bg-surface-card transition-colors rounded-b-lg"
+                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm text-text-primary hover:bg-surface-card transition-colors"
                     >
-                      <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l-4-4m4 4H4" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                      <Upload className="h-4 w-4 text-text-muted" />
                       Import CSV
                     </button>
                   </div>
@@ -136,7 +127,10 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
           </div>
         </div>
         {importStatus && (
-          <div className="rounded-md bg-primary/10 px-3 py-2 text-sm text-primary">{importStatus}</div>
+          <div className="flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-sm text-primary">
+            <CheckCircle className="h-4 w-4 shrink-0" />
+            {importStatus}
+          </div>
         )}
       </header>
       {showReview && <WeeklyReview onClose={() => setShowReview(false)} />}

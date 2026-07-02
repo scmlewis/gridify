@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { Check, Circle, Snowflake, Archive } from 'lucide-react';
 import { ContributionGrid } from './ContributionGrid';
 import { Confetti } from './Confetti';
 import { Toast } from './Toast';
@@ -195,13 +196,9 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
             title={todayChecked ? 'Uncheck in' : 'Check in'}
           >
             {todayChecked ? (
-              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
+              <Check className="h-5 w-5" strokeWidth={2.5} />
             ) : (
-              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="10" cy="10" r="7" />
-              </svg>
+              <Circle className="h-5 w-5" strokeWidth={1.8} />
             )}
           </button>
           <div className="min-w-0 flex-1">
@@ -229,9 +226,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
                 className="shrink-0 rounded-full p-2 text-text-muted hover:bg-sky-blue/10 hover:text-sky-blue transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title={`Use streak freeze (${maxFreezes - freezesUsed} remaining)`}
               >
-                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M10 2v16M2 10h16M4.93 4.93l10.14 10.14M15.07 4.93L4.93 15.07" strokeLinecap="round" />
-                </svg>
+                <Snowflake className="h-4 w-4" />
               </button>
             )}
             <button
@@ -242,9 +237,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
               className="shrink-0 rounded-full p-2 text-text-muted hover:bg-coral/10 hover:text-coral transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               title="Archive habit"
             >
-              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M5 5h10M8 5V3h4v2M6 5v10h8V5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <Archive className="h-4 w-4" />
             </button>
           </div>
         </div>

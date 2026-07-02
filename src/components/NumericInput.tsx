@@ -1,3 +1,4 @@
+import { Minus, Plus } from 'lucide-react';
 import { logCheckIn, removeCheckIn } from '../db';
 import { formatDate } from '../utils/date-utils';
 
@@ -40,9 +41,7 @@ export function NumericInput({ habitId, value, unit, targetValue, onChange }: Nu
         className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-transparent text-text-muted transition-all hover:border-primary hover:text-primary active:scale-90"
         aria-label="Decrease"
       >
-        <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-        </svg>
+        <Minus className="h-3 w-3" />
       </button>
       <span className="min-w-[2rem] text-center text-sm font-bold text-text-primary">
         {value}
@@ -56,9 +55,7 @@ export function NumericInput({ habitId, value, unit, targetValue, onChange }: Nu
         className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-transparent text-text-muted transition-all hover:border-primary hover:text-primary active:scale-90"
         aria-label="Increase"
       >
-        <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-        </svg>
+        <Plus className="h-3 w-3" />
       </button>
       {targetValue !== undefined && targetValue > 0 && (
         <span className="ml-1 text-[10px] text-text-muted">/ {targetValue}</span>
