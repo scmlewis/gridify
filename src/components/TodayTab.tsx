@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useHabits } from '../hooks/useHabits';
-import { getUserProfile } from '../db';
-import { SummaryCard } from './SummaryCard';
+import { getUserProfile, getLogsForDate, getAllLogsForDateRange } from '../db';
+import { WeekStrip } from './WeekStrip';
+import { ProgressHeroCard } from './ProgressHeroCard';
 import { CategoryGroup } from './CategoryGroup';
 import { OnboardingFlow } from './OnboardingFlow';
 import { AddHabitSheet } from './AddHabitSheet';
 import { HabitDetailSheet } from './HabitDetailSheet';
+import { formatDate } from '../utils/date-utils';
 import type { CreateHabitOptions } from '../db';
 import type { Habit } from '../types';
 
@@ -20,10 +22,52 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [showAddSheet, setShowAddSheet] = useState(false);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
+  const [todayLogs, setTodayLogs] = useState<Map<string, number>>(new Map());
+  const [weekLogs, setWeekLogs] = useState<Map<string, number>>(new Map());
+  const [level, setLevel] = useState(1);
 
   useEffect(() => {
-    getUserProfile().then(p => setOnboardingCompleted(p.onboardingCompleted));
-  }, []);
+    getUserProfile().then(p => {
+      setOnboardingCompleted(p.onboardingCompleted);
+      setLevel(p.level);
+    });
+  }, [refreshKey]);
+
+  useEffect(() => {
+    async function loadLogs() {
+      const todayStr = formatDate(new Date());
+      const todayData = await getLogsForDate(todayStr);
+      const map = new Map<string, number>();
+      for (const log of todayData) {
+        map.set(log.habitId, log.value);
+      }
+      setTodayLogs(map);
+
+      // Load week logs for WeekStrip
+      const now = new Date();
+      const dayOfWeek = now.getDay();
+      const monday = new Date(now);
+      monday.setDate(monday.getDate() - ((dayOfWeek + 6) % 7));
+      monday.setHours(0, 0, 0, 0);
+      const sunday = new Date(monday);
+      sunday.setDate(sunday.getDate() + 6);
+      const weekData = await getAllLogsForDateRange(formatDate(monday), formatDate(sunday));
+      const weekMap = new Map<string, number>();
+      for (const log of weekData) {
+        weekMap.set(log.date, (weekMap.get(log.date) ?? 0) + log.value);
+      }
+      setWeekLogs(weekMap);
+    }
+    if (onboardingCompleted) loadLogs();
+  }, [onboardingCompleted, refreshKey]);
+
+  const habitsDoneToday = useMemo(() => {
+    let count = 0;
+    for (const habit of habits) {
+      if ((todayLogs.get(habit.id) ?? 0) > 0) count++;
+    }
+    return count;
+  }, [habits, todayLogs]);
 
   function handleOnboardingComplete() {
     setOnboardingCompleted(true);
@@ -84,7 +128,31 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
   if (isLoading || onboardingCompleted === null) {
     return (
       <div className="py-12 text-center">
-        <p className="text-sm text-text-secondary">Loading...</p>
+        <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (habits.length === 0) {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-lg bg-surface-card p-8 border border-border text-center">
+          <div className="text-4xl mb-3">🎯</div>
+          <h3 className="text-base font-bold text-text-primary mb-1">No habits yet</h3>
+          <p className="text-sm text-text-secondary mb-4">Create your first habit to start building consistency.</p>
+          <button
+            onClick={() => setShowAddSheet(true)}
+            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-primary/90 transition-colors"
+          >
+            Add Your First Habit
+          </button>
+        </div>
+        <AddHabitSheet
+          isOpen={showAddSheet}
+          onClose={() => setShowAddSheet(false)}
+          onAdd={handleAddHabit}
+          onShowCategories={onShowCategories}
+        />
       </div>
     );
   }
@@ -107,8 +175,9 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
   });
 
   return (
-    <div className="space-y-3">
-      <SummaryCard habits={habits} refreshKey={refreshKey} />
+    <div className="space-y-4">
+      <WeekStrip logs={weekLogs} />
+      <ProgressHeroCard habitsDoneToday={habitsDoneToday} totalHabits={habits.length} level={level} />
       {sortedCategories.map(([category, catHabits]) => (
         <CategoryGroup
           key={category}
@@ -122,8 +191,7 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
       ))}
 <button
          onClick={() => setShowAddSheet(true)}
-         className="fixed bottom-24 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-lg transition-all hover:scale-105 active:scale-95"
-         style={{ boxShadow: '0 4px 20px rgba(255, 210, 63, 0.4)' }}
+         className="fixed bottom-20 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-lg shadow-accent-gold/30 transition-all duration-200 hover:scale-110 hover:shadow-xl hover:shadow-accent-gold/40 active:scale-95"
          title="Add new habit"
        >
         <svg className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">

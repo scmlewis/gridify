@@ -1,13 +1,19 @@
 import { db, type Habit, type HabitLog, createHabit, logCheckIn } from '../db';
 
+function csvEscape(value: string): string {
+  if (value.includes(',') || value.includes('"') || value.includes('\n') || value.includes('\r')) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
+
 function habitsToCSV(habits: Habit[], logs: HabitLog[]): string {
   const lines = ['habit,date,value'];
   const habitMap = new Map(habits.map((h) => [h.id, h.name]));
 
   for (const log of logs) {
     const name = habitMap.get(log.habitId) ?? log.habitId;
-    const escapedName = name.includes(',') ? `"${name}"` : name;
-    lines.push(`${escapedName},${log.date},${log.value}`);
+    lines.push(`${csvEscape(name)},${log.date},${log.value}`);
   }
 
   return lines.join('\n');
@@ -46,37 +52,86 @@ export async function exportJSON() {
 }
 
 function parseCSV(text: string): { habitName: string; date: string; value: number }[] {
-  const lines = text.split('\n').filter((l) => l.trim());
-  if (lines.length < 2) return [];
+  // Strip BOM if present
+  const clean = text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text;
 
   const entries: { habitName: string; date: string; value: number }[] = [];
+  const rows = parseCSVRows(clean);
 
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    if (row.length < 3) continue;
 
-    let habitName: string;
-    let rest: string;
+    const habitName = row[0].trim();
+    const date = row[1].trim();
+    const value = parseInt(row[2].trim(), 10);
 
-    if (line.startsWith('"')) {
-      const endQuote = line.indexOf('"', 1);
-      habitName = line.substring(1, endQuote);
-      rest = line.substring(endQuote + 2);
-    } else {
-      const firstComma = line.indexOf(',');
-      habitName = line.substring(0, firstComma);
-      rest = line.substring(firstComma + 1);
-    }
-
-    const [date, valueStr] = rest.split(',');
-    const value = parseInt(valueStr, 10);
-
-    if (date && !isNaN(value)) {
+    if (habitName && date && !isNaN(value)) {
       entries.push({ habitName, date, value });
     }
   }
 
   return entries;
+}
+
+function parseCSVRows(text: string): string[][] {
+  const rows: string[][] = [];
+  let current: string[] = [];
+  let field = '';
+  let inQuotes = false;
+  let i = 0;
+
+  while (i < text.length) {
+    const ch = text[i];
+
+    if (inQuotes) {
+      if (ch === '"') {
+        if (i + 1 < text.length && text[i + 1] === '"') {
+          field += '"';
+          i += 2;
+        } else {
+          inQuotes = false;
+          i++;
+        }
+      } else {
+        field += ch;
+        i++;
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+        i++;
+      } else if (ch === ',') {
+        current.push(field);
+        field = '';
+        i++;
+      } else if (ch === '\r') {
+        current.push(field);
+        field = '';
+        rows.push(current);
+        current = [];
+        if (i + 1 < text.length && text[i + 1] === '\n') i++;
+        i++;
+      } else if (ch === '\n') {
+        current.push(field);
+        field = '';
+        rows.push(current);
+        current = [];
+        i++;
+      } else {
+        field += ch;
+        i++;
+      }
+    }
+  }
+
+  // Last field/row
+  if (field || current.length > 0) {
+    current.push(field);
+    rows.push(current);
+  }
+
+  return rows;
 }
 
 export async function importCSV(csvText: string): Promise<{ imported: number; skipped: number }> {

@@ -58,7 +58,7 @@ export function CategoryGroup({
     <div>
       <button
         onClick={toggle}
-        className="flex w-full items-center gap-2 py-2 px-1 text-left group"
+        className="flex w-full items-center gap-2 py-2.5 px-1 text-left group"
       >
         <svg
           className={`h-4 w-4 text-text-muted transition-transform ${collapsed ? '' : 'rotate-90'}`}
@@ -73,7 +73,7 @@ export function CategoryGroup({
         <span className="text-[10px] text-text-muted ml-0.5">{habits.length}</span>
       </button>
       {!collapsed && (
-        <div className="space-y-1.5 pb-2">
+        <div className="space-y-2 pb-2">
           {habits.map((habit) => (
             <HabitRow 
               key={habit.id} 

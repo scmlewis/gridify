@@ -28,7 +28,7 @@ export function Toast({ message, action, duration = 5000, onDismiss }: ToastProp
 
   return (
     <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 animate-slide-up">
-      <div className="flex items-center gap-3 rounded-lg bg-surface-elevated px-4 py-3 shadow-lg border border-border">
+      <div className="flex items-center gap-3 rounded-xl bg-surface-elevated/95 backdrop-blur-md px-4 py-3 shadow-xl shadow-black/20 border border-border/60">
         <span className="text-sm text-text-primary">{message}</span>
         {action && (
           <button

@@ -8,6 +8,7 @@ import { getHabits, getHabitLogs, getAllLogsForDateRange } from '../db';
 import type { Habit } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
+import { calculateStreak } from '../utils/streak';
 
 interface GridsTabProps {
   refreshTrigger?: number;
@@ -18,24 +19,6 @@ interface HabitGridData {
   habit: Habit;
   logs: Map<string, number>;
   streak: number;
-}
-
-function computeCurrentStreak(logs: Map<string, number>): number {
-  let streak = 0;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  for (let i = 0; i < 365; i++) {
-    const date = addDays(today, -i);
-    const dateStr = formatDate(date);
-    if (logs.has(dateStr) && (logs.get(dateStr) ?? 0) > 0) {
-      streak++;
-    } else if (i > 0) {
-      break;
-    }
-  }
-
-  return streak;
 }
 
 export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProps) {
@@ -79,7 +62,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
         grids.push({
           habit,
           logs: logMap,
-          streak: computeCurrentStreak(logMap),
+          streak: calculateStreak(logMap),
         });
       }
       if (!cancelled) {
@@ -117,8 +100,9 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
   return (
     <div className="space-y-6">
       <InsightsPanel habits={habits} habitGrids={habitGrids} globalLogs={globalLogs} />
-      <div className="rounded-lg bg-surface-card p-4 border border-border" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
+      <div className="rounded-xl bg-surface-card p-4 border border-border/60" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
         <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">Overall Activity</div>
+        <p className="mb-3 text-[11px] text-text-muted">Your combined check-ins across all habits. Darker cells = more activity.</p>
         <div className="overflow-x-auto">
           <ContributionGrid logs={globalLogs} cellSize={11} cellGap={2} />
         </div>

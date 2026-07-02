@@ -44,7 +44,7 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
     <>
       <header className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-extrabold tracking-wide text-text-primary">Gridify</h1>
+          <h1 className="text-xl font-extrabold tracking-wide text-primary">Gridify</h1>
           <div className="flex items-center gap-2">
             <OnlineStatus />
             <ThemeToggle />
@@ -52,9 +52,10 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
               <button
                 onClick={() => setShowMenu(!showMenu)}
                 className="rounded-md p-1.5 text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors"
+                title="Menu"
               >
                 <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M10 3v14M3 10h14" strokeLinecap="round" />
+                  <path d="M3 5h14M3 10h14M3 15h14" strokeLinecap="round" />
                 </svg>
               </button>
               {showMenu && (

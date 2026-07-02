@@ -40,12 +40,39 @@ export function getGridCoordinates(
 
 /**
  * Maps a day's total value to a log level 0–4.
- * q1=1, q2=2, q3=3 (fixed thresholds).
+ * Uses fixed thresholds: 0, 1, 2, 3, 4.
  */
 export function getLogLevel(value: number): number {
   if (value <= 0) return 0;
   if (value <= 1) return 1;
   if (value <= 2) return 2;
   if (value <= 3) return 3;
+  return 4;
+}
+
+/**
+ * Compute dynamic quartile thresholds from actual daily totals.
+ * Returns [q1, q2, q3] thresholds.
+ */
+export function computeQuartileThresholds(logs: Map<string, number>): [number, number, number] {
+  const values = Array.from(logs.values()).filter(v => v > 0).sort((a, b) => a - b);
+  if (values.length === 0) return [1, 2, 3];
+
+  const q = (p: number) => {
+    const idx = Math.ceil(p * values.length) - 1;
+    return values[Math.max(0, idx)];
+  };
+
+  return [q(0.25), q(0.5), q(0.75)];
+}
+
+/**
+ * Maps a day's total value to a log level 0–4 using dynamic quartile thresholds.
+ */
+export function getLogLevelDynamic(value: number, thresholds: [number, number, number]): number {
+  if (value <= 0) return 0;
+  if (value <= thresholds[0]) return 1;
+  if (value <= thresholds[1]) return 2;
+  if (value <= thresholds[2]) return 3;
   return 4;
 }

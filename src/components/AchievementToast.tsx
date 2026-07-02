@@ -24,7 +24,7 @@ export function AchievementToast({ achievement, onDismiss }: AchievementToastPro
 
   return (
     <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2 animate-slide-down">
-      <div className="flex items-center gap-3 rounded-lg bg-accent-gold/20 border border-accent-gold/30 px-4 py-3 shadow-lg">
+      <div className="flex items-center gap-3 rounded-xl bg-accent-gold/15 backdrop-blur-md border border-accent-gold/25 px-4 py-3 shadow-xl shadow-accent-gold/10">
         <span className="text-2xl">{achievement.icon}</span>
         <div>
           <div className="text-xs font-semibold uppercase tracking-wider text-accent-gold">Achievement Unlocked!</div>

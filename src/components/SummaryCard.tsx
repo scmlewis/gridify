@@ -47,18 +47,18 @@ export function SummaryCard({ habits, refreshKey }: SummaryCardProps) {
         return;
       }
 
-      const daysCompleted = new Set<string>();
+      const daysActive = new Set<string>();
       for (const log of allLogs) {
-        if (log.value > 0) daysCompleted.add(log.date);
+        if (log.value > 0) daysActive.add(log.date);
       }
-      let completedDays = 0;
+      let activeDays = 0;
       const d = new Date();
       for (let i = 0; i < 7; i++) {
         const ds = formatDate(d);
-        if (daysCompleted.has(ds)) completedDays++;
+        if (daysActive.has(ds)) activeDays++;
         d.setDate(d.getDate() - 1);
       }
-      setWeeklyPct(Math.round((completedDays / 7) * 100));
+      setWeeklyPct(Math.round((activeDays / 7) * 100));
     }
     load();
     return () => { cancelled = true; };
@@ -67,7 +67,7 @@ export function SummaryCard({ habits, refreshKey }: SummaryCardProps) {
   const activeHabits = habits.filter((h) => !h.archived);
 
   return (
-    <div className="rounded-lg bg-surface-card p-4 border border-border">
+    <div className="rounded-xl bg-surface-card p-4 border border-border/60">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-bold text-text-primary">Today's Progress</h3>
         <span className="text-xs font-medium text-text-secondary">
@@ -96,7 +96,7 @@ export function SummaryCard({ habits, refreshKey }: SummaryCardProps) {
           <svg className="h-3.5 w-3.5 text-primary" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
           </svg>
-          <span className="text-text-secondary">Week: <span className="font-bold text-text-primary">{weeklyPct}%</span></span>
+          <span className="text-text-secondary">Active: <span className="font-bold text-text-primary">{weeklyPct}%</span></span>
         </div>
       </div>
     </div>

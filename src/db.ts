@@ -15,6 +15,7 @@ export interface Habit {
   targetFrequency?: 'daily' | 'weekly' | 'monthly';
   targetValue?: number;
   color?: string;
+  icon?: string;
 }
 
 export interface HabitLog {
@@ -82,6 +83,22 @@ db.version(4).stores({
   });
 });
 
+db.version(5).stores({
+  habits: 'id, archived, sortOrder, category',
+  habitLogs: 'id, habitId, date, [habitId+date]',
+  userProfile: 'id'
+});
+
+db.version(6).stores({
+  habits: 'id, archived, sortOrder, category',
+  habitLogs: 'id, habitId, date, [habitId+date]',
+  userProfile: 'id'
+}).upgrade(async (tx) => {
+  await tx.table('habits').toCollection().modify((habit: any) => {
+    habit.icon = habit.icon ?? '';
+  });
+});
+
 export { db };
 
 export interface CreateHabitOptions {
@@ -92,6 +109,7 @@ export interface CreateHabitOptions {
   targetFrequency?: 'daily' | 'weekly' | 'monthly';
   targetValue?: number;
   color?: string;
+  icon?: string;
 }
 
 export async function createHabit(nameOrOptions: string | CreateHabitOptions): Promise<string> {
@@ -115,7 +133,8 @@ export async function createHabit(nameOrOptions: string | CreateHabitOptions): P
     unit: options.unit ?? '',
     targetFrequency: options.targetFrequency ?? 'daily',
     targetValue: options.targetValue ?? 1,
-    color: options.color ?? '#6366f1'
+    color: options.color ?? '#6366f1',
+    icon: options.icon ?? ''
   });
   return id;
 }
@@ -137,7 +156,10 @@ export async function reorderHabits(updates: {id: string, sortOrder: number}[]):
 }
 
 export async function deleteHabit(id: string): Promise<void> {
-  await db.table('habits').delete(id);
+  await db.transaction('rw', db.table('habits'), db.table('habitLogs'), async () => {
+    await db.table('habitLogs').where('habitId').equals(id).delete();
+    await db.table('habits').delete(id);
+  });
 }
 
 export async function applyStreakFreeze(id: string): Promise<boolean> {
@@ -153,8 +175,7 @@ export async function getHabit(id: string): Promise<Habit | undefined> {
 
 export async function logCheckIn(habitId: string, date: string, value: number = 1): Promise<string> {
   const existing = await db.table('habitLogs')
-    .where('habitId').equals(habitId)
-    .filter((log: any) => log.date === date)
+    .where('[habitId+date]').equals([habitId, date])
     .first();
   if (existing) {
     await db.table('habitLogs').update(existing.id, { value });
@@ -167,8 +188,7 @@ export async function logCheckIn(habitId: string, date: string, value: number = 
 
 export async function removeCheckIn(habitId: string, date: string): Promise<void> {
   const log = await db.table('habitLogs')
-    .where('habitId').equals(habitId)
-    .filter((l: any) => l.date === date)
+    .where('[habitId+date]').equals([habitId, date])
     .first();
   if (log) {
     await db.table('habitLogs').delete(log.id);
@@ -183,13 +203,15 @@ export async function getHabits(): Promise<Habit[]> {
 }
 
 export async function getHabitLogs(habitId: string, startDate: string, endDate: string): Promise<HabitLog[]> {
-  const all = await db.table('habitLogs').where('habitId').equals(habitId).toArray();
-  return all.filter((log: any) => log.date >= startDate && log.date <= endDate);
+  return await db.table('habitLogs')
+    .where('[habitId+date]').between([habitId, startDate], [habitId, endDate], true, true)
+    .toArray();
 }
 
 export async function getAllLogsForDateRange(startDate: string, endDate: string): Promise<HabitLog[]> {
-  const all = await db.table('habitLogs').toArray();
-  return all.filter((log: any) => log.date >= startDate && log.date <= endDate);
+  return await db.table('habitLogs')
+    .where('date').between(startDate, endDate, true, true)
+    .toArray();
 }
 
 export async function getDailyTotals(startDate: string, endDate: string): Promise<Map<string, number>> {
@@ -271,4 +293,31 @@ function getLevelForXP(xp: number): number {
     }
   }
   return level;
+}
+
+export async function getTotalCheckInCount(): Promise<number> {
+  return await db.table('habitLogs').where('value').above(0).count();
+}
+
+export async function getNumericEntryCount(): Promise<number> {
+  const habits = await getHabits();
+  const numericHabitIds = new Set(habits.filter(h => h.valueType === 'numeric').map(h => h.id));
+  if (numericHabitIds.size === 0) return 0;
+  let count = 0;
+  for (const id of numericHabitIds) {
+    count += await db.table('habitLogs').where('habitId').equals(id).count();
+  }
+  return count;
+}
+
+export async function getLogsForDate(date: string): Promise<HabitLog[]> {
+  return await db.table('habitLogs').where('date').equals(date).toArray();
+}
+
+export async function getLogsForDateRangeIndexed(startDate: string, endDate: string): Promise<HabitLog[]> {
+  return await db.table('habitLogs').where('date').between(startDate, endDate, true, true).toArray();
+}
+
+export async function getHabitLogsCount(habitId: string): Promise<number> {
+  return await db.table('habitLogs').where('habitId').equals(habitId).count();
 }

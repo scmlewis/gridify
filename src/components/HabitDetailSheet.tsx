@@ -59,8 +59,8 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-lg max-h-[85vh] rounded-t-2xl bg-surface-card animate-slide-up overflow-hidden flex flex-col mx-auto">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-lg max-h-[85vh] rounded-t-2xl bg-surface-card animate-slide-up overflow-hidden flex flex-col left-1/2 -translate-x-1/2">
         <div className="flex items-center justify-between p-5 pb-3 border-b border-border shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
@@ -107,10 +107,10 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
 
               <button
                 onClick={handleDelete}
-                className={`w-full rounded-full py-3 text-sm font-bold transition-all active:scale-[0.98] ${
+                className={`w-full rounded-xl py-3 text-sm font-bold transition-all duration-200 active:scale-[0.98] ${
                   confirmDelete
-                    ? 'bg-error text-white'
-                    : 'bg-surface-elevated text-coral border border-coral/30 hover:bg-coral/10'
+                    ? 'bg-error text-white shadow-md shadow-error/25'
+                    : 'bg-surface-elevated text-coral border border-coral/30 hover:bg-coral/10 hover:border-coral/50'
                 }`}
               >
                 {confirmDelete ? 'Confirm Delete' : 'Delete Habit'}

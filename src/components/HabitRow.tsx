@@ -22,6 +22,7 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
   const [checked, setChecked] = useState(false);
   const [numericValue, setNumericValue] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [weekCount, setWeekCount] = useState(0);
   const todayStr = formatDate(new Date());
   const isNumeric = habit.valueType === 'numeric';
   const [isDraggable, setIsDraggable] = useState(false);
@@ -41,6 +42,17 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
       setChecked(todayVal > 0);
       setNumericValue(todayVal);
       setStreak(calculateStreak(map));
+
+      // Calculate this week's count
+      const now = new Date();
+      const dayOfWeek = now.getDay();
+      const monday = addDays(now, -((dayOfWeek + 6) % 7));
+      const mondayStr = formatDate(monday);
+      let count = 0;
+      for (const log of raw) {
+        if (log.date >= mondayStr && log.date <= todayStr && log.value > 0) count++;
+      }
+      setWeekCount(count);
     }
     load();
     return () => { cancelled = true; };
@@ -129,10 +141,10 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
       onClick={handleClick}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-className={`flex items-center gap-3 rounded-md bg-surface-card px-3 py-2.5 border transition-all ${
+className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3 border transition-all duration-200 ${
     isDraggable
-      ? 'border-primary/50 cursor-grabbing scale-[1.02] shadow-lg'
-      : 'border-border hover:border-primary/20 cursor-pointer'
+      ? 'border-primary/50 cursor-grabbing scale-[1.02] shadow-lg shadow-primary/10'
+      : 'border-border/60 hover:border-primary/30 hover:bg-surface-card/80 cursor-pointer hover:shadow-md hover:shadow-primary/5'
   }`}
       style={{ borderLeft: `3px solid ${color}` }}
     >
@@ -153,10 +165,10 @@ className={`flex items-center gap-3 rounded-md bg-surface-card px-3 py-2.5 borde
             }
             toggle();
           }}
-          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 transition-all active:scale-90 ${
+          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 active:scale-90 ${
             checked
-              ? 'border-primary bg-primary text-surface-base'
-              : 'border-border bg-transparent text-text-muted hover:border-primary hover:text-primary'
+              ? 'border-primary bg-primary text-surface-base shadow-sm shadow-primary/25'
+              : 'border-border bg-transparent text-text-muted hover:border-primary/60 hover:text-primary'
           }`}
           title={checked ? 'Uncheck' : 'Check in'}
         >
@@ -172,7 +184,16 @@ className={`flex items-center gap-3 rounded-md bg-surface-card px-3 py-2.5 borde
         </button>
       )}
       <div className="min-w-0 flex-1">
-        <span className="truncate text-sm font-medium text-text-primary">{habit.name}</span>
+        <div className="flex items-center gap-2">
+          {habit.icon && <span className="text-sm shrink-0">{habit.icon}</span>}
+          <span className="truncate text-sm font-medium text-text-primary">{habit.name}</span>
+        </div>
+        <div className="flex items-center gap-2 mt-0.5">
+          <span className="text-[10px] text-text-muted">
+            {weekCount}/{habit.targetValue || 7} days this week
+          </span>
+          <span className="ml-auto text-[10px] text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">hold to reorder</span>
+        </div>
       </div>
       {streak > 0 && (
         <span className="shrink-0 text-xs font-bold text-primary">{streak}d</span>

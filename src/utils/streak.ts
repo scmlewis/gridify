@@ -3,7 +3,8 @@ import { formatDate, addDays } from './date-utils';
 /**
  * Calculate current streak with grace period.
  * Grace period: 1 missed day is allowed without breaking the streak.
- * Returns { streak, lastMissedDate } where streak counts consecutive days including today.
+ * The missed day does not count toward the streak length.
+ * Returns streak count of consecutive days with check-ins.
  */
 export function calculateStreak(logs: Map<string, number>): number {
   let streak = 0;
@@ -20,9 +21,11 @@ export function calculateStreak(logs: Map<string, number>): number {
       graceUsed = false;
       checkDate = addDays(checkDate, -1);
     } else if (!graceUsed) {
+      // Allow one missed day — skip it without counting it toward streak
       graceUsed = true;
       checkDate = addDays(checkDate, -1);
     } else {
+      // Second missed day breaks the streak
       break;
     }
   }

@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { getCategories } from '../db';
 import { ColorPicker } from './ColorPicker';
+import { IconPicker } from './IconPicker';
 import type { Category } from '../types';
 
 interface AddHabitSheetProps {
@@ -13,6 +14,7 @@ interface AddHabitSheetProps {
     unit: string;
     targetValue: number;
     color: string;
+    icon: string;
   }) => void;
   onShowCategories?: () => void;
 }
@@ -24,6 +26,7 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
   const [unit, setUnit] = useState('');
   const [targetValue, setTargetValue] = useState(3);
   const [color, setColor] = useState('#6366f1');
+  const [icon, setIcon] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -35,6 +38,7 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
       setUnit('');
       setTargetValue(3);
       setColor('#6366f1');
+      setIcon('');
     }
   }, [isOpen]);
 
@@ -49,6 +53,7 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
       unit: valueType === 'numeric' ? unit : '',
       targetValue: valueType === 'numeric' ? targetValue : 1,
       color,
+      icon,
     });
     onClose();
   };
@@ -57,8 +62,8 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-lg rounded-t-2xl bg-surface-card p-6 pb-8 animate-slide-up mx-auto">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-lg rounded-t-2xl bg-surface-card p-6 pb-8 animate-slide-up left-1/2 -translate-x-1/2">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-bold text-text-primary">New Habit</h2>
           <button
@@ -85,6 +90,13 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
               className="w-full rounded-md bg-surface-elevated px-4 py-2.5 text-sm text-text-primary placeholder-text-muted outline-none border border-border focus:border-primary transition-colors"
               autoFocus
             />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+              Icon
+            </label>
+            <IconPicker value={icon} onChange={setIcon} />
           </div>
 
           <div>
@@ -140,6 +152,11 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
                 Numeric
               </button>
             </div>
+            <p className="mt-1.5 text-[11px] text-text-muted">
+              {valueType === 'boolean'
+                ? 'Yes/No — did you do it today?'
+                : 'Track a number — like minutes, reps, or pages.'}
+            </p>
           </div>
 
           {valueType === 'numeric' && (
@@ -159,7 +176,7 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-text-secondary">
-                  Weekly Target: {targetValue} days
+                  Weekly Target: {targetValue} {targetValue === 1 ? 'day' : 'days'}
                 </label>
                 <input
                   type="range"
@@ -171,8 +188,11 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
                 />
                 <div className="flex justify-between text-[10px] text-text-muted">
                   <span>1 day</span>
-                  <span>7 days</span>
+                  <span>Every day</span>
                 </div>
+                <p className="mt-1 text-[11px] text-text-muted">
+                  How many days per week you aim to do this habit.
+                </p>
               </div>
             </>
           )}
@@ -187,8 +207,7 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
           <button
             type="submit"
             disabled={!name.trim()}
-            className="w-full rounded-full bg-accent-gold py-3 text-sm font-bold text-surface-base hover:bg-accent-light active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ boxShadow: '0 4px 20px rgba(255, 210, 63, 0.30)' }}
+            className="w-full rounded-xl bg-accent-gold py-3 text-sm font-bold text-surface-base hover:bg-accent-light active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-accent-gold/20 hover:shadow-lg hover:shadow-accent-gold/30"
           >
             Create Habit
           </button>

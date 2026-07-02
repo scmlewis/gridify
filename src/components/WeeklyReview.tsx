@@ -35,16 +35,16 @@ export function WeeklyReview({ onClose }: WeeklyReviewProps) {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50">
-        <div className="rounded-lg bg-surface-card p-6">Loading...</div>
+      <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="rounded-lg bg-surface-card p-6 animate-scale-in">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
       <div
-        className="w-full max-w-md rounded-xl bg-surface-card p-6 shadow-xl border border-border"
+        className="w-full max-w-md rounded-xl bg-surface-card p-6 shadow-xl border border-border animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">

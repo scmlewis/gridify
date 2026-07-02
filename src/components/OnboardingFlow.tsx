@@ -66,11 +66,11 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-base p-4">
-      <div className="w-full max-w-md rounded-2xl bg-surface-card border border-border p-6 shadow-lg">
+      <div className="w-full max-w-md rounded-2xl bg-surface-card border border-border/60 p-6 shadow-2xl shadow-black/20 animate-scale-in">
         {step === 0 && (
           <div className="text-center space-y-6">
             <div className="text-5xl">🎯</div>
-            <h1 className="text-2xl font-bold text-text-primary">Welcome to Habit Tracker</h1>
+            <h1 className="text-2xl font-bold text-text-primary">Welcome to Gridify</h1>
             <p className="text-sm text-text-secondary">Build better habits, one day at a time.</p>
             <div className="space-y-3">
               <button
@@ -93,7 +93,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
           <div className="space-y-5">
             <div>
               <h2 className="text-lg font-bold text-text-primary">Choose Categories</h2>
-              <p className="text-xs text-text-secondary">Select at least one.</p>
+              <p className="text-xs text-text-secondary">Select at least one. Categories group your habits for easier tracking.</p>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {DEFAULT_CATEGORIES.map(cat => (
@@ -205,6 +205,11 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                   🔢 Numeric
                 </button>
               </div>
+              <p className="text-[11px] text-text-muted">
+                {habitValueType === 'boolean'
+                  ? 'Track whether you did or didn\'t do the habit each day.'
+                  : 'Track a number each day — like minutes exercised, pages read, or glasses of water.'}
+              </p>
             </div>
             <div className="flex gap-2">
               <button

@@ -115,7 +115,7 @@ export function InsightsPanel({ habits, habitGrids, globalLogs }: InsightsPanelP
   if (insights.length === 0) return null;
 
   return (
-    <div className="rounded-lg bg-surface-card border border-border overflow-hidden" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
+    <div className="rounded-xl bg-surface-card border border-border/60 overflow-hidden" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full p-4 flex items-center justify-between hover:bg-surface-elevated transition-colors"
@@ -125,6 +125,9 @@ export function InsightsPanel({ habits, habitGrids, globalLogs }: InsightsPanelP
           <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
             {insights.length}
           </span>
+          {!isOpen && (
+            <span className="text-[11px] text-text-muted hidden sm:inline">— patterns from your data</span>
+          )}
         </div>
         <svg
           className={`h-4 w-4 text-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { ContributionGrid } from './ContributionGrid';
 import { Confetti } from './Confetti';
 import { Toast } from './Toast';
@@ -43,6 +43,8 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
   }, [streak, milestone]);
   const [toast, setToast] = useState<{ message: string; action?: { label: string; onClick: () => void } } | null>(null);
   const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
+  const todayCheckedRef = useRef(todayChecked);
+  todayCheckedRef.current = todayChecked;
 
   const todayStr = formatDate(new Date());
 
@@ -59,9 +61,6 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       setLogs(map);
       setTodayChecked((map.get(todayStr) ?? 0) > 0);
 
-      // Derive streak and momentum from the loaded logs
-      // streak & momentum are now derived via useMemo
-
       // Load habit meta data
       const habitData = await getHabit(habit.id);
       if (habitData && !cancelled) {
@@ -73,7 +72,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
     return () => {
       cancelled = true;
     };
-  }, [habit.id, todayStr, getGridStartDate, addDays, formatDate]);
+  }, [habit.id, todayStr]);
 
   const toggleToday = useCallback(async () => {
     const newChecked = !todayChecked;
@@ -89,18 +88,29 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       updatedLogs.delete(todayStr);
     }
     setLogs(updatedLogs);
-    // No additional calculations needed
+
+    // Calculate what the streak would be after this action
+    const newStreak = calculateStreak(updatedLogs);
+    const streakDelta = newStreak - streak;
+    const streakMsg = newChecked
+      ? streakDelta > 0
+        ? ` — ${newStreak} day streak${newStreak > 1 ? 's' : ''}!`
+        : streakDelta === 0 && newStreak > 0
+          ? ` — ${newStreak} day streak maintained`
+          : ''
+      : '';
 
     setToast({
-      message: newChecked ? 'Checked in!' : 'Unchecked',
+      message: `${newChecked ? 'Checked in!' : 'Unchecked'}${streakMsg}`,
       action: {
         label: 'Undo',
         onClick: async () => {
-          // Revert UI state first
+          // Use ref to get the current state at time of undo, not captured closure
+          const wasChecked = todayCheckedRef.current;
           setTodayChecked((prev) => !prev);
           setLogs((prev) => {
             const reverted = new Map(prev);
-            if (todayChecked) {
+            if (wasChecked) {
               reverted.delete(todayStr);
             } else {
               reverted.set(todayStr, 1);
@@ -108,7 +118,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
             return reverted;
           });
           // Sync with DB
-          if (todayChecked) {
+          if (wasChecked) {
             await removeCheckIn(habit.id, todayStr);
           } else {
             await logCheckIn(habit.id, todayStr, 1);
@@ -137,7 +147,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       console.error('Failed to toggle check-in:', err);
     }
     onCheckIn?.();
-  }, [todayChecked, logs, todayStr, habit.id, onCheckIn]);
+  }, [todayChecked, logs, todayStr, habit.id, onCheckIn, streak]);
 
   const handleFreeze = useCallback(async () => {
     if (freezesUsed >= maxFreezes) return;
@@ -157,7 +167,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
 
   return (
     <>
-      <Confetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />
+      {showConfetti && <Confetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />}
       <AchievementToast achievement={currentAchievement} onDismiss={() => setCurrentAchievement(null)} />
       {toast && (
         <Toast
@@ -168,8 +178,8 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       )}
       <div
         onClick={() => onTap?.(habit)}
-        className={`rounded-lg bg-surface-card p-4 border border-border transition-all hover:border-primary/30 ${onTap ? 'cursor-pointer' : ''}`}
-        style={{ borderLeft: `3px solid ${habit.color ?? '#6366f1'}`, boxShadow: '0 4px 20px rgba(43, 168, 162, 0.06)' }}
+        className={`rounded-xl bg-surface-card p-4 border border-border/60 transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 ${onTap ? 'cursor-pointer' : ''}`}
+        style={{ borderLeft: `3px solid ${habit.color ?? '#6366f1'}` }}
       >
         <div className="flex items-center gap-3">
           <button
@@ -177,12 +187,11 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
               e.stopPropagation();
               toggleToday();
             }}
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 transition-all active:scale-90 ${
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 active:scale-90 ${
               todayChecked
-                ? 'border-primary bg-primary text-surface-base'
-                : 'border-border bg-transparent text-text-muted hover:border-primary hover:text-primary'
+                ? 'border-primary bg-primary text-surface-base shadow-md shadow-primary/25'
+                : 'border-border bg-transparent text-text-muted hover:border-primary/60 hover:text-primary hover:shadow-sm hover:shadow-primary/10'
             }`}
-            style={todayChecked ? { boxShadow: '0 4px 16px rgba(43, 168, 162, 0.25)' } : undefined}
             title={todayChecked ? 'Uncheck in' : 'Check in'}
           >
             {todayChecked ? (

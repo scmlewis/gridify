@@ -1,4 +1,4 @@
-import { getUserProfile, addXP, unlockAchievement, getHabits, db } from '../db';
+import { getUserProfile, addXP, unlockAchievement, getHabits, getTotalCheckInCount, getLogsForDate, getLogsForDateRangeIndexed, getHabitLogsCount } from '../db';
 import { formatDate, addDays, getSunday, parseDate } from './date-utils';
 
 export interface Achievement {
@@ -67,39 +67,40 @@ export async function processCheckIn(streak: number): Promise<{
   const habits = await getHabits();
   const todayDate = new Date();
   const today = formatDate(todayDate);
-  const allLogs = await db.table('habitLogs').toArray();
   const habitMap = new Map(habits.map((h) => [h.id, h]));
 
-  // 1. Basic stats
-  const totalCheckIns = allLogs.filter((l) => l.value > 0).length;
-  const numericEntriesCount = allLogs.filter(
-    (l) => habitMap.get(l.habitId)?.valueType === 'numeric' && l.value > 0
-  ).length;
+  // 1. Basic stats — use count instead of loading all logs
+  const totalCheckIns = await getTotalCheckInCount();
 
   // 2. Categories
   const categoriesWithHabits = new Set(habits.filter((h) => h.category).map((h) => h.category));
   const categoriesWithHabitsCount = categoriesWithHabits.size;
 
+  const todayLogs = await getLogsForDate(today);
   const categoriesCheckedInToday = new Set(
-    allLogs
-      .filter((l) => l.date === today && l.value > 0)
+    todayLogs
+      .filter((l) => l.value > 0)
       .map((l) => habitMap.get(l.habitId)?.category)
       .filter((c): c is string => !!c)
   );
   const categoriesCheckedInTodayCount = categoriesCheckedInToday.size;
 
-  // 3. Momentum (last 14 days)
+  // 3. Momentum (last 14 days) — query only last 14 days
   const fourteenDaysAgo = formatDate(addDays(todayDate, -13));
+  const recentLogs = await getLogsForDateRangeIndexed(fourteenDaysAgo, today);
   const daysWithCheckIn = new Set(
-    allLogs
-      .filter((l) => l.date >= fourteenDaysAgo && l.date <= today && l.value > 0)
+    recentLogs
+      .filter((l) => l.value > 0)
       .map((l) => l.date)
   );
   const momentumCompleted = daysWithCheckIn.size;
 
-  // 4. Weekly Target Hit
+  // 4. Weekly Target Hit — query recent logs for week analysis
+  const fourWeeksAgo = formatDate(addDays(todayDate, -27));
+  const weekLogs = await getLogsForDateRangeIndexed(fourWeeksAgo, today);
+
   const weeksWithLogs = new Set(
-    allLogs.map((l) => formatDate(getSunday(parseDate(l.date))))
+    weekLogs.map((l) => formatDate(getSunday(parseDate(l.date))))
   );
 
   const weeklySuccesses: Map<string, boolean> = new Map();
@@ -121,7 +122,7 @@ export async function processCheckIn(streak: number): Promise<{
           targetPerWeek = 1;
         }
 
-        const countInWeek = allLogs.filter(
+        const countInWeek = weekLogs.filter(
           (l) =>
             l.habitId === habit.id &&
             l.date >= sundayStr &&
@@ -150,19 +151,25 @@ export async function processCheckIn(streak: number): Promise<{
     }
   }
 
-  // 5. Has Large Gap
+  // 5. Has Large Gap — check only the relevant days around streak boundary
   let hasLargeGap = false;
   if (streak > 0) {
-    const gapDays = [];
-    for (let i = 1; i <= 3; i++) {
+    const gapStart = formatDate(addDays(todayDate, -(streak + 3)));
+    const gapEnd = formatDate(addDays(todayDate, -(streak)));
+    const gapLogs = await getLogsForDateRangeIndexed(gapStart, gapEnd);
+    const gapDates = new Set(gapLogs.filter(l => l.value > 0).map(l => l.date));
+    const allGapDaysEmpty = [1, 2, 3].every(i => {
       const d = formatDate(addDays(todayDate, -(streak + i)));
-      gapDays.push(d);
-    }
-    const allGapDaysEmpty = gapDays.every(
-      (d) => !allLogs.some((l) => l.date === d && l.value > 0)
-    );
-    if (allGapDaysEmpty) {
-      hasLargeGap = true;
+      return !gapDates.has(d);
+    });
+    hasLargeGap = allGapDaysEmpty;
+  }
+
+  // 6. Numeric entries count — use targeted count per numeric habit
+  let numericEntriesCount = 0;
+  for (const habit of habits) {
+    if (habit.valueType === 'numeric') {
+      numericEntriesCount += await getHabitLogsCount(habit.id);
     }
   }
 
