@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Sparkles } from 'lucide-react';
 import type { Habit } from '../db';
 import { getCrossHabitCorrelations, getMonthlyTrends } from '../utils/insights';
 import { calculateDayOfWeekStats } from '../utils/analytics';
@@ -15,7 +15,6 @@ interface InsightsPanelProps {
 }
 
 export function InsightsPanel({ habits, habitGrids, globalLogs }: InsightsPanelProps) {
-  const [isOpen, setIsOpen] = useState(false);
 
   // 1. Correlation Insight
   // "You're X% more likely to do [Habit B] on days you [Habit A]"
@@ -115,38 +114,20 @@ export function InsightsPanel({ habits, habitGrids, globalLogs }: InsightsPanelP
   if (insights.length === 0) return null;
 
   return (
-    <div className="rounded-xl bg-surface-card border border-border/60 overflow-hidden" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-4 flex items-center justify-between hover:bg-surface-elevated transition-colors"
-      >
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-text-primary">Insights</span>
-          <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
-            {insights.length}
-          </span>
-          {!isOpen && (
-            <span className="text-[11px] text-text-muted hidden sm:inline">— patterns from your data</span>
-          )}
+    <div className="rounded-xl bg-surface-card border border-border/60 p-4 space-y-2" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
+      <div className="flex items-center gap-2">
+        <Sparkles className="h-4 w-4 text-accent-gold" />
+        <span className="text-sm font-bold text-text-primary">Insights</span>
+        <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
+          {insights.length}
+        </span>
+      </div>
+      {insights.map((insight, idx) => (
+        <div key={idx} className="flex items-start gap-2 text-xs text-text-secondary">
+          <Sparkles className="mt-0.5 h-3 w-3 shrink-0 text-primary" />
+          <span>{insight}</span>
         </div>
-        <svg
-          className={`h-4 w-4 text-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-        </svg>
-      </button>
-      {isOpen && (
-        <div className="p-4 pt-0 space-y-2">
-          {insights.map((insight, idx) => (
-            <div key={idx} className="flex items-start gap-2 text-xs text-text-secondary">
-              <span className="mt-0.5 text-primary">✨</span>
-              <span>{insight}</span>
-            </div>
-          ))}
-        </div>
-      )}
+      ))}
     </div>
   );
 }

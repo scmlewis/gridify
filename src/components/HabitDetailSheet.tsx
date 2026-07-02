@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { X } from 'lucide-react';
+import { X, Check } from 'lucide-react';
 import { ContributionGrid } from './ContributionGrid';
 import { StatsCard } from './StatsCard';
 import { DayOfWeekHeatmap } from './DayOfWeekHeatmap';
 import { TrendSparkline } from './TrendSparkline';
-import { getHabitLogs, deleteHabit } from '../db';
+import { ColorPicker } from './ColorPicker';
+import { getHabitLogs, deleteHabit, updateHabit, getCategories } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
-import type { Habit } from '../types';
+import type { Habit, Category } from '../types';
 
 interface HabitDetailSheetProps {
   habit: Habit | null;
@@ -21,12 +22,17 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
   const [logs, setLogs] = useState<Map<string, number>>(new Map());
   const [isLoading, setIsLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editCategory, setEditCategory] = useState('');
+  const [editColor, setEditColor] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     if (!isOpen || !habit) return;
     let cancelled = false;
     setIsLoading(true);
     setConfirmDelete(false);
+    setEditing(false);
 
     async function load() {
       const start = getGridStartDate();
@@ -36,6 +42,9 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
       const map = new Map<string, number>();
       for (const log of raw) map.set(log.date, log.value);
       setLogs(map);
+      setEditCategory(habit!.category || 'uncategorized');
+      setEditColor(habit!.color || '#6366f1');
+      setCategories(await getCategories());
       setIsLoading(false);
     }
     load();
@@ -54,9 +63,16 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
     onRefresh?.();
   }, [habit, confirmDelete, onDelete, onClose, onRefresh]);
 
+  const handleSaveEdit = useCallback(async () => {
+    if (!habit) return;
+    await updateHabit(habit.id, { category: editCategory, color: editColor });
+    setEditing(false);
+    onRefresh?.();
+  }, [habit, editCategory, editColor, onRefresh]);
+
   if (!isOpen || !habit) return null;
 
-  const color = habit.color || '#2BA8A2';
+  const color = editColor || habit.color || '#2BA8A2';
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
@@ -104,9 +120,64 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
                 <DayOfWeekHeatmap logs={logs} color={color} />
               </div>
 
+              {/* Edit Section */}
+              <div className="rounded-lg bg-surface-elevated p-4 border border-border space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-text-muted">Settings</div>
+                  {!editing && (
+                    <button
+                      onClick={() => { setEditCategory(habit.category || 'uncategorized'); setEditColor(habit.color || '#6366f1'); setEditing(true); }}
+                      className="text-xs text-primary font-semibold hover:opacity-80 transition-opacity"
+                    >
+                      Edit
+                    </button>
+                  )}
+                </div>
+                {editing ? (
+                  <>
+                    <div>
+                      <label className="mb-1 block text-[10px] text-text-muted">Category</label>
+                      <select
+                        value={editCategory}
+                        onChange={(e) => setEditCategory(e.target.value)}
+                        className="w-full rounded-md bg-surface-card border border-border px-2.5 py-1.5 text-sm text-text-primary outline-none focus:border-primary transition-colors"
+                      >
+                        <option value="uncategorized">Uncategorized</option>
+                        {categories.map((cat) => (
+                          <option key={cat.id} value={cat.name}>{cat.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-[10px] text-text-muted">Color</label>
+                      <ColorPicker value={editColor} onChange={setEditColor} />
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleSaveEdit}
+                        className="flex items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-surface-base hover:opacity-90 transition-opacity"
+                      >
+                        <Check className="h-3 w-3" />
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditing(false)}
+                        className="rounded-full px-4 py-1.5 text-xs font-semibold text-text-muted hover:text-text-primary transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-xs text-text-secondary">
+                    Category: <span className="font-medium text-text-primary">{habit.category || 'Uncategorized'}</span>
+                  </div>
+                )}
+              </div>
+
               <button
                 onClick={handleDelete}
-                className={`w-full rounded-xl py-3 text-sm font-bold transition-all duration-200 active:scale-[0.98] ${
+                className={`w-full rounded-full py-3 text-sm font-bold transition-all duration-200 active:scale-[0.98] ${
                   confirmDelete
                     ? 'bg-error text-white shadow-md shadow-error/25'
                     : 'bg-surface-elevated text-coral border border-coral/30 hover:bg-coral/10 hover:border-coral/50'

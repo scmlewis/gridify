@@ -3,7 +3,6 @@ import { ContributionGrid } from './ContributionGrid';
 import { EmptyState } from './EmptyState';
 import { HabitDetailSheet } from './HabitDetailSheet';
 import { HabitCard } from './HabitCard';
-import { InsightsPanel } from './InsightsPanel';
 import { getHabits, getHabitLogs, getAllLogsForDateRange } from '../db';
 import type { Habit } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
@@ -99,7 +98,6 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
 
   return (
     <div className="space-y-6">
-      <InsightsPanel habits={habits} habitGrids={habitGrids} globalLogs={globalLogs} />
       <div className="rounded-xl bg-surface-card p-4 border border-border/60" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
         <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">Overall Activity</div>
         <p className="mb-3 text-[11px] text-text-muted">Your combined check-ins across all habits. Darker cells = more activity.</p>

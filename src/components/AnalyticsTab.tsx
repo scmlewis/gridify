@@ -1,13 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getHabits, getAllLogsForDateRange } from '../db';
 import type { Habit } from '../db';
 import { formatDate, addDays } from '../utils/date-utils';
 import { AnalyticsBarChart } from './AnalyticsBarChart';
+import { InsightsPanel } from './InsightsPanel';
 import { EmptyState } from './EmptyState';
 import type { HabitLog } from '../types';
 
 interface AnalyticsTabProps {
   refreshTrigger?: number;
+}
+
+interface HabitGridData {
+  habit: Habit;
+  logs: Map<string, number>;
 }
 
 export function AnalyticsTab({ refreshTrigger }: AnalyticsTabProps) {
@@ -23,7 +29,6 @@ export function AnalyticsTab({ refreshTrigger }: AnalyticsTabProps) {
       if (cancelled) return;
       setHabits(habitsList);
 
-      // Load last 90 days of data for analytics
       const start = formatDate(addDays(new Date(), -90));
       const end = formatDate(addDays(new Date(), 1));
       const allLogs = await getAllLogsForDateRange(start, end);
@@ -34,6 +39,25 @@ export function AnalyticsTab({ refreshTrigger }: AnalyticsTabProps) {
     load();
     return () => { cancelled = true; };
   }, [refreshTrigger]);
+
+  const habitGrids = useMemo<HabitGridData[]>(() => {
+    return habits.map(habit => {
+      const habitLogs = logs.filter(l => l.habitId === habit.id);
+      const logMap = new Map<string, number>();
+      for (const log of habitLogs) {
+        logMap.set(log.date, (logMap.get(log.date) ?? 0) + log.value);
+      }
+      return { habit, logs: logMap };
+    });
+  }, [habits, logs]);
+
+  const globalLogs = useMemo(() => {
+    const totals = new Map<string, number>();
+    for (const log of logs) {
+      totals.set(log.date, (totals.get(log.date) ?? 0) + log.value);
+    }
+    return totals;
+  }, [logs]);
 
   if (isLoading) {
     return (
@@ -55,6 +79,7 @@ export function AnalyticsTab({ refreshTrigger }: AnalyticsTabProps) {
 
   return (
     <div className="space-y-4">
+      <InsightsPanel habits={habits} habitGrids={habitGrids} globalLogs={globalLogs} />
       <div className="rounded-xl bg-surface-card p-4 border border-border/60">
         <AnalyticsBarChart habits={habits} logs={logs} />
       </div>

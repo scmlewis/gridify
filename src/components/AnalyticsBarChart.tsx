@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Target } from 'lucide-react';
 import { formatDate, addDays, getSunday, parseDate } from '../utils/date-utils';
 import type { Habit, HabitLog } from '../types';
 
@@ -174,7 +174,7 @@ export function AnalyticsBarChart({ habits, logs }: AnalyticsBarChartProps) {
           <div className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Per Habit</div>
           {perHabitData.map(({ habit, completedDays, totalDays, pct }) => (
             <div key={habit.id} className="flex items-center gap-3">
-              <span className="text-base">{habit.icon || '🎯'}</span>
+              <span className="flex h-5 w-5 items-center justify-center text-sm shrink-0">{habit.icon ? <span>{habit.icon}</span> : <Target className="h-3.5 w-3.5 text-text-muted" />}</span>
               <div className="min-w-0 flex-1">
                 <div className="text-xs font-medium text-text-primary truncate">{habit.name}</div>
                 <div className="text-[10px] text-text-muted">{completedDays}/{totalDays} days</div>
