@@ -15,28 +15,32 @@ function App() {
 
 
   return (
-    <div className="min-h-screen bg-surface-base px-4 pt-6 pb-20">
-      <div className="mx-auto max-w-4xl space-y-4">
-        <ErrorBoundary>
-          <Header
-            onImport={() => setRefreshTrigger(r => r + 1)}
-            onShowCategories={() => setShowCategories(true)}
-          />
-        </ErrorBoundary>
-        <ErrorBoundary>
-          {activeTab === 'today' && (
-            <TodayTab onRefresh={setRefreshTrigger} refreshKey={refreshTrigger} onShowCategories={() => setShowCategories(true)} />
+    <div className="min-h-screen bg-surface-base pb-20">
+      <div className="mx-auto max-w-4xl px-4">
+        <div className="sticky top-0 z-30 bg-surface-base pt-6">
+          <ErrorBoundary>
+            <Header
+              onImport={() => setRefreshTrigger(r => r + 1)}
+              onShowCategories={() => setShowCategories(true)}
+            />
+          </ErrorBoundary>
+        </div>
+        <div className="mt-4 space-y-4">
+          <ErrorBoundary>
+            {activeTab === 'today' && (
+              <TodayTab onRefresh={setRefreshTrigger} refreshKey={refreshTrigger} onShowCategories={() => setShowCategories(true)} />
+            )}
+            {activeTab === 'grids' && (
+              <GridsTab refreshTrigger={refreshTrigger} onRefresh={setRefreshTrigger} />
+            )}
+            {activeTab === 'analytics' && (
+              <AnalyticsTab refreshTrigger={refreshTrigger} />
+            )}
+          </ErrorBoundary>
+          {showCategories && (
+            <CategoryManagement isOpen={showCategories} onClose={() => setShowCategories(false)} />
           )}
-          {activeTab === 'grids' && (
-            <GridsTab refreshTrigger={refreshTrigger} onRefresh={setRefreshTrigger} />
-          )}
-          {activeTab === 'analytics' && (
-            <AnalyticsTab refreshTrigger={refreshTrigger} />
-          )}
-        </ErrorBoundary>
-        {showCategories && (
-          <CategoryManagement isOpen={showCategories} onClose={() => setShowCategories(false)} />
-        )}
+        </div>
       </div>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       <UpdatePrompt />

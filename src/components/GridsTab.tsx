@@ -101,9 +101,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
       <div className="rounded-xl bg-surface-card p-4 border border-border/60" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
         <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">Overall Activity</div>
         <p className="mb-3 text-[11px] text-text-muted">Your combined check-ins across all habits. Darker cells = more activity.</p>
-        <div className="overflow-x-auto">
           <ContributionGrid logs={globalLogs} cellSize={11} cellGap={2} />
-        </div>
       </div>
 
       <div className="flex flex-wrap gap-2">

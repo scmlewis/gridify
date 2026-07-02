@@ -100,9 +100,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
             <>
               <div className="rounded-lg bg-surface-elevated p-4 border border-border">
                 <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">Activity Grid</div>
-                <div className="overflow-x-auto">
                   <ContributionGrid logs={logs} cellSize={10} cellGap={2} showLabels={false} showLegend={false} />
-                </div>
               </div>
 
               <div className="rounded-lg bg-surface-elevated p-4 border border-border">

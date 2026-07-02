@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { formatDate, addDays } from '../utils/date-utils';
 import { getGridStartDate, getLogLevel } from '../utils/grid-math';
 
@@ -41,6 +41,14 @@ export function ContributionGrid({
   showLegend = true,
 }: ContributionGridProps) {
   const startDate = useMemo(() => getGridStartDate(), []);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) {
+      el.scrollLeft = el.scrollWidth;
+    }
+  }, [logs]);
 
   const cells = useMemo(() => {
     const grid: {
@@ -93,7 +101,7 @@ export function ContributionGrid({
   const labelWidth = showLabels ? 28 : 0;
 
   return (
-    <div className="inline-flex flex-col">
+    <div ref={scrollRef} className="overflow-x-auto inline-flex flex-col">
       {showLabels && (
         <div
           className="relative"

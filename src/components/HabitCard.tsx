@@ -241,7 +241,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
             </button>
           </div>
         </div>
-        <div className="mt-3 overflow-x-auto">
+        <div className="mt-3">
           <ContributionGrid logs={logs} cellSize={10} cellGap={2} showLabels={false} showLegend={false} />
         </div>
       </div>
