@@ -16,8 +16,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-surface-base pb-20">
-      <div className="mx-auto max-w-4xl px-4">
-        <div className="sticky top-0 z-30 bg-surface-base pt-6">
+      <div className="sticky top-0 z-30 bg-surface-base border-b border-border/40">
+        <div className="mx-auto max-w-4xl px-4 pt-6">
           <ErrorBoundary>
             <Header
               onImport={() => setRefreshTrigger(r => r + 1)}
@@ -25,22 +25,22 @@ function App() {
             />
           </ErrorBoundary>
         </div>
-        <div className="mt-4 space-y-4">
-          <ErrorBoundary>
-            {activeTab === 'today' && (
-              <TodayTab onRefresh={setRefreshTrigger} refreshKey={refreshTrigger} onShowCategories={() => setShowCategories(true)} />
-            )}
-            {activeTab === 'grids' && (
-              <GridsTab refreshTrigger={refreshTrigger} onRefresh={setRefreshTrigger} />
-            )}
-            {activeTab === 'analytics' && (
-              <AnalyticsTab refreshTrigger={refreshTrigger} />
-            )}
-          </ErrorBoundary>
-          {showCategories && (
-            <CategoryManagement isOpen={showCategories} onClose={() => setShowCategories(false)} />
+      </div>
+      <div className="mx-auto max-w-4xl px-4 mt-4 space-y-4">
+        <ErrorBoundary>
+          {activeTab === 'today' && (
+            <TodayTab onRefresh={setRefreshTrigger} refreshKey={refreshTrigger} onShowCategories={() => setShowCategories(true)} />
           )}
-        </div>
+          {activeTab === 'grids' && (
+            <GridsTab refreshTrigger={refreshTrigger} onRefresh={setRefreshTrigger} />
+          )}
+          {activeTab === 'analytics' && (
+            <AnalyticsTab refreshTrigger={refreshTrigger} />
+          )}
+        </ErrorBoundary>
+        {showCategories && (
+          <CategoryManagement isOpen={showCategories} onClose={() => setShowCategories(false)} />
+        )}
       </div>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       <UpdatePrompt />
