@@ -194,7 +194,7 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
       ))}
 <button
          onClick={() => setShowAddSheet(true)}
-         className="fixed bottom-20 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
+          className="fixed bottom-[calc(var(--nav-h)+0.75rem)] right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
          title="Add new habit"
        >
         <Plus className="h-6 w-6" />

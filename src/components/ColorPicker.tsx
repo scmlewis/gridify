@@ -1,12 +1,16 @@
 const PRESET_COLORS = [
-  { name: 'Indigo', value: '#6366f1' },
-  { name: 'Teal', value: '#2BA8A2' },
+  { name: 'Ruby', value: '#E74C3C' },
   { name: 'Coral', value: '#EF6C4A' },
   { name: 'Gold', value: '#FFD23F' },
-  { name: 'Sky', value: '#5DADE2' },
+  { name: 'Lime', value: '#A8E635' },
   { name: 'Green', value: '#27AE60' },
-  { name: 'Pink', value: '#E84393' },
+  { name: 'Teal', value: '#2BA8A2' },
+  { name: 'Sky', value: '#5DADE2' },
+  { name: 'Ocean', value: '#2980B9' },
+  { name: 'Indigo', value: '#6366f1' },
   { name: 'Purple', value: '#9B59B6' },
+  { name: 'Pink', value: '#E84393' },
+  { name: 'Rose', value: '#FD79A8' },
 ];
 
 interface ColorPickerProps {

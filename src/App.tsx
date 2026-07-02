@@ -15,7 +15,7 @@ function App() {
 
 
   return (
-    <div className="min-h-screen bg-surface-base pb-20">
+    <div className="min-h-screen bg-surface-base pb-[var(--nav-h)]">
       <div className="fixed top-0 inset-x-0 z-30 bg-surface-base border-b border-border/40">
         <div className="mx-auto max-w-4xl px-4 pt-6">
           <ErrorBoundary>
