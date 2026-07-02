@@ -51,7 +51,7 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
             <div className="relative">
               <button
                 onClick={() => setShowMenu(!showMenu)}
-                className="rounded-md p-1.5 text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors"
+                className="rounded-full p-2.5 text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Menu"
               >
                 <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">

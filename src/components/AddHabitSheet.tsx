@@ -61,9 +61,9 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg rounded-t-2xl bg-surface-card p-6 pb-8 animate-slide-up left-1/2 -translate-x-1/2">
+      <div className="relative w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl bg-surface-card p-6 pb-8 animate-slide-up sm:animate-scale-in max-h-[90vh] overflow-y-auto">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-bold text-text-primary">New Habit</h2>
           <button
@@ -132,9 +132,9 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
               <button
                 type="button"
                 onClick={() => setValueType('boolean')}
-                className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium border transition-all ${
+                className={`flex-1 rounded-full px-4 py-3 text-sm font-medium border transition-all min-h-[44px] ${
                   valueType === 'boolean'
-                    ? 'border-primary bg-primary/20 text-primary'
+                    ? 'border-primary bg-primary/20 text-primary shadow-teal-glow'
                     : 'border-border bg-surface-elevated text-text-muted hover:border-primary/50'
                 }`}
               >
@@ -143,9 +143,9 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
               <button
                 type="button"
                 onClick={() => setValueType('numeric')}
-                className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium border transition-all ${
+                className={`flex-1 rounded-full px-4 py-3 text-sm font-medium border transition-all min-h-[44px] ${
                   valueType === 'numeric'
-                    ? 'border-primary bg-primary/20 text-primary'
+                    ? 'border-primary bg-primary/20 text-primary shadow-teal-glow'
                     : 'border-border bg-surface-elevated text-text-muted hover:border-primary/50'
                 }`}
               >
@@ -207,7 +207,7 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
           <button
             type="submit"
             disabled={!name.trim()}
-            className="w-full rounded-xl bg-accent-gold py-3 text-sm font-bold text-surface-base hover:bg-accent-light active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-accent-gold/20 hover:shadow-lg hover:shadow-accent-gold/30"
+            className="w-full rounded-full bg-accent-gold py-3.5 text-sm font-bold text-surface-base hover:bg-accent-light active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-accent-glow hover:shadow-lg hover:shadow-accent-gold/50 min-h-[48px]"
           >
             Create Habit
           </button>

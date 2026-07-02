@@ -49,13 +49,13 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className={`flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all duration-200 ${
+            className={`flex flex-col items-center gap-0.5 px-4 py-2 rounded-xl transition-all duration-200 min-h-[44px] ${
               activeTab === tab.id
                 ? 'text-primary'
                 : 'text-text-muted hover:text-text-secondary'
             }`}
           >
-            <div className={`transition-transform duration-200 ${activeTab === tab.id ? 'scale-110' : ''}`}>
+            <div className={`transition-transform duration-200 ${activeTab === tab.id ? 'scale-110 drop-shadow-[0_0_6px_rgba(43,168,162,0.4)]' : ''}`}>
               {tab.icon}
             </div>
             <span className="text-[10px] font-semibold">{tab.label}</span>

@@ -19,6 +19,7 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
   const [newColor, setNewColor] = useState(PRESET_COLORS[0]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
+  const [editColor, setEditColor] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -49,7 +50,7 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
   const handleRename = async (id: string) => {
     const trimmed = editName.trim();
     if (!trimmed) return;
-    await save(categories.map((c) => (c.id === id ? { ...c, name: trimmed } : c)));
+    await save(categories.map((c) => (c.id === id ? { ...c, name: trimmed, color: editColor } : c)));
     setEditingId(null);
   };
 
@@ -98,7 +99,7 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
           </div>
           <button
             onClick={handleAdd}
-            className="rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-surface-base hover:opacity-90 transition-opacity"
+            className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-surface-base hover:opacity-90 transition-opacity shadow-teal-glow min-h-[40px]"
           >
             Add
           </button>
@@ -111,9 +112,23 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
           )}
           {categories.map((cat) => (
             <li key={cat.id} className="flex items-center gap-2 rounded-lg bg-surface-elevated px-3 py-2">
-              <span className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
               {editingId === cat.id ? (
                 <>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {PRESET_COLORS.slice(0, 5).map((c) => (
+                      <button
+                        key={c}
+                        title={c}
+                        onClick={() => setEditColor(c)}
+                        className="h-4 w-4 rounded-full transition-transform hover:scale-110"
+                        style={{
+                          backgroundColor: c,
+                          outline: editColor === c ? '2px solid white' : 'none',
+                          outlineOffset: '1px',
+                        }}
+                      />
+                    ))}
+                  </div>
                   <input
                     autoFocus
                     value={editName}
@@ -129,12 +144,13 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
                 </>
               ) : (
                 <>
+                  <span className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
                   <span className="flex-1 text-sm text-text-primary">{cat.name}</span>
                   <button
-                    onClick={() => { setEditingId(cat.id); setEditName(cat.name); }}
+                    onClick={() => { setEditingId(cat.id); setEditName(cat.name); setEditColor(cat.color); }}
                     className="text-xs text-text-muted hover:text-primary transition-colors"
                   >
-                    Rename
+                    Edit
                   </button>
                   <button
                     onClick={() => handleDelete(cat.id)}

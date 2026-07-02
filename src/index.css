@@ -131,3 +131,17 @@ button:focus-visible {
 .animate-scale-in {
   animation: scale-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* Flip7-inspired glow shadows */
+.shadow-teal-glow {
+  box-shadow: 0 4px 20px rgba(43, 168, 162, 0.3);
+}
+.shadow-accent-glow {
+  box-shadow: 0 4px 20px rgba(255, 210, 63, 0.4);
+}
+.shadow-coral-glow {
+  box-shadow: 0 4px 20px rgba(239, 108, 74, 0.35);
+}
+.shadow-card {
+  box-shadow: 0 4px 20px rgba(43, 168, 162, 0.1);
+}

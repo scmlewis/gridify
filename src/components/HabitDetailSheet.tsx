@@ -58,9 +58,9 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
   const color = habit.color || '#2BA8A2';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg max-h-[85vh] rounded-t-2xl bg-surface-card animate-slide-up overflow-hidden flex flex-col left-1/2 -translate-x-1/2">
+      <div className="relative w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl bg-surface-card animate-slide-up sm:animate-scale-in overflow-hidden flex flex-col max-h-[85vh]">
         <div className="flex items-center justify-between p-5 pb-3 border-b border-border shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: color }} />

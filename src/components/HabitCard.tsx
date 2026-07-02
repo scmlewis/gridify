@@ -187,9 +187,9 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
               e.stopPropagation();
               toggleToday();
             }}
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 active:scale-90 ${
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 active:scale-90 ${
               todayChecked
-                ? 'border-primary bg-primary text-surface-base shadow-md shadow-primary/25'
+                ? 'border-primary bg-primary text-surface-base shadow-teal-glow'
                 : 'border-border bg-transparent text-text-muted hover:border-primary/60 hover:text-primary hover:shadow-sm hover:shadow-primary/10'
             }`}
             title={todayChecked ? 'Uncheck in' : 'Check in'}
@@ -226,7 +226,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
                   e.stopPropagation();
                   handleFreeze();
                 }}
-                className="shrink-0 rounded-md p-1.5 text-text-muted hover:bg-sky-blue/10 hover:text-sky-blue transition-colors"
+                className="shrink-0 rounded-full p-2 text-text-muted hover:bg-sky-blue/10 hover:text-sky-blue transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title={`Use streak freeze (${maxFreezes - freezesUsed} remaining)`}
               >
                 <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -239,7 +239,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
                 e.stopPropagation();
                 handleArchive();
               }}
-              className="shrink-0 rounded-md p-1.5 text-text-muted hover:bg-coral/10 hover:text-coral transition-colors"
+              className="shrink-0 rounded-full p-2 text-text-muted hover:bg-coral/10 hover:text-coral transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               title="Archive habit"
             >
               <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
