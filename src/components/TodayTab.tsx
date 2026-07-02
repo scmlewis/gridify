@@ -19,7 +19,7 @@ interface TodayTabProps {
 }
 
 export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }: TodayTabProps) {
-  const { habits, isLoading, addHabit, reorder } = useHabits();
+  const { habits, isLoading, addHabit, reorder } = useHabits(refreshKey);
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [showAddSheet, setShowAddSheet] = useState(false);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
@@ -184,10 +184,12 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
           key={category}
           categoryName={category}
           habits={catHabits}
+          onCheckIn={() => _onRefresh(n => n + 1)}
           onHabitTap={setSelectedHabit}
           onDragStart={handleDragStart}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
+          refreshKey={refreshKey}
         />
       ))}
 <button

@@ -25,6 +25,7 @@ interface CategoryGroupProps {
   onDragStart?: (e: React.DragEvent, habitId: string) => void;
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent, habitId: string) => void;
+  refreshKey?: number;
 }
 
 export function CategoryGroup({ 
@@ -34,7 +35,8 @@ export function CategoryGroup({
   onHabitTap,
   onDragStart,
   onDragOver,
-  onDrop 
+  onDrop,
+  refreshKey
 }: CategoryGroupProps) {
   const [collapsed, setCollapsed] = useState<boolean>(() => getCollapsedCategories().has(categoryName));
 
@@ -83,6 +85,7 @@ export function CategoryGroup({
               onDragStart={onDragStart}
               onDragOver={onDragOver}
               onDrop={onDrop}
+              refreshKey={refreshKey}
             />
           ))}
         </div>

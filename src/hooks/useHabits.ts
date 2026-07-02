@@ -3,7 +3,7 @@ import { getHabits, createHabit, deleteHabit, archiveHabit, reorderHabits } from
 import type { Habit } from '../types';
 import type { CreateHabitOptions } from '../db';
 
-export function useHabits() {
+export function useHabits(refreshKey?: number) {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -21,7 +21,7 @@ export function useHabits() {
         if (!cancelled) setIsLoading(false);
       });
     return () => { cancelled = true; };
-  }, []);
+  }, [refreshKey]);
 
   const addHabit = useCallback(async (nameOrOptions: string | CreateHabitOptions) => {
     try {

@@ -13,21 +13,21 @@ interface HabitRowProps {
   onDragStart?: (e: React.DragEvent, habitId: string) => void;
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent, habitId: string) => void;
+  refreshKey?: number;
 }
 
 function triggerHaptic() {
   if (navigator.vibrate) navigator.vibrate(10);
 }
 
-export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onDrop }: HabitRowProps) {
+export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onDrop, refreshKey }: HabitRowProps) {
   const [checked, setChecked] = useState(false);
   const [numericValue, setNumericValue] = useState(0);
   const [streak, setStreak] = useState(0);
   const [weekCount, setWeekCount] = useState(0);
   const todayStr = formatDate(new Date());
   const isNumeric = habit.valueType === 'numeric';
-  const [isDraggable, setIsDraggable] = useState(false);
-  const [isLongPress, setIsLongPress] = useState(false);
+  const isLongPressRef = useRef(false);
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
     }
     load();
     return () => { cancelled = true; };
-  }, [habit.id, todayStr]);
+  }, [habit.id, todayStr, refreshKey]);
 
   const toggle = useCallback(async () => {
     const next = !checked;
@@ -85,13 +85,12 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
   const color = habit.color || '#6366f1';
 
   const handleTouchStart = (_e: React.TouchEvent) => {
-    setIsLongPress(false);
+    isLongPressRef.current = false;
     if (timerRef.current !== null) {
       clearTimeout(timerRef.current);
     }
     timerRef.current = window.setTimeout(() => {
-      setIsLongPress(true);
-      setIsDraggable(true);
+      isLongPressRef.current = true;
       triggerHaptic();
     }, 600);
   };
@@ -104,10 +103,6 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
   };
 
   const handleDragStart = (e: React.DragEvent) => {
-    if (!isDraggable) {
-      e.preventDefault();
-      return;
-    }
     onDragStart?.(e, habit.id);
   };
 
@@ -117,8 +112,7 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
 
   const handleDrop = (e: React.DragEvent) => {
     onDrop?.(e, habit.id);
-    setIsDraggable(false);
-    setIsLongPress(false);
+    isLongPressRef.current = false;
     if (timerRef.current !== null) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
@@ -126,7 +120,7 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
   };
 
   const handleClick = (e: React.MouseEvent) => {
-    if (isLongPress) {
+    if (isLongPressRef.current) {
       e.preventDefault();
       return;
     }
@@ -135,18 +129,14 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
 
   return (
     <div
-      draggable={isDraggable}
+      draggable={true}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onClick={handleClick}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3 border transition-all duration-200 ${
-    isDraggable
-      ? 'border-primary/50 cursor-grabbing scale-[1.02] shadow-lg shadow-primary/10'
-      : 'border-border/60 hover:border-primary/30 hover:bg-surface-card/80 cursor-pointer hover:shadow-md hover:shadow-primary/5'
-  }`}
+className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3 border transition-all duration-200 border-border/60 hover:border-primary/30 hover:bg-surface-card/80 cursor-pointer hover:shadow-md hover:shadow-primary/5`}
       style={{ borderLeft: `3px solid ${color}` }}
     >
       {isNumeric ? (
@@ -161,7 +151,7 @@ className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3
         <button
           onClick={(e) => {
             e.stopPropagation();
-            if (isLongPress) {
+            if (isLongPressRef.current) {
               return;
             }
             toggle();
