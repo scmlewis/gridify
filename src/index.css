@@ -217,15 +217,15 @@ button:focus-visible {
   100% { background-position: 200% 0; }
 }
 .animate-shimmer {
-  background: linear-gradient(90deg, var(--surface-elevated) 25%, var(--surface-card) 50%, var(--surface-elevated) 75%);
+  background: linear-gradient(90deg, var(--color-surface-elevated) 25%, var(--color-surface-card) 50%, var(--color-surface-elevated) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
 /* Drop zone pulse */
 @keyframes drop-pulse {
-  0%, 100% { border-color: color-mix(in srgb, var(--primary) 30%, transparent); }
-  50% { border-color: color-mix(in srgb, var(--primary) 60%, transparent); }
+  0%, 100% { border-color: color-mix(in srgb, var(--color-primary) 30%, transparent); }
+  50% { border-color: color-mix(in srgb, var(--color-primary) 60%, transparent); }
 }
 .animate-drop-pulse {
   animation: drop-pulse 1s ease-in-out infinite;
