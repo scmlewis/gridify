@@ -43,7 +43,7 @@ export function WeeklyReview({ onClose }: WeeklyReviewProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
+      <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 animate-backdrop-in backdrop-blur-sm p-4" onClick={onClose}>
       <div
         className="w-full max-w-md rounded-xl bg-surface-card p-6 shadow-xl border border-border animate-scale-in"
         onClick={(e) => e.stopPropagation()}
