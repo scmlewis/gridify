@@ -314,10 +314,6 @@ export async function getLogsForDate(date: string): Promise<HabitLog[]> {
   return await db.table('habitLogs').where('date').equals(date).toArray();
 }
 
-export async function getLogsForDateRangeIndexed(startDate: string, endDate: string): Promise<HabitLog[]> {
-  return await db.table('habitLogs').where('date').between(startDate, endDate, true, true).toArray();
-}
-
 export async function getHabitLogsCount(habitId: string): Promise<number> {
   return await db.table('habitLogs').where('habitId').equals(habitId).count();
 }

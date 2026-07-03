@@ -1,4 +1,4 @@
-import { getUserProfile, addXP, unlockAchievement, getHabits, getTotalCheckInCount, getLogsForDate, getLogsForDateRangeIndexed, getHabitLogsCount } from '../db';
+import { getUserProfile, addXP, unlockAchievement, getHabits, getTotalCheckInCount, getLogsForDate, getAllLogsForDateRange, getHabitLogsCount } from '../db';
 import { formatDate, addDays, getSunday, parseDate } from './date-utils';
 
 export interface Achievement {
@@ -63,20 +63,23 @@ export async function processCheckIn(streak: number): Promise<{
   leveledUp: boolean;
   newLevel: number;
 }> {
-  const profile = await getUserProfile();
-  const habits = await getHabits();
   const todayDate = new Date();
   const today = formatDate(todayDate);
-  const habitMap = new Map(habits.map((h) => [h.id, h]));
 
-  // 1. Basic stats — use count instead of loading all logs
-  const totalCheckIns = await getTotalCheckInCount();
+  // Parallelize independent DB queries
+  const [profile, habits, totalCheckIns, todayLogs] = await Promise.all([
+    getUserProfile(),
+    getHabits(),
+    getTotalCheckInCount(),
+    getLogsForDate(today),
+  ]);
+
+  const habitMap = new Map(habits.map((h) => [h.id, h]));
 
   // 2. Categories
   const categoriesWithHabits = new Set(habits.filter((h) => h.category).map((h) => h.category));
   const categoriesWithHabitsCount = categoriesWithHabits.size;
 
-  const todayLogs = await getLogsForDate(today);
   const categoriesCheckedInToday = new Set(
     todayLogs
       .filter((l) => l.value > 0)
@@ -87,17 +90,22 @@ export async function processCheckIn(streak: number): Promise<{
 
   // 3. Momentum (last 14 days) — query only last 14 days
   const fourteenDaysAgo = formatDate(addDays(todayDate, -13));
-  const recentLogs = await getLogsForDateRangeIndexed(fourteenDaysAgo, today);
+
+  // 4. Weekly Target Hit — query recent logs for week analysis
+  const fourWeeksAgo = formatDate(addDays(todayDate, -27));
+
+  // Parallelize the two date range queries
+  const [recentLogs, weekLogs] = await Promise.all([
+    getAllLogsForDateRange(fourteenDaysAgo, today),
+    getAllLogsForDateRange(fourWeeksAgo, today),
+  ]);
+
   const daysWithCheckIn = new Set(
     recentLogs
       .filter((l) => l.value > 0)
       .map((l) => l.date)
   );
   const momentumCompleted = daysWithCheckIn.size;
-
-  // 4. Weekly Target Hit — query recent logs for week analysis
-  const fourWeeksAgo = formatDate(addDays(todayDate, -27));
-  const weekLogs = await getLogsForDateRangeIndexed(fourWeeksAgo, today);
 
   const weeksWithLogs = new Set(
     weekLogs.map((l) => formatDate(getSunday(parseDate(l.date))))
@@ -156,7 +164,7 @@ export async function processCheckIn(streak: number): Promise<{
   if (streak > 0) {
     const gapStart = formatDate(addDays(todayDate, -(streak + 3)));
     const gapEnd = formatDate(addDays(todayDate, -(streak)));
-    const gapLogs = await getLogsForDateRangeIndexed(gapStart, gapEnd);
+    const gapLogs = await getAllLogsForDateRange(gapStart, gapEnd);
     const gapDates = new Set(gapLogs.filter(l => l.value > 0).map(l => l.date));
     const allGapDaysEmpty = [1, 2, 3].every(i => {
       const d = formatDate(addDays(todayDate, -(streak + i)));
@@ -165,12 +173,14 @@ export async function processCheckIn(streak: number): Promise<{
     hasLargeGap = allGapDaysEmpty;
   }
 
-  // 6. Numeric entries count — use targeted count per numeric habit
+  // 6. Numeric entries count — batch query per numeric habit
+  const numericHabits = habits.filter(h => h.valueType === 'numeric');
   let numericEntriesCount = 0;
-  for (const habit of habits) {
-    if (habit.valueType === 'numeric') {
-      numericEntriesCount += await getHabitLogsCount(habit.id);
-    }
+  if (numericHabits.length > 0) {
+    const counts = await Promise.all(
+      numericHabits.map(h => getHabitLogsCount(h.id))
+    );
+    numericEntriesCount = counts.reduce((sum, c) => sum + c, 0);
   }
 
   const context: AchievementContext = {

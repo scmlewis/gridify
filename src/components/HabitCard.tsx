@@ -79,9 +79,12 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
     const newChecked = !todayChecked;
     triggerHaptic();
 
+    // Save previous state for rollback
+    const prevChecked = todayChecked;
+    const prevLogs = new Map(logs);
+
     // Optimistically update UI state
     setTodayChecked(newChecked);
-    // Update logs map
     const updatedLogs = new Map(logs);
     if (newChecked) {
       updatedLogs.set(todayStr, 1);
@@ -106,9 +109,8 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       action: {
         label: 'Undo',
         onClick: async () => {
-          // Use ref to get the current state at time of undo, not captured closure
           const wasChecked = todayCheckedRef.current;
-          setTodayChecked((prev) => !prev);
+          setTodayChecked(!wasChecked);
           setLogs((prev) => {
             const reverted = new Map(prev);
             if (wasChecked) {
@@ -118,7 +120,6 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
             }
             return reverted;
           });
-          // Sync with DB
           if (wasChecked) {
             await removeCheckIn(habit.id, todayStr);
           } else {
@@ -146,6 +147,9 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       }
     } catch (err) {
       console.error('Failed to toggle check-in:', err);
+      // Rollback optimistic update
+      setTodayChecked(prevChecked);
+      setLogs(prevLogs);
     }
     onCheckIn?.();
   }, [todayChecked, logs, todayStr, habit.id, onCheckIn, streak]);
@@ -168,7 +172,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
 
   return (
     <>
-      {showConfetti && <Confetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />}
+      {showConfetti && <Confetti trigger={true} onComplete={() => setShowConfetti(false)} />}
       <AchievementToast achievement={currentAchievement} onDismiss={() => setCurrentAchievement(null)} />
       {toast && (
         <Toast

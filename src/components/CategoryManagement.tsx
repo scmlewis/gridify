@@ -31,8 +31,12 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
   if (!isOpen) return null;
 
   const save = async (updated: Category[]) => {
-    await updateCategories(updated);
-    setCategories(updated);
+    try {
+      await updateCategories(updated);
+      setCategories(updated);
+    } catch (err) {
+      console.error('Failed to save categories:', err);
+    }
   };
 
   const handleAdd = async () => {
@@ -45,6 +49,7 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm('Delete this category? Habits will become uncategorized.')) return;
     await save(categories.filter((c) => c.id !== id));
   };
 

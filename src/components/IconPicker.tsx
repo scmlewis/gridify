@@ -48,23 +48,27 @@ const ICON_DATA: [string, string][] = [
   ['🧹', 'tidy'],
 ];
 
-const UNIQUE_ICONS: [string, string][] = [];
-const seen = new Set<string>();
-for (const [icon, label] of ICON_DATA) {
-  if (!seen.has(icon)) {
-    seen.add(icon);
-    UNIQUE_ICONS.push([icon, label]);
+function getUniqueIcons(): [string, string][] {
+  const seen = new Set<string>();
+  const unique: [string, string][] = [];
+  for (const [icon, label] of ICON_DATA) {
+    if (!seen.has(icon)) {
+      seen.add(icon);
+      unique.push([icon, label]);
+    }
   }
+  return unique;
 }
 
 export function IconPicker({ value, onChange }: IconPickerProps) {
   const [search, setSearch] = useState('');
+  const uniqueIcons = useMemo(getUniqueIcons, []);
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return UNIQUE_ICONS;
+    if (!search.trim()) return uniqueIcons;
     const q = search.toLowerCase();
-    return UNIQUE_ICONS.filter(([, label]) => label.includes(q));
-  }, [search]);
+    return uniqueIcons.filter(([, label]) => label.includes(q));
+  }, [search, uniqueIcons]);
 
   return (
     <div className="space-y-2">

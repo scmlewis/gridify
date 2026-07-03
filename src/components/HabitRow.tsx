@@ -136,7 +136,7 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
       onClick={handleClick}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3 border transition-all duration-200 border-border/60 hover:border-primary/30 hover:bg-surface-card/80 cursor-pointer hover:shadow-md hover:shadow-primary/5`}
+      className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3 border transition-all duration-200 border-border/60 hover:border-primary/30 hover:bg-surface-card/80 cursor-pointer hover:shadow-md hover:shadow-primary/5`}
       style={{ borderLeft: `3px solid ${color}` }}
     >
       {isNumeric ? (
@@ -179,7 +179,7 @@ className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3
           <span className="text-[10px] text-text-muted">
             {weekCount}/{habit.targetValue || 7} days this week
           </span>
-          <span className="ml-auto text-[10px] text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">hold to reorder</span>
+          <span className="ml-auto text-[10px] text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">drag to reorder</span>
         </div>
       </div>
       {streak > 0 && (

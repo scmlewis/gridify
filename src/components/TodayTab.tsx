@@ -122,6 +122,24 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
     await reorder(updates);
   };
 
+  const sortedCategories = useMemo(() => {
+    const grouped = new Map<string, typeof habits>();
+    for (const habit of habits) {
+      const cat = habit.category || 'uncategorized';
+      const list = grouped.get(cat);
+      if (list) {
+        list.push(habit);
+      } else {
+        grouped.set(cat, [habit]);
+      }
+    }
+    return [...grouped.entries()].sort(([a], [b]) => {
+      if (a === 'uncategorized') return 1;
+      if (b === 'uncategorized') return -1;
+      return a.localeCompare(b);
+    });
+  }, [habits]);
+
   if (onboardingCompleted === false) {
     return <OnboardingFlow onComplete={handleOnboardingComplete} />;
   }
@@ -158,23 +176,6 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
     );
   }
 
-  const grouped = new Map<string, typeof habits>();
-  for (const habit of habits) {
-    const cat = habit.category || 'uncategorized';
-    const list = grouped.get(cat);
-    if (list) {
-      list.push(habit);
-    } else {
-      grouped.set(cat, [habit]);
-    }
-  }
-
-  const sortedCategories = [...grouped.entries()].sort(([a], [b]) => {
-    if (a === 'uncategorized') return 1;
-    if (b === 'uncategorized') return -1;
-    return a.localeCompare(b);
-  });
-
   return (
     <div className="space-y-4">
       <WeekStrip logs={weekLogs} />
@@ -192,11 +193,11 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
           refreshKey={refreshKey}
         />
       ))}
-<button
-         onClick={() => setShowAddSheet(true)}
-          className="fixed bottom-[calc(var(--nav-h)+0.75rem)] right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
-         title="Add new habit"
-       >
+      <button
+        onClick={() => setShowAddSheet(true)}
+        className="fixed bottom-[calc(var(--nav-h)+0.75rem)] right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
+        title="Add new habit"
+      >
         <Plus className="h-6 w-6" />
       </button>
       <AddHabitSheet
