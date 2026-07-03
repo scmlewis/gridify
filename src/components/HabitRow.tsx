@@ -11,16 +11,19 @@ interface HabitRowProps {
   onCheckIn?: () => void;
   onTap?: (habit: Habit) => void;
   onDragStart?: (e: React.DragEvent, habitId: string) => void;
-  onDragOver?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent, habitId: string) => void;
   onDrop?: (e: React.DragEvent, habitId: string) => void;
   refreshKey?: number;
+  isDropTarget?: boolean;
+  onDragLeave?: () => void;
 }
 
 function triggerHaptic() {
   if (navigator.vibrate) navigator.vibrate(10);
 }
 
-export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onDrop, refreshKey }: HabitRowProps) {
+export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onDrop, refreshKey, isDropTarget, onDragLeave }: HabitRowProps) {
+  const [isDragging, setIsDragging] = useState(false);
   const [checked, setChecked] = useState(false);
   const [numericValue, setNumericValue] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -103,11 +106,16 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
   };
 
   const handleDragStart = (e: React.DragEvent) => {
+    setIsDragging(true);
     onDragStart?.(e, habit.id);
   };
 
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
   const handleDragOver = (e: React.DragEvent) => {
-    onDragOver?.(e);
+    onDragOver?.(e, habit.id);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -133,10 +141,12 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onDragEnd={handleDragEnd}
+      onDragLeave={onDragLeave}
       onClick={handleClick}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3 border transition-all duration-200 border-border/60 hover:border-primary/30 hover:bg-surface-card/80 cursor-pointer hover:shadow-md hover:shadow-primary/5`}
+      className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3 border transition-all duration-200 border-border/60 hover:border-primary/30 hover:bg-surface-card/80 cursor-pointer hover:shadow-md hover:shadow-primary/5 ${isDragging ? 'dragging' : ''} ${isDropTarget ? 'drop-target' : ''}`}
       style={{ borderLeft: `3px solid ${color}` }}
     >
       {isNumeric ? (

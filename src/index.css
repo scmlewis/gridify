@@ -284,6 +284,18 @@ button:focus-visible {
   animation: tab-enter-right 200ms var(--ease-smooth) forwards;
 }
 
+/* Drag and drop states */
+.dragging {
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px -5px color-mix(in srgb, var(--color-primary) 25%, transparent);
+  opacity: 0.9;
+  z-index: 10;
+}
+.drop-target {
+  border: 2px dashed color-mix(in srgb, var(--color-primary) 40%, transparent);
+  animation: drop-pulse 1s ease-in-out infinite;
+}
+
 /* Prefers reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

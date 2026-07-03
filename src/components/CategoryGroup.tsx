@@ -23,9 +23,11 @@ interface CategoryGroupProps {
   onCheckIn?: () => void;
   onHabitTap?: (habit: Habit) => void;
   onDragStart?: (e: React.DragEvent, habitId: string) => void;
-  onDragOver?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent, habitId: string) => void;
   onDrop?: (e: React.DragEvent, habitId: string) => void;
   refreshKey?: number;
+  dragOverHabitId?: string | null;
+  onDragLeave?: () => void;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -39,6 +41,8 @@ export function CategoryGroup({
   onDragOver,
   onDrop,
   refreshKey,
+  dragOverHabitId,
+  onDragLeave,
   className,
   style,
 }: CategoryGroupProps) {
@@ -90,6 +94,8 @@ export function CategoryGroup({
               onDragOver={onDragOver}
               onDrop={onDrop}
               refreshKey={refreshKey}
+              isDropTarget={dragOverHabitId === habit.id}
+              onDragLeave={onDragLeave}
             />
           ))}
         </div>

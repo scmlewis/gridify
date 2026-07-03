@@ -26,6 +26,7 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories, 
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [todayLogs, setTodayLogs] = useState<Map<string, number>>(new Map());
   const [weekLogs, setWeekLogs] = useState<Map<string, number>>(new Map());
+  const [dragOverHabitId, setDragOverHabitId] = useState<string | null>(null);
   const [level, setLevel] = useState(1);
 
   useEffect(() => {
@@ -85,12 +86,18 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories, 
     e.dataTransfer.setData('habitId', habitId);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent, habitId: string) => {
     e.preventDefault();
+    setDragOverHabitId(habitId);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverHabitId(null);
   };
 
   const handleDrop = async (e: React.DragEvent, targetHabitId: string) => {
     e.preventDefault();
+    setDragOverHabitId(null);
     const draggedId = e.dataTransfer.getData('habitId');
     if (draggedId === targetHabitId) return;
 
@@ -195,6 +202,8 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories, 
             onDragOver={handleDragOver}
             onDrop={handleDrop}
             refreshKey={refreshKey}
+            dragOverHabitId={dragOverHabitId}
+            onDragLeave={handleDragLeave}
             className="animate-group-enter"
             style={{ animationDelay: `${index * 60}ms` }}
           />
