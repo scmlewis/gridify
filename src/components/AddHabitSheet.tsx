@@ -63,7 +63,7 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div className="absolute inset-0 bg-black/60 animate-backdrop-in backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/60 animate-backdrop-in backdrop-blur-sm" onClick={onClose} />
       <div className="relative w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl bg-surface-card p-6 pb-8 animate-slide-up-sheet sheet-open max-h-[90vh] overflow-y-auto">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-bold text-text-primary">New Habit</h2>

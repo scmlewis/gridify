@@ -76,7 +76,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div className="absolute inset-0 bg-black/60 animate-backdrop-in backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/60 animate-backdrop-in backdrop-blur-sm" onClick={onClose} />
       <div className="relative w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl bg-surface-card animate-slide-up-sheet sheet-open overflow-hidden flex flex-col max-h-[85vh]">
         <div className="flex items-center justify-between p-5 pb-3 border-b border-border shrink-0">
           <div className="flex items-center gap-3 min-w-0">
