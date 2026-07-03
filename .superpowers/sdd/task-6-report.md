@@ -1,23 +1,15 @@
-## Task 6: Onboarding Flow — COMPLETE
+# Task 6: Toast Spring Curve
 
-**Status:** DONE
-**Commit:** `f6dfcd5` — feat: add onboarding flow
+## Summary
+Replaced `animate-slide-up` with `animate-slide-up-sheet` on the Toast component's root div to use a spring-curve entrance animation.
 
-### Files Created/Modified
-- `src/components/OnboardingFlow.tsx` — 3-step onboarding: Welcome, Category Selection, First Habit
-- `src/components/TodayTab.tsx` — Checks `onboardingCompleted` and renders OnboardingFlow if needed
+## Changes
+- `src/components/Toast.tsx:30` — swapped `animate-slide-up` → `animate-slide-up-sheet`
 
-### What's Implemented
-- **Step 1:** Welcome screen with "Get Started" and "Skip" buttons
-- **Step 2:** Category selection with 5 defaults (Fitness, Mindfulness, Learning, Productivity, Health) + custom input
-- **Step 3:** First habit creation (name, category dropdown, binary/numeric toggle)
-- Uses `completeOnboarding()` to persist completion state
-- Uses `createHabit()` to create first habit if provided
-- Skip at any step saves empty categories and marks onboarding complete
-- Shows loading state while fetching profile
+## Verification
+- `npx tsc --noEmit` — passed (no errors)
+- `npx vitest run` — 7 files, 89 tests, all passing
 
-### Build
-- `npm run build` passes (tsc + vite)
-
-### Concerns
-- None
+## Commit
+- SHA: `f98b49363c14dfe804903cd01c5d2edd04ee7c82`
+- Message: `feat: toast spring curve entrance animation`

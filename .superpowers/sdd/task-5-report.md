@@ -1,23 +1,19 @@
-## Task 5: Category Groups - Complete
+# Task 5: Drag & Drop Polish — Report
 
-### Status
-Done
+**Status:** DONE
 
-### Files Created/Modified
-- `src/components/HabitRow.tsx` - Compact habit row with colored left border, checkbox, name, streak
-- `src/components/CategoryGroup.tsx` - Collapsible category sections with localStorage persistence
-- `src/components/TodayTab.tsx` - Updated to group habits by category and render CategoryGroups
+## Commit
 
-### Implementation Details
-- **HabitRow**: Fetches logs for last 30 days to compute streak, optimistic check-in toggle with haptic feedback, colored left border from `habit.color` field
-- **CategoryGroup**: Collapse state persisted in localStorage under `habit-tracker-collapsed-categories`, chevron rotation animation, category count badge
-- **TodayTab**: Groups habits by `category` field, sorts categories alphabetically with "uncategorized" last, passes `refreshKey` to SummaryCard
+- `80d8102` — feat: drag & drop polish — ghost lift, drop zone pulse, reorder transition
 
-### Build
-`npm run build` passes (tsc + vite)
+## Changes
 
-### Commit
-`feat: add category groups`
+- `src/index.css` — added `.dragging` (ghost lift with scale, shadow, opacity) and `.drop-target` (dashed border + pulse animation) CSS classes
+- `src/components/HabitRow.tsx` — added `isDragging` state, `handleDragEnd` handler, `isDropTarget`/`onDragLeave` props, applied `dragging`/`drop-target` classes conditionally
+- `src/components/TodayTab.tsx` — added `dragOverHabitId` state, `handleDragLeave` handler, updated `handleDragOver` to accept `habitId`, passed new props to `CategoryGroup`
+- `src/components/CategoryGroup.tsx` — added `dragOverHabitId`/`onDragLeave` props, forwarded `isDropTarget` and `onDragLeave` to each `HabitRow`
 
-### Concerns
-- None. All existing patterns followed (optimistic updates, Dexie queries, design tokens).
+## Test Summary
+
+- TypeScript: clean (no errors)
+- Vitest: 89 tests passed across 7 test files

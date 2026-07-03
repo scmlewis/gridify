@@ -1,17 +1,20 @@
-# Task 3: Summary Card — Report
+# Task 3: Sheet & Modal Animations — Report
 
-## Status: DONE
+**Status:** DONE
 
-## What was built
-- Created `SummaryCard.tsx` — displays today's progress dots (one per habit), best streak across all habits, and weekly completion percentage
-- Updated `TodayTab.tsx` — replaced placeholder with SummaryCard integration
-- Updated `App.tsx` — passed `refreshTrigger` as `refreshKey` to SummaryCard
+## Commit
 
-## Commits
-- `9db33e5` feat: add SummaryCard
+- `495a567` feat: sheet & modal spring animations with backdrop blur and stagger
 
-## Build
-- `npm run build` passes cleanly (tsc + vite)
+## Changes
 
-## Concerns
-- None. Component follows existing patterns (Dexie queries, tailwind theme tokens, same styling conventions as HabitCard).
+- **src/index.css**: Updated `animate-scale-in` to use `var(--ease-spring)`. Added `backdrop-in`/`backdrop-out` keyframes and `.animate-backdrop-in`/`.animate-backdrop-out` classes. Added `.sheet-open` stagger cascade for up to 6 child elements.
+- **src/components/AddHabitSheet.tsx**: Added `animate-backdrop-in` to backdrop. Replaced `animate-slide-up sm:animate-scale-in` with `animate-slide-up-sheet sheet-open` on inner sheet.
+- **src/components/HabitDetailSheet.tsx**: Same pattern as AddHabitSheet.
+- **src/components/CategoryManagement.tsx**: Added `animate-backdrop-in` to backdrop. Replaced `animate-scale-in` with `animate-slide-up-sheet sheet-open` on inner sheet.
+- **src/components/WeeklyReview.tsx**: Added `animate-backdrop-in` to backdrop. Kept `animate-scale-in` on modal (already spring easing).
+
+## Test Summary
+
+- `npx tsc --noEmit` — clean (0 errors)
+- `npx vitest run` — 7 test files, 89 tests passed

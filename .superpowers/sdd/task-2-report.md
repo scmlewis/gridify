@@ -1,35 +1,43 @@
-# Task 2: Tab Navigation Shell - Report
+# Task 2: HabitCard Interactions - Report
 
-## What I Implemented
+## Status: DONE
 
-Created a two-tab navigation shell with Today and Grids tabs:
-- `TabBar.tsx`: Reusable tab bar component with active state styling
-- `TodayTab.tsx`: Placeholder content for the Today tab
-- `GridsTab.tsx`: Placeholder content for the Grids tab
-- Updated `App.tsx` to integrate the tab navigation
+## Commits Created
+- **eabcbb0** - feat: HabitCard ripple, glow pulse, streak animation, hover states
 
-## What I Tested and Test Results
+## Test Summary
+All 89 tests passed across 7 test files. TypeScript compilation clean with no errors.
 
-1. **Dev server**: Started successfully with `npm run dev` - no errors
-2. **TypeScript**: Ran `npx tsc --noEmit` - no type errors
-3. **Manual verification**: Tab switching works correctly, placeholder content displays
+## Changes Made
 
-## Files Changed
+### 1. Added glow-pulse keyframe to `src/index.css`
+- Added `@keyframes glow-pulse` animation for box-shadow effect
+- Added `.animate-glow-pulse` utility class with 0.6s duration, using smooth easing and 2 iterations
 
-- `src/components/TabBar.tsx` (new)
-- `src/components/TodayTab.tsx` (new)
-- `src/components/GridsTab.tsx` (new)
-- `src/App.tsx` (modified)
+### 2. Modified `src/components/HabitCard.tsx`
 
-## Self-Review Findings
+#### Ripple Effect on Check-in Button
+- Added `relative` positioning to button
+- Added `ripple-container` span with absolute positioning
+- Added `animate-ripple` span that shows when checked
+- Added `relative z-10` to icons to appear above ripple
+- Added `animate-glow-pulse` class when checked
 
-- Tab bar uses existing theme colors (primary, text-muted, border, text-secondary)
-- Active tab has primary color underline and text
-- Inactive tabs have muted text with hover effect
-- Placeholder content includes icons and descriptive text
-- Layout maintains existing header with app name
-- Responsive design with proper spacing
+#### Streak Animation State
+- Added `streakAnimating` state to track when streak increases
+- In `toggleToday()` function, added logic to detect streak increase and trigger animation
+- Animation runs for 300ms when streak increases
+- Streak display applies `animate-streak-up` class when animating
 
-## Issues or Concerns
+#### Card Hover/Press States
+- Added `hover:-translate-y-0.5` for subtle lift effect
+- Added `active:scale-[0.98]` for press feedback
+- Maintained existing hover effects (border color, shadow)
 
-None. Implementation meets all requirements from the task brief.
+## Verification
+- TypeScript compilation: ✅ Clean
+- Unit tests: ✅ 89/89 passing
+- Manual verification: All changes follow existing code patterns and maintain the `todayCheckedRef` undo pattern
+
+## Concerns
+None. All changes are minimal, focused, and follow the existing codebase patterns. The animations use the CSS variables and keyframes from Task 1 as specified.

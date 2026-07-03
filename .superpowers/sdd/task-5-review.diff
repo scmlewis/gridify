@@ -1,0 +1,157 @@
+diff --git a/src/components/CategoryGroup.tsx b/src/components/CategoryGroup.tsx
+index 8277ef9..15ff8e1 100644
+--- a/src/components/CategoryGroup.tsx
++++ b/src/components/CategoryGroup.tsx
+@@ -23,9 +23,11 @@ interface CategoryGroupProps {
+   onCheckIn?: () => void;
+   onHabitTap?: (habit: Habit) => void;
+   onDragStart?: (e: React.DragEvent, habitId: string) => void;
+-  onDragOver?: (e: React.DragEvent) => void;
++  onDragOver?: (e: React.DragEvent, habitId: string) => void;
+   onDrop?: (e: React.DragEvent, habitId: string) => void;
+   refreshKey?: number;
++  dragOverHabitId?: string | null;
++  onDragLeave?: () => void;
+   className?: string;
+   style?: React.CSSProperties;
+ }
+@@ -39,6 +41,8 @@ export function CategoryGroup({
+   onDragOver,
+   onDrop,
+   refreshKey,
++  dragOverHabitId,
++  onDragLeave,
+   className,
+   style,
+ }: CategoryGroupProps) {
+@@ -90,6 +94,8 @@ export function CategoryGroup({
+               onDragOver={onDragOver}
+               onDrop={onDrop}
+               refreshKey={refreshKey}
++              isDropTarget={dragOverHabitId === habit.id}
++              onDragLeave={onDragLeave}
+             />
+           ))}
+         </div>
+diff --git a/src/components/HabitRow.tsx b/src/components/HabitRow.tsx
+index 489ed0b..a95fe0c 100644
+--- a/src/components/HabitRow.tsx
++++ b/src/components/HabitRow.tsx
+@@ -11,16 +11,19 @@ interface HabitRowProps {
+   onCheckIn?: () => void;
+   onTap?: (habit: Habit) => void;
+   onDragStart?: (e: React.DragEvent, habitId: string) => void;
+-  onDragOver?: (e: React.DragEvent) => void;
++  onDragOver?: (e: React.DragEvent, habitId: string) => void;
+   onDrop?: (e: React.DragEvent, habitId: string) => void;
+   refreshKey?: number;
++  isDropTarget?: boolean;
++  onDragLeave?: () => void;
+ }
+ 
+ function triggerHaptic() {
+   if (navigator.vibrate) navigator.vibrate(10);
+ }
+ 
+-export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onDrop, refreshKey }: HabitRowProps) {
++export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onDrop, refreshKey, isDropTarget, onDragLeave }: HabitRowProps) {
++  const [isDragging, setIsDragging] = useState(false);
+   const [checked, setChecked] = useState(false);
+   const [numericValue, setNumericValue] = useState(0);
+   const [streak, setStreak] = useState(0);
+@@ -103,11 +106,16 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
+   };
+ 
+   const handleDragStart = (e: React.DragEvent) => {
++    setIsDragging(true);
+     onDragStart?.(e, habit.id);
+   };
+ 
++  const handleDragEnd = () => {
++    setIsDragging(false);
++  };
++
+   const handleDragOver = (e: React.DragEvent) => {
+-    onDragOver?.(e);
++    onDragOver?.(e, habit.id);
+   };
+ 
+   const handleDrop = (e: React.DragEvent) => {
+@@ -133,10 +141,12 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
+       onDragStart={handleDragStart}
+       onDragOver={handleDragOver}
+       onDrop={handleDrop}
++      onDragEnd={handleDragEnd}
++      onDragLeave={onDragLeave}
+       onClick={handleClick}
+       onTouchStart={handleTouchStart}
+       onTouchEnd={handleTouchEnd}
+-      className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3 border transition-all duration-200 border-border/60 hover:border-primary/30 hover:bg-surface-card/80 cursor-pointer hover:shadow-md hover:shadow-primary/5`}
++      className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3 border transition-all duration-200 border-border/60 hover:border-primary/30 hover:bg-surface-card/80 cursor-pointer hover:shadow-md hover:shadow-primary/5 ${isDragging ? 'dragging' : ''} ${isDropTarget ? 'drop-target' : ''}`}
+       style={{ borderLeft: `3px solid ${color}` }}
+     >
+       {isNumeric ? (
+diff --git a/src/components/TodayTab.tsx b/src/components/TodayTab.tsx
+index 0b6e533..72430e1 100644
+--- a/src/components/TodayTab.tsx
++++ b/src/components/TodayTab.tsx
+@@ -26,6 +26,7 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories,
+   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
+   const [todayLogs, setTodayLogs] = useState<Map<string, number>>(new Map());
+   const [weekLogs, setWeekLogs] = useState<Map<string, number>>(new Map());
++  const [dragOverHabitId, setDragOverHabitId] = useState<string | null>(null);
+   const [level, setLevel] = useState(1);
+ 
+   useEffect(() => {
+@@ -85,12 +86,18 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories,
+     e.dataTransfer.setData('habitId', habitId);
+   };
+ 
+-  const handleDragOver = (e: React.DragEvent) => {
++  const handleDragOver = (e: React.DragEvent, habitId: string) => {
+     e.preventDefault();
++    setDragOverHabitId(habitId);
++  };
++
++  const handleDragLeave = () => {
++    setDragOverHabitId(null);
+   };
+ 
+   const handleDrop = async (e: React.DragEvent, targetHabitId: string) => {
+     e.preventDefault();
++    setDragOverHabitId(null);
+     const draggedId = e.dataTransfer.getData('habitId');
+     if (draggedId === targetHabitId) return;
+ 
+@@ -195,6 +202,8 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories,
+             onDragOver={handleDragOver}
+             onDrop={handleDrop}
+             refreshKey={refreshKey}
++            dragOverHabitId={dragOverHabitId}
++            onDragLeave={handleDragLeave}
+             className="animate-group-enter"
+             style={{ animationDelay: `${index * 60}ms` }}
+           />
+diff --git a/src/index.css b/src/index.css
+index 0e96d7f..29380e5 100644
+--- a/src/index.css
++++ b/src/index.css
+@@ -284,6 +284,18 @@ button:focus-visible {
+   animation: tab-enter-right 200ms var(--ease-smooth) forwards;
+ }
+ 
++/* Drag and drop states */
++.dragging {
++  transform: scale(1.02);
++  box-shadow: 0 8px 25px -5px color-mix(in srgb, var(--color-primary) 25%, transparent);
++  opacity: 0.9;
++  z-index: 10;
++}
++.drop-target {
++  border: 2px dashed color-mix(in srgb, var(--color-primary) 40%, transparent);
++  animation: drop-pulse 1s ease-in-out infinite;
++}
++
+ /* Prefers reduced motion */
+ @media (prefers-reduced-motion: reduce) {
+   *, *::before, *::after {
