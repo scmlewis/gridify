@@ -46,6 +46,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
   const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
   const [streakAnimating, setStreakAnimating] = useState(false);
   const [rippleKey, setRippleKey] = useState(0);
+  const [justChecked, setJustChecked] = useState(false);
   const todayCheckedRef = useRef(todayChecked);
   todayCheckedRef.current = todayChecked;
 
@@ -87,6 +88,10 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
 
     // Optimistically update UI state
     setTodayChecked(newChecked);
+    if (newChecked) {
+      setJustChecked(true);
+      setTimeout(() => setJustChecked(false), 1200);
+    }
     const updatedLogs = new Map(logs);
     if (newChecked) {
       updatedLogs.set(todayStr, 1);
@@ -196,13 +201,15 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setRippleKey((prev) => prev + 1);
+              if (!todayChecked) setRippleKey((prev) => prev + 1);
               toggleToday();
             }}
             className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 active:scale-90 ${
-              todayChecked
+              todayChecked && justChecked
                 ? 'animate-glow-pulse border-primary bg-primary text-surface-base shadow-teal-glow'
-                : 'border-border bg-transparent text-text-muted hover:border-primary/60 hover:text-primary hover:shadow-sm hover:shadow-primary/10'
+                : todayChecked
+                  ? 'border-primary bg-primary text-surface-base shadow-teal-glow'
+                  : 'border-border bg-transparent text-text-muted hover:border-primary/60 hover:text-primary hover:shadow-sm hover:shadow-primary/10'
             }`}
             title={todayChecked ? 'Uncheck in' : 'Check in'}
           >

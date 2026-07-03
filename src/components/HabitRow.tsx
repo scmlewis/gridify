@@ -147,7 +147,7 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       className={`group flex items-center gap-3 rounded-xl bg-surface-card px-3.5 py-3 border transition-all duration-200 border-border/60 hover:border-primary/30 hover:bg-surface-card/80 cursor-pointer hover:shadow-md hover:shadow-primary/5 ${isDragging ? 'dragging' : ''} ${isDropTarget ? 'drop-target' : ''}`}
-      style={{ borderLeft: `3px solid ${color}` }}
+      style={{ borderLeft: `3px solid ${color}`, transition: 'transform 250ms var(--ease-spring), box-shadow 200ms ease, opacity 200ms ease' }}
     >
       {isNumeric ? (
         <NumericInput

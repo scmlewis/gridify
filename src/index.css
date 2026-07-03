@@ -253,6 +253,7 @@ button:focus-visible {
 .sheet-open > *:nth-child(4) { transition-delay: 150ms; opacity: 1; transform: translateY(0); }
 .sheet-open > *:nth-child(5) { transition-delay: 200ms; opacity: 1; transform: translateY(0); }
 .sheet-open > *:nth-child(6) { transition-delay: 250ms; opacity: 1; transform: translateY(0); }
+.sheet-open > *:nth-child(n+7) { opacity: 1; transform: translateY(0); transition-delay: 300ms; }
 
 @keyframes tab-enter-left {
   0% { transform: translateX(-12px); opacity: 0; }
