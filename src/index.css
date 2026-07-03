@@ -269,6 +269,21 @@ button:focus-visible {
 .sheet-open > *:nth-child(5) { transition-delay: 200ms; opacity: 1; transform: translateY(0); }
 .sheet-open > *:nth-child(6) { transition-delay: 250ms; opacity: 1; transform: translateY(0); }
 
+@keyframes tab-enter-left {
+  0% { transform: translateX(-12px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes tab-enter-right {
+  0% { transform: translateX(12px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+.animate-tab-enter-left {
+  animation: tab-enter-left 200ms var(--ease-smooth) forwards;
+}
+.animate-tab-enter-right {
+  animation: tab-enter-right 200ms var(--ease-smooth) forwards;
+}
+
 /* Prefers reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

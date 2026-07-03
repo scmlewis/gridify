@@ -26,17 +26,21 @@ interface CategoryGroupProps {
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent, habitId: string) => void;
   refreshKey?: number;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
-export function CategoryGroup({ 
-  categoryName, 
-  habits, 
-  onCheckIn, 
+export function CategoryGroup({
+  categoryName,
+  habits,
+  onCheckIn,
   onHabitTap,
   onDragStart,
   onDragOver,
   onDrop,
-  refreshKey
+  refreshKey,
+  className,
+  style,
 }: CategoryGroupProps) {
   const [collapsed, setCollapsed] = useState<boolean>(() => getCollapsedCategories().has(categoryName));
 
@@ -57,7 +61,7 @@ export function CategoryGroup({
   const displayName = categoryName === 'uncategorized' ? 'Uncategorized' : categoryName;
 
   return (
-    <div>
+    <div className={className} style={style}>
       <button
         onClick={toggle}
         className="flex w-full items-center gap-2 py-2.5 px-1 text-left group"

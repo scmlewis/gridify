@@ -10,8 +10,18 @@ import { UpdatePrompt } from './components/UpdatePrompt';
 
 function App() {
   const [activeTab, setActiveTab] = useState<'today' | 'grids' | 'analytics'>('today');
+  const [tabDirection, setTabDirection] = useState<'left' | 'right'>('right');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showCategories, setShowCategories] = useState(false);
+
+  const tabOrder = { today: 0, grids: 1, analytics: 2 };
+
+  const handleTabChange = (tab: 'today' | 'grids' | 'analytics') => {
+    const prevIndex = tabOrder[activeTab];
+    const nextIndex = tabOrder[tab];
+    setTabDirection(nextIndex > prevIndex ? 'right' : 'left');
+    setActiveTab(tab);
+  };
 
 
   return (
@@ -29,20 +39,20 @@ function App() {
       <div className="mx-auto max-w-4xl px-4 pt-20 space-y-4">
         <ErrorBoundary>
           {activeTab === 'today' && (
-            <TodayTab onRefresh={setRefreshTrigger} refreshKey={refreshTrigger} onShowCategories={() => setShowCategories(true)} />
+            <TodayTab onRefresh={setRefreshTrigger} refreshKey={refreshTrigger} onShowCategories={() => setShowCategories(true)} tabDirection={tabDirection} />
           )}
           {activeTab === 'grids' && (
-            <GridsTab refreshTrigger={refreshTrigger} onRefresh={setRefreshTrigger} />
+            <GridsTab refreshTrigger={refreshTrigger} onRefresh={setRefreshTrigger} tabDirection={tabDirection} />
           )}
           {activeTab === 'analytics' && (
-            <AnalyticsTab refreshTrigger={refreshTrigger} />
+            <AnalyticsTab refreshTrigger={refreshTrigger} tabDirection={tabDirection} />
           )}
         </ErrorBoundary>
         {showCategories && (
           <CategoryManagement isOpen={showCategories} onClose={() => setShowCategories(false)} />
         )}
       </div>
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       <UpdatePrompt />
     </div>
   );

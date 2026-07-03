@@ -9,6 +9,7 @@ import type { HabitLog } from '../types';
 
 interface AnalyticsTabProps {
   refreshTrigger?: number;
+  tabDirection?: 'left' | 'right';
 }
 
 interface HabitGridData {
@@ -16,7 +17,7 @@ interface HabitGridData {
   logs: Map<string, number>;
 }
 
-export function AnalyticsTab({ refreshTrigger }: AnalyticsTabProps) {
+export function AnalyticsTab({ refreshTrigger, tabDirection = 'right' }: AnalyticsTabProps) {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [logs, setLogs] = useState<HabitLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -78,10 +79,12 @@ export function AnalyticsTab({ refreshTrigger }: AnalyticsTabProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <InsightsPanel habits={habits} habitGrids={habitGrids} globalLogs={globalLogs} />
-      <div className="rounded-xl bg-surface-card p-4 border border-border/60">
-        <AnalyticsBarChart habits={habits} logs={logs} />
+    <div className={tabDirection === 'right' ? 'animate-tab-enter-right' : 'animate-tab-enter-left'}>
+      <div className="space-y-4">
+        <InsightsPanel habits={habits} habitGrids={habitGrids} globalLogs={globalLogs} />
+        <div className="rounded-xl bg-surface-card p-4 border border-border/60">
+          <AnalyticsBarChart habits={habits} logs={logs} />
+        </div>
       </div>
     </div>
   );

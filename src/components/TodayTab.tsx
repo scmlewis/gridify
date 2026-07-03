@@ -16,9 +16,10 @@ interface TodayTabProps {
   onRefresh: React.Dispatch<React.SetStateAction<number>>;
   refreshKey?: number;
   onShowCategories?: () => void;
+  tabDirection?: 'left' | 'right';
 }
 
-export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }: TodayTabProps) {
+export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories, tabDirection = 'right' }: TodayTabProps) {
   const { habits, isLoading, addHabit, reorder } = useHabits(refreshKey);
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [showAddSheet, setShowAddSheet] = useState(false);
@@ -146,8 +147,10 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
 
   if (isLoading || onboardingCompleted === null) {
     return (
-      <div className="py-12 text-center">
-        <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="animate-shimmer rounded-xl h-20 w-full" style={{ animationDelay: `${i * 100}ms` }} />
+        ))}
       </div>
     );
   }
@@ -177,42 +180,46 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
   }
 
   return (
-    <div className="space-y-4">
-      <WeekStrip logs={weekLogs} />
-      <ProgressHeroCard habitsDoneToday={habitsDoneToday} totalHabits={habits.length} level={level} />
-      {sortedCategories.map(([category, catHabits]) => (
-        <CategoryGroup
-          key={category}
-          categoryName={category}
-          habits={catHabits}
-          onCheckIn={() => _onRefresh(n => n + 1)}
-          onHabitTap={setSelectedHabit}
-          onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-          refreshKey={refreshKey}
+    <div className={tabDirection === 'right' ? 'animate-tab-enter-right' : 'animate-tab-enter-left'}>
+      <div className="space-y-4">
+        <WeekStrip logs={weekLogs} />
+        <ProgressHeroCard habitsDoneToday={habitsDoneToday} totalHabits={habits.length} level={level} />
+        {sortedCategories.map(([category, catHabits], index) => (
+          <CategoryGroup
+            key={category}
+            categoryName={category}
+            habits={catHabits}
+            onCheckIn={() => _onRefresh(n => n + 1)}
+            onHabitTap={setSelectedHabit}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            refreshKey={refreshKey}
+            className="animate-group-enter"
+            style={{ animationDelay: `${index * 60}ms` }}
+          />
+        ))}
+        <button
+          onClick={() => setShowAddSheet(true)}
+          className="fixed bottom-[calc(var(--nav-h)+0.75rem)] right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
+          title="Add new habit"
+        >
+          <Plus className="h-6 w-6" />
+        </button>
+        <AddHabitSheet
+          isOpen={showAddSheet}
+          onClose={() => setShowAddSheet(false)}
+          onAdd={handleAddHabit}
+          onShowCategories={onShowCategories}
         />
-      ))}
-      <button
-        onClick={() => setShowAddSheet(true)}
-        className="fixed bottom-[calc(var(--nav-h)+0.75rem)] right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
-        title="Add new habit"
-      >
-        <Plus className="h-6 w-6" />
-      </button>
-      <AddHabitSheet
-        isOpen={showAddSheet}
-        onClose={() => setShowAddSheet(false)}
-        onAdd={handleAddHabit}
-        onShowCategories={onShowCategories}
-      />
-      <HabitDetailSheet
-        habit={selectedHabit}
-        isOpen={selectedHabit !== null}
-        onClose={() => setSelectedHabit(null)}
-        onDelete={() => _onRefresh(n => n + 1)}
-        onRefresh={() => _onRefresh(n => n + 1)}
-      />
+        <HabitDetailSheet
+          habit={selectedHabit}
+          isOpen={selectedHabit !== null}
+          onClose={() => setSelectedHabit(null)}
+          onDelete={() => _onRefresh(n => n + 1)}
+          onRefresh={() => _onRefresh(n => n + 1)}
+        />
+      </div>
     </div>
   );
 }
