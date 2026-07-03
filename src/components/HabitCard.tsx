@@ -44,6 +44,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
   }, [streak, milestone]);
   const [toast, setToast] = useState<{ message: string; action?: { label: string; onClick: () => void } } | null>(null);
   const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
+  const [streakAnimating, setStreakAnimating] = useState(false);
   const todayCheckedRef = useRef(todayChecked);
   todayCheckedRef.current = todayChecked;
 
@@ -151,6 +152,11 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       setTodayChecked(prevChecked);
       setLogs(prevLogs);
     }
+    const newStreak = calculateStreak(updatedLogs);
+    if (newStreak > streak) {
+      setStreakAnimating(true);
+      setTimeout(() => setStreakAnimating(false), 300);
+    }
     onCheckIn?.();
   }, [todayChecked, logs, todayStr, habit.id, onCheckIn, streak]);
 
@@ -183,7 +189,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       )}
       <div
         onClick={() => onTap?.(habit)}
-        className={`rounded-xl bg-surface-card p-4 border border-border/60 transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 ${onTap ? 'cursor-pointer' : ''}`}
+        className={`rounded-xl bg-surface-card p-4 border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.98] ${onTap ? 'cursor-pointer' : ''}`}
         style={{ borderLeft: `3px solid ${habit.color ?? '#6366f1'}` }}
       >
         <div className="flex items-center gap-3">
@@ -192,24 +198,27 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
               e.stopPropagation();
               toggleToday();
             }}
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 active:scale-90 ${
+            className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 active:scale-90 ${
               todayChecked
-                ? 'border-primary bg-primary text-surface-base shadow-teal-glow'
+                ? 'animate-glow-pulse border-primary bg-primary text-surface-base shadow-teal-glow'
                 : 'border-border bg-transparent text-text-muted hover:border-primary/60 hover:text-primary hover:shadow-sm hover:shadow-primary/10'
             }`}
             title={todayChecked ? 'Uncheck in' : 'Check in'}
           >
+            <span className="ripple-container absolute inset-0 flex items-center justify-center overflow-hidden rounded-full">
+              {todayChecked && <span className="animate-ripple absolute h-full w-full rounded-full bg-white/30" />}
+            </span>
             {todayChecked ? (
-              <Check className="h-5 w-5" strokeWidth={2.5} />
+              <Check className="h-5 w-5 relative z-10" strokeWidth={2.5} />
             ) : (
-              <Circle className="h-5 w-5" strokeWidth={1.8} />
+              <Circle className="h-5 w-5 relative z-10" strokeWidth={1.8} />
             )}
           </button>
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-bold text-text-primary">{habit.name}</div>
             <div className="flex items-center gap-2 text-xs font-medium">
               {streak > 0 ? (
-                <span className="text-primary">{streak} day streak</span>
+                <span className={`text-primary ${streakAnimating ? 'animate-streak-up' : ''}`}>{streak} day streak</span>
               ) : (
                 <span className="text-text-muted">{momentum.completed} of last {momentum.total} days</span>
               )}
