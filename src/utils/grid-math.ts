@@ -33,8 +33,8 @@ export function getGridCoordinates(
   }
 
   return {
-    col: deltaDays % 7,             // weekday index (0=Sun, 6=Sat) → CSS column
-    row: Math.floor(deltaDays / 7), // week index (0-52) → CSS row
+    col: Math.floor(deltaDays / 7), // week index (0-52) → CSS column
+    row: deltaDays % 7,             // weekday index (0=Sun, 6=Sat) → CSS row
   };
 }
 
