@@ -1,9 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { getHabits, getAllLogsForDateRange } from '../db';
 import type { Habit } from '../db';
+import { BarChart3 } from 'lucide-react';
 import { formatDate, addDays } from '../utils/date-utils';
+import { generateGlobalObservations } from '../utils/observations';
 import { AnalyticsBarChart } from './AnalyticsBarChart';
 import { InsightsPanel } from './InsightsPanel';
+import { ObservationCard } from './ObservationCard';
 import { EmptyState } from './EmptyState';
 import type { HabitLog } from '../types';
 
@@ -60,6 +63,10 @@ export function AnalyticsTab({ refreshTrigger, tabDirection = 'right' }: Analyti
     return totals;
   }, [logs]);
 
+  const observations = useMemo(() => {
+    return generateGlobalObservations(habits, habitGrids);
+  }, [habits, habitGrids]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -71,7 +78,7 @@ export function AnalyticsTab({ refreshTrigger, tabDirection = 'right' }: Analyti
   if (habits.length === 0) {
     return (
       <EmptyState
-        icon="📊"
+        icon={BarChart3}
         title="No data yet"
         description="Add some habits and start checking in to see your analytics."
       />
@@ -81,6 +88,7 @@ export function AnalyticsTab({ refreshTrigger, tabDirection = 'right' }: Analyti
   return (
     <div className={tabDirection === 'right' ? 'animate-tab-enter-right' : 'animate-tab-enter-left'}>
       <div className="space-y-4">
+        <ObservationCard observations={observations} title="Overview" />
         <InsightsPanel habits={habits} habitGrids={habitGrids} globalLogs={globalLogs} />
         <div className="rounded-xl bg-surface-card p-4 border border-border/60">
           <AnalyticsBarChart habits={habits} logs={logs} />

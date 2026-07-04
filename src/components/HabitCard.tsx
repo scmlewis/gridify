@@ -100,6 +100,9 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
     }
     setLogs(updatedLogs);
 
+    // Detect first-ever check-in for this habit
+    const isFirstCheckIn = newChecked && logs.size === 0;
+
     // Calculate what the streak would be after this action
     const newStreak = calculateStreak(updatedLogs);
     const streakDelta = newStreak - streak;
@@ -112,7 +115,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       : '';
 
     setToast({
-      message: `${newChecked ? 'Checked in!' : 'Unchecked'}${streakMsg}`,
+      message: isFirstCheckIn ? 'First square! They add up.' : `${newChecked ? 'Checked in!' : 'Unchecked'}${streakMsg}`,
       action: {
         label: 'Undo',
         onClick: async () => {

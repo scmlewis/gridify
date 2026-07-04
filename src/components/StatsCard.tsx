@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { formatDate, addDays } from '../utils/date-utils';
-import { calculateStreak } from '../utils/streak';
+import { calculateStreak, calculateMomentum, getMomentumLabel } from '../utils/streak';
 
 interface StatsCardProps {
   logs: Map<string, number>;
@@ -75,6 +75,8 @@ export function StatsCard({ logs, createdAt, color = '#2BA8A2' }: StatsCardProps
   const stats = useMemo(() => {
     const streak = calculateStreak(logs);
     const bestStreak = computeBestStreak(logs);
+    const momentum = calculateMomentum(logs);
+    const momentumLabel = getMomentumLabel(momentum.completed, momentum.total);
 
     let totalCheckIns = 0;
     for (const [, value] of logs.entries()) {
@@ -107,16 +109,59 @@ export function StatsCard({ logs, createdAt, color = '#2BA8A2' }: StatsCardProps
 
     const trend = recentCount - prevCount;
 
+    // Rolling 30-day completion rate
+    const thirtyDaysAgo = addDays(now, -30);
+    const thirtyDaysAgoStr = formatDate(thirtyDaysAgo);
+    let last30Count = 0;
+    let last30Total = 0;
+    for (const [dateStr, value] of logs.entries()) {
+      if (dateStr < thirtyDaysAgoStr) continue;
+      last30Total++;
+      if (value > 0) last30Count++;
+    }
+    const rolling30Rate = last30Total > 0 ? Math.round((last30Count / last30Total) * 100) : 0;
+
+    // Monthly average
+    const monthsSinceCreation = Math.max(1, daysSinceCreation / 30);
+    const monthlyAvg = +(totalCheckIns / monthsSinceCreation).toFixed(1);
+
+    // Weekend vs weekday comparison
+    let weekdayCount = 0;
+    let weekdayTotal = 0;
+    let weekendCount = 0;
+    let weekendTotal = 0;
+    for (const [dateStr, value] of logs.entries()) {
+      const date = new Date(dateStr + 'T00:00:00');
+      const day = date.getDay();
+      const isWeekend = day === 0 || day === 6;
+      if (isWeekend) {
+        weekendTotal++;
+        if (value > 0) weekendCount++;
+      } else {
+        weekdayTotal++;
+        if (value > 0) weekdayCount++;
+      }
+    }
+    const weekendPct = weekendTotal > 0 ? Math.round((weekendCount / weekendTotal) * 100) : 0;
+    const weekdayPct = weekdayTotal > 0 ? Math.round((weekdayCount / weekdayTotal) * 100) : 0;
+    const weekendBetter = weekendPct > weekdayPct;
+
     return {
       streak,
       bestStreak,
       completionRate: Math.min(completionRate, 100),
+      rolling30Rate,
       weeklyAvg,
+      monthlyAvg,
       totalCheckIns,
       bestDay,
       worstDay,
       trend,
       daysSinceCreation,
+      momentumLabel,
+      weekendPct,
+      weekdayPct,
+      weekendBetter,
     };
   }, [logs, createdAt]);
 
@@ -134,11 +179,26 @@ export function StatsCard({ logs, createdAt, color = '#2BA8A2' }: StatsCardProps
         color={stats.trend > 0 ? '#27AE60' : stats.trend < 0 ? '#E74C3C' : color}
       />
       <div className="col-span-2 rounded-lg bg-surface-elevated p-3">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-text-muted mb-1.5">Day Analysis</div>
+        <div className="text-[10px] font-semibold uppercase tracking-wider text-text-muted mb-1.5">Patterns</div>
         <div className="flex justify-between text-xs">
           <span className="text-text-secondary">Best day: <span className="font-bold text-text-primary">{stats.bestDay}</span></span>
           <span className="text-text-secondary">Worst day: <span className="font-bold text-text-primary">{stats.worstDay}</span></span>
         </div>
+        <div className="flex justify-between text-xs mt-1.5">
+          <span className="text-text-secondary">Weekdays: <span className="font-bold text-text-primary">{stats.weekdayPct}%</span></span>
+          <span className="text-text-secondary">Weekends: <span className="font-bold text-text-primary">{stats.weekendPct}%</span></span>
+          {stats.weekendPct > 0 && stats.weekdayPct > 0 && (
+            <span className={`text-[10px] font-medium ${stats.weekendBetter ? 'text-primary' : 'text-text-muted'}`}>
+              {stats.weekendBetter ? 'Better on weekends' : 'Better on weekdays'}
+            </span>
+          )}
+        </div>
+        <div className="mt-2 flex justify-between text-xs">
+          <span className="text-text-secondary">Momentum:</span>
+          <span className="font-bold" style={{ color: stats.momentumLabel.color }}>{stats.momentumLabel.label}</span>
+          <span className="text-text-secondary">{stats.monthlyAvg}/mo avg</span>
+        </div>
+        <div className="mt-1 text-[10px] text-text-muted">Rolling 30-day: {stats.rolling30Rate}% · Overall: {stats.completionRate}%</div>
       </div>
     </div>
   );

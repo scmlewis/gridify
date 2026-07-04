@@ -53,6 +53,18 @@ export function calculateMomentum(logs: Map<string, number>, windowDays: number 
 }
 
 /**
+ * Get a qualitative label for momentum score.
+ * momentum.completed / momentum.total as a percentage.
+ */
+export function getMomentumLabel(completed: number, total: number): { label: string; color: string } {
+  const pct = total > 0 ? (completed / total) * 100 : 0;
+  if (pct >= 90) return { label: 'Excellent', color: '#27AE60' };
+  if (pct >= 70) return { label: 'Good', color: '#2BA8A2' };
+  if (pct >= 40) return { label: 'Recovering', color: '#F39C12' };
+  return { label: 'Needs Attention', color: '#E74C3C' };
+}
+
+/**
  * Check if a streak hits a milestone.
  * Returns the milestone threshold if hit, or null.
  */

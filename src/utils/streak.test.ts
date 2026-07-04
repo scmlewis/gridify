@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateStreak, calculateMomentum, getMilestone } from './streak';
+import { calculateStreak, calculateMomentum, getMilestone, getMomentumLabel } from './streak';
 import { formatDate, addDays } from './date-utils';
 
 function makeLogs(dates: string[]): Map<string, number> {
@@ -82,6 +82,37 @@ describe('calculateMomentum', () => {
   it('returns 0 for empty logs', () => {
     const result = calculateMomentum(new Map(), 7);
     expect(result.completed).toBe(0);
+  });
+});
+
+describe('getMomentumLabel', () => {
+  it('returns Excellent for >=90%', () => {
+    const result = getMomentumLabel(13, 14);
+    expect(result.label).toBe('Excellent');
+    expect(result.color).toBe('#27AE60');
+  });
+
+  it('returns Good for >=70%', () => {
+    const result = getMomentumLabel(10, 14);
+    expect(result.label).toBe('Good');
+    expect(result.color).toBe('#2BA8A2');
+  });
+
+  it('returns Recovering for >=40%', () => {
+    const result = getMomentumLabel(7, 14);
+    expect(result.label).toBe('Recovering');
+    expect(result.color).toBe('#F39C12');
+  });
+
+  it('returns Needs Attention for <40%', () => {
+    const result = getMomentumLabel(3, 14);
+    expect(result.label).toBe('Needs Attention');
+    expect(result.color).toBe('#E74C3C');
+  });
+
+  it('handles zero total gracefully', () => {
+    const result = getMomentumLabel(0, 0);
+    expect(result.label).toBe('Needs Attention');
   });
 });
 

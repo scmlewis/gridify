@@ -72,6 +72,16 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             <div className="text-5xl">🎯</div>
             <h1 className="text-2xl font-bold text-text-primary">Welcome to Gridify</h1>
             <p className="text-sm text-text-secondary">Build better habits, one day at a time.</p>
+            <div className="rounded-lg bg-surface-elevated p-3 text-left">
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="text-sm">📅</span>
+                <span className="text-xs font-semibold text-text-primary">Your year, visualized</span>
+              </div>
+              <p className="text-[11px] text-text-secondary leading-relaxed">
+                Each square is one day. Over time, the contribution graph becomes a 
+                visual record of your entire year — a snapshot of your consistency at a glance.
+              </p>
+            </div>
             <div className="space-y-3">
               <button
                 onClick={() => setStep(1)}

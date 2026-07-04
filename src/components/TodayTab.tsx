@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Target } from 'lucide-react';
 import { useHabits } from '../hooks/useHabits';
 import { getUserProfile, getLogsForDate, getAllLogsForDateRange } from '../db';
 import { WeekStrip } from './WeekStrip';
 import { ProgressHeroCard } from './ProgressHeroCard';
+import { EmptyState } from './EmptyState';
 import { CategoryGroup } from './CategoryGroup';
 import { OnboardingFlow } from './OnboardingFlow';
 import { AddHabitSheet } from './AddHabitSheet';
@@ -165,17 +166,12 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories, 
   if (habits.length === 0) {
     return (
       <div className="space-y-4">
-        <div className="rounded-lg bg-surface-card p-8 border border-border text-center">
-          <div className="text-4xl mb-3">🎯</div>
-          <h3 className="text-base font-bold text-text-primary mb-1">No habits yet</h3>
-          <p className="text-sm text-text-secondary mb-4">Create your first habit to start building consistency.</p>
-          <button
-            onClick={() => setShowAddSheet(true)}
-            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-primary/90 transition-colors"
-          >
-            Add Your First Habit
-          </button>
-        </div>
+        <EmptyState
+          icon={Target}
+          title="No habits yet"
+          description="Create your first habit to start building consistency."
+          action={{ label: 'Add Your First Habit', onClick: () => setShowAddSheet(true) }}
+        />
         <AddHabitSheet
           isOpen={showAddSheet}
           onClose={() => setShowAddSheet(false)}

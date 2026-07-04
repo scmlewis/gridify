@@ -4,6 +4,9 @@ import { ContributionGrid } from './ContributionGrid';
 import { StatsCard } from './StatsCard';
 import { DayOfWeekHeatmap } from './DayOfWeekHeatmap';
 import { TrendSparkline } from './TrendSparkline';
+import { StreakTimeline } from './StreakTimeline';
+import { CompletionDistribution } from './CompletionDistribution';
+import { YearComparison } from './YearComparison';
 import { ColorPicker } from './ColorPicker';
 import { getHabitLogs, deleteHabit, updateHabit, getCategories } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
@@ -108,6 +111,10 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
                 <TrendSparkline logs={logs} color={color} />
               </div>
 
+              <div className="rounded-lg bg-surface-elevated p-4 border border-border">
+                <StreakTimeline logs={logs} color={color} />
+              </div>
+
               <div>
                 <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">Statistics</div>
                 <StatsCard logs={logs} createdAt={habit.createdAt} color={color} />
@@ -116,6 +123,14 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
               <div className="rounded-lg bg-surface-elevated p-4 border border-border">
                 <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Day of Week</div>
                 <DayOfWeekHeatmap logs={logs} color={color} />
+              </div>
+
+              <div className="rounded-lg bg-surface-elevated p-4 border border-border">
+                <CompletionDistribution logs={logs} />
+              </div>
+
+              <div className="rounded-lg bg-surface-elevated p-4 border border-border">
+                <YearComparison logs={logs} />
               </div>
 
               {/* Edit Section */}

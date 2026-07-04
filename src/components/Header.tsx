@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
-import { Menu, FolderOpen, FileText, Download, Upload, CheckCircle } from 'lucide-react';
+import { Menu, FolderOpen, FileText, Download, Upload, CheckCircle, Moon, Sun, Monitor } from 'lucide-react';
 import { OnlineStatus } from './OnlineStatus';
-import { ThemeToggle } from './ThemeToggle';
+import { useTheme } from '../hooks/useTheme';
 import { WeeklyReview } from './WeeklyReview';
 import { exportCSV, exportJSON, importCSV } from '../utils/export';
 
@@ -15,6 +15,13 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
   const [showReview, setShowReview] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { theme, setTheme } = useTheme();
+
+  const THEMES = [
+    { id: 'dark' as const, label: 'Dark', icon: Moon },
+    { id: 'light' as const, label: 'Light', icon: Sun },
+    { id: 'oled' as const, label: 'OLED', icon: Monitor },
+  ];
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -48,7 +55,6 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
           <h1 className="text-xl font-extrabold tracking-wide text-primary">Gridify</h1>
           <div className="flex items-center gap-2">
             <OnlineStatus />
-            <ThemeToggle />
             <div className="relative">
               <button
                 onClick={() => setShowMenu(!showMenu)}
@@ -61,6 +67,26 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setShowMenu(false)} />
                   <div className="absolute right-0 top-full z-40 mt-1 w-48 rounded-xl bg-surface-elevated border border-border shadow-lg overflow-hidden">
+                    <div className="p-1">
+                      {THEMES.map((t) => {
+                        const Icon = t.icon;
+                        return (
+                          <button
+                            key={t.id}
+                            onClick={() => { setShowMenu(false); setTheme(t.id); }}
+                            className={`flex w-full items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-colors ${
+                              theme === t.id
+                                ? 'bg-primary/10 text-primary'
+                                : 'text-text-primary hover:bg-surface-card'
+                            }`}
+                          >
+                            <Icon className={`h-4 w-4 ${theme === t.id ? 'text-primary' : 'text-text-muted'}`} />
+                            {t.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="mx-2 border-t border-border/50" />
                     <button
                       onClick={() => {
                         setShowMenu(false);

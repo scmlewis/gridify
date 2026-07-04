@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Grid3x3 } from 'lucide-react';
 import { ContributionGrid } from './ContributionGrid';
 import { EmptyState } from './EmptyState';
 import { HabitDetailSheet } from './HabitDetailSheet';
@@ -85,7 +86,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh, tabDirection =
   if (habits.length === 0) {
     return (
       <EmptyState
-        icon="📊"
+        icon={Grid3x3}
         title="No habits yet"
         description="Add your first habit to start tracking your activity grids."
       />
@@ -103,7 +104,20 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh, tabDirection =
       <div className="rounded-xl bg-surface-card p-4 border border-border/60" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
         <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">Overall Activity</div>
         <p className="mb-3 text-[11px] text-text-muted">Your combined check-ins across all habits. Darker cells = more activity.</p>
-          <ContributionGrid logs={globalLogs} cellSize={11} cellGap={2} />
+        <div className="flex items-center gap-1.5 mb-3 justify-end">
+          <span className="text-[10px] text-text-muted">Less</span>
+          {[0, 1, 2, 3, 4].map((level) => {
+            const classes = ['rounded-sm', 'w-2.5', 'h-2.5'];
+            if (level === 0) classes.push('bg-primary-bg');
+            else if (level === 1) classes.push('bg-primary-dark');
+            else if (level === 2) classes.push('bg-primary');
+            else if (level === 3) classes.push('bg-primary-light');
+            else if (level === 4) classes.push('bg-accent-gold');
+            return <div key={level} className={classes.join(' ')} />;
+          })}
+          <span className="text-[10px] text-text-muted">More</span>
+        </div>
+        <ContributionGrid logs={globalLogs} cellSize={11} cellGap={2} showLegend={false} />
       </div>
 
       <div className="flex flex-wrap gap-2">
