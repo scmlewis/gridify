@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { formatDate, addDays } from '../utils/date-utils';
 import { getGridStartDate, getLogLevel } from '../utils/grid-math';
 
@@ -44,11 +44,13 @@ export function ContributionGrid({
   const scrollRef = useRef<HTMLDivElement>(null);
   const todayStr = formatDate(new Date());
   const [selectedCell, setSelectedCell] = useState<string | null>(null);
+  const hasScrolledRef = useRef(false);
 
   useEffect(() => {
     const el = scrollRef.current;
-    if (el) {
+    if (el && !hasScrolledRef.current) {
       el.scrollLeft = el.scrollWidth;
+      hasScrolledRef.current = true;
     }
   }, [logs]);
 
@@ -104,9 +106,26 @@ export function ContributionGrid({
 
   const labelWidth = showLabels ? 28 : 0;
 
+  const handleCellClick = useCallback((cellKey: string) => {
+    setSelectedCell(prev => prev === cellKey ? null : cellKey);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const handleScroll = () => {
+      setSelectedCell(null);
+    };
+
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div ref={scrollRef} className="w-full overflow-x-auto">
-      <div className="inline-flex flex-col">
+    <div className="relative">
+      <div ref={scrollRef} className="w-full overflow-x-auto">
+        <div className="inline-flex flex-col">
         {showLabels && (
           <div
             className="relative"
@@ -159,11 +178,11 @@ export function ContributionGrid({
             {cells.map((cell) => (
               <div
                 key={cell.key}
-                onClick={() => setSelectedCell(selectedCell === cell.key ? null : cell.key)}
+                onClick={() => handleCellClick(cell.key)}
                 className={`relative rounded-sm cursor-default group ${cell.isFuture ? 'opacity-25' : LEVEL_CLASSES[cell.level]}`}
                 style={{ width: cellSize, height: cellSize }}
               >
-                <div className={`pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-surface-elevated px-2.5 py-1.5 text-xs text-text-primary shadow-md border border-border ${cell.isFuture ? 'hidden' : 'hidden group-hover:block'} ${selectedCell === cell.key ? '!block' : ''}`}>
+                <div className={`pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-surface-elevated px-2.5 py-1.5 text-xs text-text-primary shadow-md border border-border ${cell.isFuture ? 'hidden' : 'hidden group-hover:block'} ${selectedCell === cell.key ? '!block' : ''}`}>
                   <span className="font-semibold">{formatTooltipDate(cell.dateStr)}</span>
                   <span className="ml-1.5 text-text-secondary">
                     {LEVEL_LABELS[cell.level]}
@@ -190,6 +209,7 @@ export function ContributionGrid({
             <span className="text-[10px] text-text-muted">More</span>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
