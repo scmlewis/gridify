@@ -85,7 +85,7 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
     onCheckIn?.();
   }, [onCheckIn]);
 
-  const color = habit.color || '#6366f1';
+  const color = habit.color || '#2BA8A2';
 
   const handleTouchStart = (_e: React.TouchEvent) => {
     isLongPressRef.current = false;

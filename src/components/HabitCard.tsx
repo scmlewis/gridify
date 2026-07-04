@@ -154,9 +154,11 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
         await logCheckIn(habit.id, todayStr, 1);
         const result = await processCheckIn(calculateStreak(new Map(logs).set(todayStr, 1)));
         if (result.newAchievements.length > 0) {
+          setToast(null);
           setCurrentAchievement(result.newAchievements[0]);
         }
         if (result.leveledUp) {
+          setCurrentAchievement(null);
           setToast({
             message: `Level up! You're now level ${result.newLevel}`,
           });
@@ -235,7 +237,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
         onDragLeave={onDragLeave}
         onClick={() => onTap?.(habit)}
         className={`rounded-xl bg-surface-card p-4 border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.98] ${onTap ? 'cursor-pointer' : ''} ${isDragging ? 'opacity-50 scale-[0.98]' : ''} ${isDropTarget ? 'ring-2 ring-primary/50' : ''}`}
-        style={{ borderLeft: `3px solid ${habit.color ?? '#6366f1'}` }}
+        style={{ borderLeft: `3px solid ${habit.color ?? '#2BA8A2'}` }}
       >
         <div className="flex items-center gap-3">
           <button
@@ -267,8 +269,10 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
             <div className="flex items-center gap-2 text-xs font-medium">
               {streak > 0 ? (
                 <span className={`text-primary ${streakAnimating ? 'animate-streak-up' : ''}`}>{streak} day streak</span>
-              ) : (
+              ) : momentum.completed > 0 ? (
                 <span className="text-text-muted">{momentum.completed} of last {momentum.total} days</span>
+              ) : (
+                <span className="text-text-muted">Start your streak today</span>
               )}
               {milestone && (
                 <span className="inline-flex items-center rounded-full bg-accent-gold/20 px-2 py-0.5 text-[10px] font-bold text-accent-gold">

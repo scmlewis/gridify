@@ -26,7 +26,7 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
   const [valueType, setValueType] = useState<'boolean' | 'numeric'>('boolean');
   const [unit, setUnit] = useState('');
   const [targetValue, setTargetValue] = useState(3);
-  const [color, setColor] = useState('#6366f1');
+  const [color, setColor] = useState('#2BA8A2');
   const [icon, setIcon] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
 

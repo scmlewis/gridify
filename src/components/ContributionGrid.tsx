@@ -1,4 +1,4 @@
-import { useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { formatDate, addDays } from '../utils/date-utils';
 import { getGridStartDate, getLogLevel } from '../utils/grid-math';
 
@@ -42,6 +42,8 @@ export function ContributionGrid({
 }: ContributionGridProps) {
   const startDate = useMemo(() => getGridStartDate(), []);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const todayStr = formatDate(new Date());
+  const [selectedCell, setSelectedCell] = useState<string | null>(null);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -58,6 +60,7 @@ export function ContributionGrid({
       level: number;
       dateStr: string;
       value: number;
+      isFuture: boolean;
     }[] = [];
 
     for (let day = 0; day < 7; day++) {
@@ -74,12 +77,13 @@ export function ContributionGrid({
           level,
           dateStr,
           value,
+          isFuture: dateStr > todayStr,
         });
       }
     }
 
     return grid;
-  }, [startDate, logs]);
+  }, [startDate, logs, todayStr]);
 
   const monthLabels = useMemo(() => {
     const labels: { month: string; col: number }[] = [];
@@ -155,10 +159,11 @@ export function ContributionGrid({
             {cells.map((cell) => (
               <div
                 key={cell.key}
-                className={`relative rounded-sm cursor-default group ${LEVEL_CLASSES[cell.level]}`}
+                onClick={() => setSelectedCell(selectedCell === cell.key ? null : cell.key)}
+                className={`relative rounded-sm cursor-default group ${cell.isFuture ? 'opacity-25' : LEVEL_CLASSES[cell.level]}`}
                 style={{ width: cellSize, height: cellSize }}
               >
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-surface-elevated px-2.5 py-1.5 text-xs text-text-primary shadow-md border border-border group-hover:block">
+                <div className={`pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-surface-elevated px-2.5 py-1.5 text-xs text-text-primary shadow-md border border-border ${cell.isFuture ? 'hidden' : 'hidden group-hover:block'} ${selectedCell === cell.key ? '!block' : ''}`}>
                   <span className="font-semibold">{formatTooltipDate(cell.dateStr)}</span>
                   <span className="ml-1.5 text-text-secondary">
                     {LEVEL_LABELS[cell.level]}

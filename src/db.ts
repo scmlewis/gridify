@@ -76,7 +76,7 @@ db.version(4).stores({
     habit.unit = habit.unit ?? '';
     habit.targetFrequency = habit.targetFrequency ?? 'daily';
     habit.targetValue = habit.targetValue ?? 1;
-    habit.color = habit.color ?? '#6366f1';
+    habit.color = habit.color ?? '#2BA8A2';
   });
   await tx.table('userProfile').toCollection().modify((profile: any) => {
     profile.onboardingCompleted = profile.onboardingCompleted ?? false;
@@ -134,7 +134,7 @@ export async function createHabit(nameOrOptions: string | CreateHabitOptions): P
     unit: options.unit ?? '',
     targetFrequency: options.targetFrequency ?? 'daily',
     targetValue: options.targetValue ?? 1,
-    color: options.color ?? '#6366f1',
+    color: options.color ?? '#2BA8A2',
     icon: options.icon ?? ''
   });
   return id;

@@ -46,7 +46,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
       for (const log of raw) map.set(log.date, log.value);
       setLogs(map);
       setEditCategory(habit!.category || 'uncategorized');
-      setEditColor(habit!.color || '#6366f1');
+      setEditColor(habit!.color || '#2BA8A2');
       setCategories(await getCategories());
       setIsLoading(false);
     }
@@ -139,7 +139,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
                   <div className="text-xs font-semibold uppercase tracking-wider text-text-muted">Settings</div>
                   {!editing && (
                     <button
-                      onClick={() => { setEditCategory(habit.category || 'uncategorized'); setEditColor(habit.color || '#6366f1'); setEditing(true); }}
+                      onClick={() => { setEditCategory(habit.category || 'uncategorized'); setEditColor(habit.color || '#2BA8A2'); setEditing(true); }}
                       className="text-xs text-primary font-semibold hover:opacity-80 transition-opacity"
                     >
                       Edit
