@@ -1,5 +1,6 @@
 import Dexie from 'dexie';
 import { nanoid } from 'nanoid';
+import { formatDate, addDays } from './utils/date-utils';
 
 export interface Habit {
   id: string;
@@ -162,11 +163,45 @@ export async function deleteHabit(id: string): Promise<void> {
   });
 }
 
-export async function applyStreakFreeze(id: string): Promise<boolean> {
+export async function canApplyStreakFreeze(id: string): Promise<{ allowed: boolean; reason?: string }> {
   const habit = await db.table('habits').get(id) as Habit | undefined;
-  if (!habit || habit.freezesUsed >= habit.maxFreezes) return false;
+  if (!habit) return { allowed: false, reason: 'Habit not found' };
+  if (habit.archived) return { allowed: false, reason: 'Habit is archived' };
+  if (habit.freezesUsed >= habit.maxFreezes) return { allowed: false, reason: 'No freezes remaining' };
+
+  const today = new Date();
+  const yesterday = addDays(today, -1);
+  const todayStr = formatDate(today);
+  const yesterdayStr = formatDate(yesterday);
+
+  // Check that today does NOT already have a check-in
+  const todayLog = await db.table('habitLogs')
+    .where('[habitId+date]').equals([id, todayStr])
+    .first();
+  if (todayLog && todayLog.value > 0) {
+    return { allowed: false, reason: 'Already checked in today' };
+  }
+
+  // Check that yesterday HAS a check-in (freeze protects an existing streak)
+  const yesterdayLog = await db.table('habitLogs')
+    .where('[habitId+date]').equals([id, yesterdayStr])
+    .first();
+  if (!yesterdayLog || yesterdayLog.value <= 0) {
+    return { allowed: false, reason: 'Complete yesterday first — freeze protects an active streak' };
+  }
+
+  return { allowed: true };
+}
+
+export async function applyStreakFreeze(id: string): Promise<{ success: boolean; reason?: string }> {
+  const validation = await canApplyStreakFreeze(id);
+  if (!validation.allowed) {
+    return { success: false, reason: validation.reason };
+  }
+
+  const habit = await db.table('habits').get(id) as Habit;
   await db.table('habits').update(id, { freezesUsed: habit.freezesUsed + 1 });
-  return true;
+  return { success: true };
 }
 
 export async function getHabit(id: string): Promise<Habit | undefined> {

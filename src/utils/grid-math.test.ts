@@ -5,21 +5,21 @@ import { formatDate, addDays } from './date-utils';
 describe('getGridCoordinates', () => {
   const startDate = new Date(2024, 5, 16); // Sunday
 
-  it('returns col 0, row 0 for start date', () => {
+  it('returns col 0, row 0 for start date (Sunday, week 0)', () => {
     const result = getGridCoordinates(formatDate(startDate), startDate);
     expect(result).toEqual({ col: 0, row: 0 });
   });
 
-  it('returns col 0, row 1 for Monday (day after Sunday)', () => {
+  it('returns col 1, row 0 for Monday (day 1, week 0)', () => {
     const monday = addDays(startDate, 1);
     const result = getGridCoordinates(formatDate(monday), startDate);
-    expect(result).toEqual({ col: 0, row: 1 });
+    expect(result).toEqual({ col: 1, row: 0 });
   });
 
-  it('returns col 1, row 0 for next Sunday', () => {
+  it('returns col 0, row 1 for next Sunday (day 0, week 1)', () => {
     const nextSunday = addDays(startDate, 7);
     const result = getGridCoordinates(formatDate(nextSunday), startDate);
-    expect(result).toEqual({ col: 1, row: 0 });
+    expect(result).toEqual({ col: 0, row: 1 });
   });
 
   it('returns null for date before grid start', () => {
@@ -34,12 +34,12 @@ describe('getGridCoordinates', () => {
     expect(result).toBeNull();
   });
 
-  it('returns last valid column at 52 weeks + 6 days', () => {
+  it('returns col 6, row 52 at 52 weeks + 6 days (Saturday, last week)', () => {
     const lastDay = addDays(startDate, 53 * 7 - 1);
     const result = getGridCoordinates(formatDate(lastDay), startDate);
     expect(result).not.toBeNull();
-    expect(result!.col).toBe(52);
-    expect(result!.row).toBe(6);
+    expect(result!.col).toBe(6);
+    expect(result!.row).toBe(52);
   });
 });
 

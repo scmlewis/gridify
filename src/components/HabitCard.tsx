@@ -4,7 +4,7 @@ import { ContributionGrid } from './ContributionGrid';
 import { Confetti } from './Confetti';
 import { Toast } from './Toast';
 import { AchievementToast } from './AchievementToast';
-import { getHabitLogs, logCheckIn, removeCheckIn, applyStreakFreeze, getHabit } from '../db';
+import { getHabitLogs, logCheckIn, removeCheckIn, applyStreakFreeze, canApplyStreakFreeze, getHabit } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
 import { calculateStreak, calculateMomentum, getMilestone } from '../utils/streak';
@@ -16,6 +16,11 @@ interface HabitCardProps {
   onArchived: (id: string) => void;
   onCheckIn?: () => void;
   onTap?: (habit: Habit) => void;
+  onDragStart?: (e: React.DragEvent, habitId: string) => void;
+  onDragOver?: (e: React.DragEvent, habitId: string) => void;
+  onDrop?: (e: React.DragEvent, habitId: string) => void;
+  onDragLeave?: () => void;
+  isDropTarget?: boolean;
 }
 
 function triggerHaptic() {
@@ -24,15 +29,17 @@ function triggerHaptic() {
   }
 }
 
-export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProps) {
+export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, onDragOver, onDrop, onDragLeave, isDropTarget }: HabitCardProps) {
   const [logs, setLogs] = useState<Map<string, number>>(new Map());
   const [todayChecked, setTodayChecked] = useState(false);
   const streak = useMemo(() => calculateStreak(logs), [logs]);
   const momentum = useMemo(() => calculateMomentum(logs), [logs]);
   const [freezesUsed, setFreezesUsed] = useState(0);
   const [maxFreezes, setMaxFreezes] = useState(2);
+  const [canFreeze, setCanFreeze] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [milestone, setMilestone] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Effect to handle milestone detection and trigger confetti when streak reaches a new milestone
   useEffect(() => {
@@ -70,6 +77,8 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       if (habitData && !cancelled) {
         setFreezesUsed(habitData.freezesUsed);
         setMaxFreezes(habitData.maxFreezes);
+        const freezeCheck = await canApplyStreakFreeze(habit.id);
+        if (!cancelled) setCanFreeze(freezeCheck.allowed);
       }
     }
     load();
@@ -169,12 +178,16 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
   }, [todayChecked, logs, todayStr, habit.id, onCheckIn, streak]);
 
   const handleFreeze = useCallback(async () => {
-    if (freezesUsed >= maxFreezes) return;
-    const success = await applyStreakFreeze(habit.id);
-    if (success) {
+    if (freezesUsed >= maxFreezes || !canFreeze) return;
+    const result = await applyStreakFreeze(habit.id);
+    if (result.success) {
       setFreezesUsed((prev) => prev + 1);
+      setCanFreeze(false);
+      setToast({ message: 'Streak freeze applied' });
+    } else if (result.reason) {
+      setToast({ message: result.reason });
     }
-  }, [habit.id, freezesUsed, maxFreezes]);
+  }, [habit.id, freezesUsed, maxFreezes, canFreeze]);
 
   const handleArchive = useCallback(async () => {
     try {
@@ -183,6 +196,24 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
       console.error('Failed to archive habit:', err);
     }
   }, [habit.id, onArchived]);
+
+  const handleDragStart = (e: React.DragEvent) => {
+    setIsDragging(true);
+    onDragStart?.(e, habit.id);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    onDragOver?.(e, habit.id);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    onDrop?.(e, habit.id);
+  };
 
   return (
     <>
@@ -196,8 +227,14 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
         />
       )}
       <div
+        draggable={true}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+        onDragEnd={handleDragEnd}
+        onDragLeave={onDragLeave}
         onClick={() => onTap?.(habit)}
-        className={`rounded-xl bg-surface-card p-4 border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.98] ${onTap ? 'cursor-pointer' : ''}`}
+        className={`rounded-xl bg-surface-card p-4 border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.98] ${onTap ? 'cursor-pointer' : ''} ${isDragging ? 'opacity-50 scale-[0.98]' : ''} ${isDropTarget ? 'ring-2 ring-primary/50' : ''}`}
         style={{ borderLeft: `3px solid ${habit.color ?? '#6366f1'}` }}
       >
         <div className="flex items-center gap-3">
@@ -241,7 +278,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap }: HabitCardProp
             </div>
           </div>
           <div className="flex items-center gap-1">
-            {freezesUsed < maxFreezes && (
+            {canFreeze && freezesUsed < maxFreezes && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();

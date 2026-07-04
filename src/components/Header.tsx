@@ -66,25 +66,28 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
               {showMenu && (
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setShowMenu(false)} />
-                  <div className="absolute right-0 top-full z-40 mt-1 w-48 rounded-xl bg-surface-elevated border border-border shadow-lg overflow-hidden">
-                    <div className="p-1">
-                      {THEMES.map((t) => {
-                        const Icon = t.icon;
-                        return (
-                          <button
-                            key={t.id}
-                            onClick={() => { setShowMenu(false); setTheme(t.id); }}
-                            className={`flex w-full items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-colors ${
-                              theme === t.id
-                                ? 'bg-primary/10 text-primary'
-                                : 'text-text-primary hover:bg-surface-card'
-                            }`}
-                          >
-                            <Icon className={`h-4 w-4 ${theme === t.id ? 'text-primary' : 'text-text-muted'}`} />
-                            {t.label}
-                          </button>
-                        );
-                      })}
+                  <div className="absolute right-0 top-full z-40 mt-1 w-56 rounded-xl bg-surface-elevated border border-border shadow-lg overflow-hidden">
+                    <div className="px-3 pt-3 pb-2">
+                      <div className="text-[10px] font-semibold uppercase tracking-wider text-text-muted mb-2">Theme</div>
+                      <div className="flex rounded-lg bg-surface-card p-0.5 border border-border/50">
+                        {THEMES.map((t) => {
+                          const Icon = t.icon;
+                          return (
+                            <button
+                              key={t.id}
+                              onClick={() => setTheme(t.id)}
+                              className={`flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium transition-all duration-200 ${
+                                theme === t.id
+                                  ? 'bg-primary text-surface-base shadow-sm'
+                                  : 'text-text-muted hover:text-text-secondary'
+                              }`}
+                            >
+                              <Icon className="h-3.5 w-3.5" />
+                              <span>{t.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                     <div className="mx-2 border-t border-border/50" />
                     <button

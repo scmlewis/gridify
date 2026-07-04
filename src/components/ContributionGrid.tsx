@@ -19,18 +19,13 @@ const LEVEL_CLASSES: Record<number, string> = {
 };
 
 const LEVEL_LABELS = ['No activity', '1 check-in', '2 check-ins', '3 check-ins', '4+ check-ins'];
-
-const MONTH_ABBRS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-const WEEKDAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
+const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function formatTooltipDate(dateStr: string): string {
   const [y, m, d] = dateStr.split('-').map(Number);
   const date = new Date(y, m - 1, d);
-  const month = MONTH_ABBRS[date.getMonth()];
-  const day = date.getDate();
-  const year = date.getFullYear();
-  return `${month} ${day}, ${year}`;
+  return `${MONTHS[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 }
 
 export function ContributionGrid({
@@ -46,7 +41,7 @@ export function ContributionGrid({
   useEffect(() => {
     const el = scrollRef.current;
     if (el) {
-      el.scrollLeft = el.scrollWidth;
+      el.scrollTop = el.scrollHeight;
     }
   }, [logs]);
 
@@ -69,8 +64,8 @@ export function ContributionGrid({
 
         grid.push({
           key: dateStr,
-          col: week,
-          row: day,
+          col: day,    // CSS column (weekday: 0=Sun .. 6=Sat)
+          row: week,   // CSS row (week index: 0..52)
           level,
           dateStr,
           value,
@@ -82,7 +77,7 @@ export function ContributionGrid({
   }, [startDate, logs]);
 
   const monthLabels = useMemo(() => {
-    const labels: { month: string; col: number }[] = [];
+    const labels: { month: string; row: number }[] = [];
     let lastMonth = -1;
 
     for (let week = 0; week < 53; week++) {
@@ -90,7 +85,7 @@ export function ContributionGrid({
       const month = weekStart.getMonth();
 
       if (month !== lastMonth) {
-        labels.push({ month: MONTH_ABBRS[month], col: week });
+        labels.push({ month: MONTHS[month], row: week });
         lastMonth = month;
       }
     }
@@ -98,23 +93,35 @@ export function ContributionGrid({
     return labels;
   }, [startDate]);
 
-  const labelWidth = showLabels ? 28 : 0;
+  const labelWidth = showLabels ? 24 : 0;
+  const rowHeight = cellSize + cellGap;
 
   return (
-    <div ref={scrollRef} className="w-full overflow-x-auto">
-      <div className="inline-flex flex-col">
+    <div className="flex flex-col">
+      {/* Weekday headers */}
+      {showLabels && (
+        <div className="flex" style={{ marginLeft: labelWidth + 4, marginBottom: 2 }}>
+          {WEEKDAY_LABELS.map((label, i) => (
+            <div
+              key={i}
+              className="text-[9px] font-medium text-text-muted flex items-end justify-center"
+              style={{ width: rowHeight }}
+            >
+              {label}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="flex">
+        {/* Month labels on left */}
         {showLabels && (
-          <div
-            className="relative"
-            style={{ marginLeft: labelWidth, marginBottom: 4, height: 16 }}
-          >
+          <div className="flex flex-col shrink-0 relative" style={{ width: labelWidth, marginRight: 4 }}>
             {monthLabels.map((label, i) => (
               <div
                 key={`${label.month}-${i}`}
-                className="absolute text-[10px] font-medium text-text-muted"
-                style={{
-                  left: label.col * (cellSize + cellGap),
-                }}
+                className="absolute text-[9px] font-medium text-text-muted leading-none"
+                style={{ top: label.row * rowHeight }}
               >
                 {label.month}
               </div>
@@ -122,33 +129,17 @@ export function ContributionGrid({
           </div>
         )}
 
-        <div className="flex">
-          {showLabels && (
-            <div
-              className="flex flex-col justify-between shrink-0"
-              style={{
-                width: labelWidth,
-                height: 7 * (cellSize + cellGap) - cellGap,
-                paddingRight: 4,
-              }}
-            >
-              {WEEKDAY_LABELS.map((label, i) => (
-                <div
-                  key={i}
-                  className="text-[10px] font-medium text-text-muted flex items-center"
-                  style={{ height: cellSize }}
-                >
-                  {label}
-                </div>
-              ))}
-            </div>
-          )}
-
+        {/* Scrollable grid */}
+        <div
+          ref={scrollRef}
+          className="overflow-y-auto"
+          style={{ maxHeight: 8 * rowHeight }}
+        >
           <div
-            className="grid shrink-0"
+            className="grid"
             style={{
-              gridTemplateColumns: `repeat(53, ${cellSize}px)`,
-              gridTemplateRows: `repeat(7, ${cellSize}px)`,
+              gridTemplateColumns: `repeat(7, ${cellSize}px)`,
+              gridTemplateRows: `repeat(53, ${cellSize}px)`,
               gap: `${cellGap}px`,
             }}
           >
@@ -158,7 +149,7 @@ export function ContributionGrid({
                 className={`relative rounded-sm cursor-default group ${LEVEL_CLASSES[cell.level]}`}
                 style={{ width: cellSize, height: cellSize }}
               >
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-surface-elevated px-2.5 py-1.5 text-xs text-text-primary shadow-md border border-border group-hover:block">
+                <div className="pointer-events-none absolute left-full top-1/2 z-10 ml-2 -translate-y-1/2 whitespace-nowrap rounded-md bg-surface-elevated px-2.5 py-1.5 text-xs text-text-primary shadow-md border border-border opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="font-semibold">{formatTooltipDate(cell.dateStr)}</span>
                   <span className="ml-1.5 text-text-secondary">
                     {LEVEL_LABELS[cell.level]}
@@ -168,24 +159,21 @@ export function ContributionGrid({
             ))}
           </div>
         </div>
-
-        {showLegend && (
-          <div
-            className="flex items-center gap-2 mt-2"
-            style={{ marginLeft: labelWidth }}
-          >
-            <span className="text-[10px] text-text-muted">Less</span>
-            {[0, 1, 2, 3, 4].map((level) => (
-              <div
-                key={level}
-                className={`rounded-sm ${LEVEL_CLASSES[level]}`}
-                style={{ width: cellSize, height: cellSize }}
-              />
-            ))}
-            <span className="text-[10px] text-text-muted">More</span>
-          </div>
-        )}
       </div>
+
+      {showLegend && (
+        <div className="flex items-center gap-2 mt-2" style={{ marginLeft: labelWidth + 4 }}>
+          <span className="text-[10px] text-text-muted">Less</span>
+          {[0, 1, 2, 3, 4].map((level) => (
+            <div
+              key={level}
+              className={`rounded-sm ${LEVEL_CLASSES[level]}`}
+              style={{ width: cellSize, height: cellSize }}
+            />
+          ))}
+          <span className="text-[10px] text-text-muted">More</span>
+        </div>
+      )}
     </div>
   );
 }

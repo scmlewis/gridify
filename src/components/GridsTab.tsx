@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Grid3x3 } from 'lucide-react';
 import { ContributionGrid } from './ContributionGrid';
 import { EmptyState } from './EmptyState';
 import { HabitDetailSheet } from './HabitDetailSheet';
 import { HabitCard } from './HabitCard';
-import { getHabits, getHabitLogs, getAllLogsForDateRange } from '../db';
+import { getHabits, getHabitLogs, getAllLogsForDateRange, reorderHabits } from '../db';
 import type { Habit } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
@@ -29,6 +29,8 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh, tabDirection =
   const [isLoading, setIsLoading] = useState(true);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -75,6 +77,55 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh, tabDirection =
     return () => { cancelled = true; };
   }, [refreshTrigger]);
 
+  const handleDragStart = useCallback((e: React.DragEvent, id: string) => {
+    setDraggedId(id);
+    e.dataTransfer.effectAllowed = 'move';
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent, overId: string) => {
+    e.preventDefault();
+    setOverId(overId);
+  }, []);
+
+  const handleDrop = useCallback(async (e: React.DragEvent, dropId: string) => {
+    e.preventDefault();
+    if (!draggedId || draggedId === dropId) {
+      setDraggedId(null);
+      setOverId(null);
+      return;
+    }
+
+    const sorted = [...habits].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+    const fromIdx = sorted.findIndex(h => h.id === draggedId);
+    const toIdx = sorted.findIndex(h => h.id === dropId);
+    if (fromIdx === -1 || toIdx === -1) return;
+
+    const moved = sorted[fromIdx];
+    sorted.splice(fromIdx, 1);
+    sorted.splice(toIdx, 0, moved);
+
+    const reorderUpdates = sorted.map((h, i) => ({ id: h.id, sortOrder: i }));
+    await reorderHabits(reorderUpdates);
+
+    setHabits(prev => {
+      const updated = [...prev].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+      const fromI = updated.findIndex(h => h.id === draggedId);
+      const toI = updated.findIndex(h => h.id === dropId);
+      if (fromI === -1 || toI === -1) return updated;
+      const m = updated[fromI];
+      updated.splice(fromI, 1);
+      updated.splice(toI, 0, m);
+      return updated;
+    });
+
+    setDraggedId(null);
+    setOverId(null);
+  }, [draggedId, habits]);
+
+  const handleDragLeave = useCallback(() => {
+    setOverId(null);
+  }, []);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -94,9 +145,10 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh, tabDirection =
   }
 
   const categories = Array.from(new Set(habits.map(h => h.category || 'uncategorized'))).sort();
+  const sortedGrids = [...habitGrids].sort((a, b) => (a.habit.sortOrder ?? 0) - (b.habit.sortOrder ?? 0));
   const filteredGrids = activeCategory === 'All'
-    ? habitGrids
-    : habitGrids.filter(g => (g.habit.category || 'uncategorized') === activeCategory);
+    ? sortedGrids
+    : sortedGrids.filter(g => (g.habit.category || 'uncategorized') === activeCategory);
 
   return (
     <div className={tabDirection === 'right' ? 'animate-tab-enter-right' : 'animate-tab-enter-left'}>
@@ -152,8 +204,12 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh, tabDirection =
             key={habit.id}
             habit={habit}
             onArchived={() => _onRefresh(n => n + 1)}
-            onCheckIn={() => _onRefresh(n => n + 1)}
             onTap={setSelectedHabit}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            onDragLeave={handleDragLeave}
+            isDropTarget={overId === habit.id && draggedId !== habit.id}
           />
         ))}
       </div>
