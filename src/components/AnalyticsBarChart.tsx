@@ -73,9 +73,7 @@ export function AnalyticsBarChart({ habits, logs }: AnalyticsBarChartProps) {
     return days;
   }, [startDate, endDate, viewMode, logs, habits]);
 
-  const maxCount = useMemo(() => {
-    return Math.max(1, ...dailyData.map(d => d.count));
-  }, [dailyData]);
+
 
   const avgCompletion = useMemo(() => {
     if (dailyData.length === 0 || habits.length === 0) return 0;
@@ -147,7 +145,7 @@ export function AnalyticsBarChart({ habits, logs }: AnalyticsBarChartProps) {
       {/* Bar chart */}
       <div className={`flex items-end gap-1 ${viewMode === 'month' ? 'overflow-x-auto pb-1' : ''}`} style={{ height: viewMode === 'week' ? 100 : 80 }}>
         {dailyData.map((d) => {
-          const heightPct = d.total > 0 ? (d.count / maxCount) * 100 : 0;
+          const heightPct = d.total > 0 ? (d.count / d.total) * 100 : 0;
           return (
             <div key={d.date} className={`flex flex-col items-center gap-1 ${viewMode === 'month' ? 'min-w-[14px]' : 'flex-1'}`}>
               <div className="w-full flex justify-center" style={{ height: '100%' }}>
