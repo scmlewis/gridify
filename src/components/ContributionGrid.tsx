@@ -19,13 +19,18 @@ const LEVEL_CLASSES: Record<number, string> = {
 };
 
 const LEVEL_LABELS = ['No activity', '1 check-in', '2 check-ins', '3 check-ins', '4+ check-ins'];
-const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const MONTH_ABBRS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const WEEKDAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
 
 function formatTooltipDate(dateStr: string): string {
   const [y, m, d] = dateStr.split('-').map(Number);
   const date = new Date(y, m - 1, d);
-  return `${MONTHS[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  const month = MONTH_ABBRS[date.getMonth()];
+  const day = date.getDate();
+  const year = date.getFullYear();
+  return `${month} ${day}, ${year}`;
 }
 
 export function ContributionGrid({
@@ -64,8 +69,8 @@ export function ContributionGrid({
 
         grid.push({
           key: dateStr,
-          col: week, // CSS column (week index: 0..52)
-          row: day,  // CSS row (weekday: 0=Sun .. 6=Sat)
+          col: week,
+          row: day,
           level,
           dateStr,
           value,
@@ -85,7 +90,7 @@ export function ContributionGrid({
       const month = weekStart.getMonth();
 
       if (month !== lastMonth) {
-        labels.push({ month: MONTHS[month], col: week });
+        labels.push({ month: MONTH_ABBRS[month], col: week });
         lastMonth = month;
       }
     }
@@ -93,50 +98,54 @@ export function ContributionGrid({
     return labels;
   }, [startDate]);
 
-  const labelHeight = showLabels ? 16 : 0;
-  const colWidth = cellSize + cellGap;
-  const rowHeight = cellSize + cellGap;
+  const labelWidth = showLabels ? 28 : 0;
 
   return (
-    <div className="flex flex-col w-full min-w-0">
-      {/* Month labels along top */}
-      {showLabels && (
-        <div className="flex" style={{ marginBottom: 2, height: labelHeight }}>
-          {monthLabels.map((label, i) => (
-            <div
-              key={`${label.month}-${i}`}
-              className="text-[9px] font-medium text-text-muted leading-none shrink-0"
-              style={{ width: label.col * colWidth }}
-            >
-              {label.month}
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="flex min-w-0">
-        {/* Weekday labels on left */}
+    <div ref={scrollRef} className="w-full overflow-x-auto">
+      <div className="inline-flex flex-col">
         {showLabels && (
-          <div className="flex flex-col shrink-0" style={{ marginRight: 4 }}>
-            {WEEKDAY_LABELS.map((label, i) => (
+          <div
+            className="relative"
+            style={{ marginLeft: labelWidth, marginBottom: 4, height: 16 }}
+          >
+            {monthLabels.map((label, i) => (
               <div
-                key={i}
-                className="text-[9px] font-medium text-text-muted flex items-center justify-end"
-                style={{ height: rowHeight, width: 12 }}
+                key={`${label.month}-${i}`}
+                className="absolute text-[10px] font-medium text-text-muted"
+                style={{
+                  left: label.col * (cellSize + cellGap),
+                }}
               >
-                {label}
+                {label.month}
               </div>
             ))}
           </div>
         )}
 
-        {/* Scrollable grid */}
-        <div
-          ref={scrollRef}
-          className="overflow-x-auto w-full min-w-0"
-        >
+        <div className="flex">
+          {showLabels && (
+            <div
+              className="flex flex-col justify-between shrink-0"
+              style={{
+                width: labelWidth,
+                height: 7 * (cellSize + cellGap) - cellGap,
+                paddingRight: 4,
+              }}
+            >
+              {WEEKDAY_LABELS.map((label, i) => (
+                <div
+                  key={i}
+                  className="text-[10px] font-medium text-text-muted flex items-center"
+                  style={{ height: cellSize }}
+                >
+                  {label}
+                </div>
+              ))}
+            </div>
+          )}
+
           <div
-            className="grid"
+            className="grid shrink-0"
             style={{
               gridTemplateColumns: `repeat(53, ${cellSize}px)`,
               gridTemplateRows: `repeat(7, ${cellSize}px)`,
@@ -149,7 +158,7 @@ export function ContributionGrid({
                 className={`relative rounded-sm cursor-default group ${LEVEL_CLASSES[cell.level]}`}
                 style={{ width: cellSize, height: cellSize }}
               >
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-surface-elevated px-2.5 py-1.5 text-xs text-text-primary shadow-md border border-border opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-surface-elevated px-2.5 py-1.5 text-xs text-text-primary shadow-md border border-border group-hover:block">
                   <span className="font-semibold">{formatTooltipDate(cell.dateStr)}</span>
                   <span className="ml-1.5 text-text-secondary">
                     {LEVEL_LABELS[cell.level]}
@@ -159,21 +168,24 @@ export function ContributionGrid({
             ))}
           </div>
         </div>
-      </div>
 
-      {showLegend && (
-        <div className="flex items-center gap-2 mt-2">
-          <span className="text-[10px] text-text-muted">Less</span>
-          {[0, 1, 2, 3, 4].map((level) => (
-            <div
-              key={level}
-              className={`rounded-sm ${LEVEL_CLASSES[level]}`}
-              style={{ width: cellSize, height: cellSize }}
-            />
-          ))}
-          <span className="text-[10px] text-text-muted">More</span>
-        </div>
-      )}
+        {showLegend && (
+          <div
+            className="flex items-center gap-2 mt-2"
+            style={{ marginLeft: labelWidth }}
+          >
+            <span className="text-[10px] text-text-muted">Less</span>
+            {[0, 1, 2, 3, 4].map((level) => (
+              <div
+                key={level}
+                className={`rounded-sm ${LEVEL_CLASSES[level]}`}
+                style={{ width: cellSize, height: cellSize }}
+              />
+            ))}
+            <span className="text-[10px] text-text-muted">More</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
