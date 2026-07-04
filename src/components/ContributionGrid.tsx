@@ -60,8 +60,8 @@ export function ContributionGrid({
       value: number;
     }[] = [];
 
-    for (let week = 0; week < 53; week++) {
-      for (let day = 0; day < 7; day++) {
+    for (let day = 0; day < 7; day++) {
+      for (let week = 0; week < 53; week++) {
         const date = addDays(startDate, week * 7 + day);
         const dateStr = formatDate(date);
         const value = logs.get(dateStr) ?? 0;
