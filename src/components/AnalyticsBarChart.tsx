@@ -147,7 +147,7 @@ export function AnalyticsBarChart({ habits, logs }: AnalyticsBarChartProps) {
         {dailyData.map((d) => {
           const heightPct = d.total > 0 ? (d.count / d.total) * 100 : 0;
           return (
-            <div key={d.date} className={`flex flex-col items-center gap-1 ${viewMode === 'month' ? 'min-w-[14px]' : 'flex-1'}`}>
+            <div key={d.date} className={`flex flex-col items-center gap-1 h-full ${viewMode === 'month' ? 'min-w-[14px]' : 'flex-1'}`}>
               <div className="w-full flex justify-center" style={{ height: '100%' }}>
                 <div
                   className="w-full max-w-[24px] rounded-t-md bg-primary/80 transition-all duration-300"
