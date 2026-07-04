@@ -98,7 +98,7 @@ export function ContributionGrid({
   const rowHeight = cellSize + cellGap;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full min-w-0">
       {/* Month labels along top */}
       {showLabels && (
         <div className="flex" style={{ marginBottom: 2, height: labelHeight }}>
@@ -114,7 +114,7 @@ export function ContributionGrid({
         </div>
       )}
 
-      <div className="flex">
+      <div className="flex min-w-0">
         {/* Weekday labels on left */}
         {showLabels && (
           <div className="flex flex-col shrink-0" style={{ marginRight: 4 }}>
@@ -133,7 +133,7 @@ export function ContributionGrid({
         {/* Scrollable grid */}
         <div
           ref={scrollRef}
-          className="overflow-x-auto"
+          className="overflow-x-auto w-full min-w-0"
         >
           <div
             className="grid"
