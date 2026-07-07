@@ -4,6 +4,19 @@ A high-density, offline-first Progressive Web App for habit tracking with a GitH
 
 **Live Demo:** https://scmlewis.github.io/gridify/
 
+<div align="center">
+
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
+![Dexie.js](https://img.shields.io/badge/Dexie.js-4-018EFF?logo=javascript&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?logo=vitest&logoColor=white)
+![OxLint](https://img.shields.io/badge/OxLint-Linting-FA9D3E?logo=rust&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?logo=pwa&logoColor=white)
+
+</div>
+
 ---
 
 ## Features
