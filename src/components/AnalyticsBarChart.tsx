@@ -143,28 +143,57 @@ export function AnalyticsBarChart({ habits, logs }: AnalyticsBarChartProps) {
       </div>
 
       {/* Bar chart */}
-      <div className={`flex items-end gap-1 ${viewMode === 'month' ? 'overflow-x-auto pb-1' : ''}`} style={{ height: viewMode === 'week' ? 100 : 80 }}>
-        {dailyData.map((d) => {
-          const heightPct = d.total > 0 ? (d.count / d.total) * 100 : 0;
-          return (
-            <div key={d.date} className={`flex flex-col items-center gap-1 h-full ${viewMode === 'month' ? 'min-w-[14px]' : 'flex-1'}`}>
-              <div className="w-full flex justify-center" style={{ height: '100%' }}>
-                <div
-                  className="w-full max-w-[24px] rounded-t-md bg-primary/80 transition-all duration-300"
-                  style={{ height: `${heightPct}%`, minHeight: heightPct > 0 ? 4 : 0 }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <div className={`flex gap-1 ${viewMode === 'month' ? 'overflow-x-hidden' : ''}`}>
-        {dailyData.map((d) => (
-          <div key={d.date} className={`flex justify-center ${viewMode === 'month' ? 'min-w-[14px]' : 'flex-1'}`}>
-            <span className="text-[9px] text-text-muted">{d.label}</span>
+      {viewMode === 'month' ? (
+        <div className="overflow-x-auto pb-1">
+          <div className="flex items-end gap-1" style={{ height: 80, minWidth: dailyData.length * 16 }}>
+            {dailyData.map((d) => {
+              const heightPct = d.total > 0 ? (d.count / d.total) * 100 : 0;
+              return (
+                <div key={d.date} className="flex flex-col items-center gap-1 h-full min-w-[14px]">
+                  <div className="w-full flex justify-center" style={{ height: '100%' }}>
+                    <div
+                      className="w-full max-w-[24px] rounded-t-md bg-primary/80 transition-all duration-300"
+                      style={{ height: `${heightPct}%`, minHeight: heightPct > 0 ? 4 : 0 }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        ))}
-      </div>
+          <div className="flex gap-1" style={{ minWidth: dailyData.length * 16 }}>
+            {dailyData.map((d) => (
+              <div key={d.date} className="flex justify-center min-w-[14px]">
+                <span className="text-[9px] text-text-muted">{d.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="flex items-end gap-1" style={{ height: 100 }}>
+            {dailyData.map((d) => {
+              const heightPct = d.total > 0 ? (d.count / d.total) * 100 : 0;
+              return (
+                <div key={d.date} className="flex flex-col items-center gap-1 h-full flex-1">
+                  <div className="w-full flex justify-center" style={{ height: '100%' }}>
+                    <div
+                      className="w-full max-w-[24px] rounded-t-md bg-primary/80 transition-all duration-300"
+                      style={{ height: `${heightPct}%`, minHeight: heightPct > 0 ? 4 : 0 }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex gap-1">
+            {dailyData.map((d) => (
+              <div key={d.date} className="flex justify-center flex-1">
+                <span className="text-[9px] text-text-muted">{d.label}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Per-habit breakdown */}
       {perHabitData.length > 0 && (
