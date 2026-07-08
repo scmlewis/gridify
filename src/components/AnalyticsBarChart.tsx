@@ -149,13 +149,11 @@ export function AnalyticsBarChart({ habits, logs }: AnalyticsBarChartProps) {
             {dailyData.map((d) => {
               const heightPct = d.total > 0 ? (d.count / d.total) * 100 : 0;
               return (
-                <div key={d.date} className="flex flex-col items-center gap-1 h-full min-w-[14px]">
-                  <div className="w-full flex justify-center" style={{ height: '100%' }}>
-                    <div
-                      className="w-full max-w-[24px] rounded-t-md bg-primary/80 transition-all duration-300"
-                      style={{ height: `${heightPct}%`, minHeight: heightPct > 0 ? 4 : 0 }}
-                    />
-                  </div>
+                <div key={d.date} className="flex flex-col items-center justify-end min-w-[14px] h-full">
+                  <div
+                    className="w-full max-w-[24px] rounded-t-md bg-primary/80 transition-all duration-300"
+                    style={{ height: `${heightPct}%`, minHeight: heightPct > 0 ? 4 : 0 }}
+                  />
                 </div>
               );
             })}
@@ -174,13 +172,11 @@ export function AnalyticsBarChart({ habits, logs }: AnalyticsBarChartProps) {
             {dailyData.map((d) => {
               const heightPct = d.total > 0 ? (d.count / d.total) * 100 : 0;
               return (
-                <div key={d.date} className="flex flex-col items-center gap-1 h-full flex-1">
-                  <div className="w-full flex justify-center" style={{ height: '100%' }}>
-                    <div
-                      className="w-full max-w-[24px] rounded-t-md bg-primary/80 transition-all duration-300"
-                      style={{ height: `${heightPct}%`, minHeight: heightPct > 0 ? 4 : 0 }}
-                    />
-                  </div>
+                <div key={d.date} className="flex flex-col items-center justify-end h-full flex-1">
+                  <div
+                    className="w-full max-w-[24px] rounded-t-md bg-primary/80 transition-all duration-300"
+                    style={{ height: `${heightPct}%`, minHeight: heightPct > 0 ? 4 : 0 }}
+                  />
                 </div>
               );
             })}
