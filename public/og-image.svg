@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Gridify habit tracker">
+  <rect width="1200" height="630" fill="#111827"/>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#111827"/>
+      <stop offset="1" stop-color="#0b1220"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Contribution grid motif -->
+  <g transform="translate(720, 150)">
+    <!-- 7 rows x 11 cols of rounded squares -->
+    <!-- Row 0 -->
+    <g>
+      <rect x="0" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="48" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+      <rect x="96" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="144" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="192" y="0" width="34" height="34" rx="7" fill="#059669"/>
+      <rect x="240" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="288" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="336" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="384" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+      <rect x="432" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="480" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+    </g>
+    <!-- Row 1 -->
+    <g transform="translate(0, 48)">
+      <rect x="0" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="48" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="96" y="0" width="34" height="34" rx="7" fill="#059669"/>
+      <rect x="144" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="192" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="240" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+      <rect x="288" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="336" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="384" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="432" y="0" width="34" height="34" rx="7" fill="#059669"/>
+      <rect x="480" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+    </g>
+    <!-- Row 2 -->
+    <g transform="translate(0, 96)">
+      <rect x="0" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="48" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+      <rect x="96" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="144" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="192" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+      <rect x="240" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="288" y="0" width="34" height="34" rx="7" fill="#059669"/>
+      <rect x="336" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="384" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="432" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="480" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+    </g>
+    <!-- Row 3 -->
+    <g transform="translate(0, 144)">
+      <rect x="0" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+      <rect x="48" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="96" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="144" y="0" width="34" height="34" rx="7" fill="#059669"/>
+      <rect x="192" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="240" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="288" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="336" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+      <rect x="384" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="432" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="480" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+    </g>
+    <!-- Row 4 -->
+    <g transform="translate(0, 192)">
+      <rect x="0" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="48" y="0" width="34" height="34" rx="7" fill="#059669"/>
+      <rect x="96" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="144" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="192" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+      <rect x="240" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="288" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="336" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="384" y="0" width="34" height="34" rx="7" fill="#059669"/>
+      <rect x="432" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="480" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+    </g>
+    <!-- Row 5 -->
+    <g transform="translate(0, 240)">
+      <rect x="0" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="48" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="96" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+      <rect x="144" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="192" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="240" y="0" width="34" height="34" rx="7" fill="#059669"/>
+      <rect x="288" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="336" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="384" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="432" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+      <rect x="480" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+    </g>
+    <!-- Row 6 -->
+    <g transform="translate(0, 288)">
+      <rect x="0" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="48" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="96" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="144" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+      <rect x="192" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+      <rect x="240" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="288" y="0" width="34" height="34" rx="7" fill="#059669"/>
+      <rect x="336" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="384" y="0" width="34" height="34" rx="7" fill="#10b981"/>
+      <rect x="432" y="0" width="34" height="34" rx="7" fill="#1f2937"/>
+      <rect x="480" y="0" width="34" height="34" rx="7" fill="#34d399"/>
+    </g>
+  </g>
+
+  <!-- Wordmark + tagline -->
+  <text x="80" y="250" font-family="'Segoe UI', system-ui, -apple-system, Arial, sans-serif" font-size="120" font-weight="800" fill="#f9fafb" letter-spacing="-2">Gridify</text>
+  <rect x="84" y="290" width="120" height="10" rx="5" fill="#10b981"/>
+  <text x="84" y="360" font-family="'Segoe UI', system-ui, -apple-system, Arial, sans-serif" font-size="38" font-weight="500" fill="#9ca3af">Track habits. Build streaks.</text>
+  <text x="84" y="410" font-family="'Segoe UI', system-ui, -apple-system, Arial, sans-serif" font-size="38" font-weight="500" fill="#9ca3af">Stay consistent.</text>
+</svg>

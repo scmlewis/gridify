@@ -34,6 +34,8 @@ jobs:
         run: npm install
 
       - name: Build
+        env:
+          VITE_SITE_URL: https://${{ github.repository_owner }}.github.io/gridify
         run: npm run build
 
       - name: Setup Pages

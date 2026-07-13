@@ -26,7 +26,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-surface-base pb-[var(--nav-h)]">
-      <div className="fixed top-0 inset-x-0 z-30 bg-surface-base border-b border-border/40">
+      <header className="fixed top-0 inset-x-0 z-30 bg-surface-base border-b border-border/40">
         <div className="mx-auto max-w-4xl px-4 pt-6">
           <ErrorBoundary>
             <Header
@@ -35,8 +35,8 @@ function App() {
             />
           </ErrorBoundary>
         </div>
-      </div>
-      <div className="mx-auto max-w-4xl px-4 pt-20 space-y-4">
+      </header>
+      <main className="mx-auto max-w-4xl px-4 pt-20 space-y-4">
         <ErrorBoundary>
           {activeTab === 'today' && (
             <TodayTab onRefresh={setRefreshTrigger} refreshKey={refreshTrigger} onShowCategories={() => setShowCategories(true)} tabDirection={tabDirection} />
@@ -51,7 +51,7 @@ function App() {
         {showCategories && (
           <CategoryManagement isOpen={showCategories} onClose={() => setShowCategories(false)} />
         )}
-      </div>
+      </main>
       <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       <UpdatePrompt />
     </div>
