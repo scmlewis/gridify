@@ -204,6 +204,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh, tabDirection =
             key={habit.id}
             habit={habit}
             onArchived={() => _onRefresh(n => n + 1)}
+            onCheckIn={() => _onRefresh(n => n + 1)}
             onTap={setSelectedHabit}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}

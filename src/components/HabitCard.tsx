@@ -152,6 +152,18 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
     try {
       if (newChecked) {
         await logCheckIn(habit.id, todayStr, 1);
+      } else {
+        await removeCheckIn(habit.id, todayStr);
+      }
+    } catch (err) {
+      console.error('Failed to toggle check-in:', err);
+      setTodayChecked(prevChecked);
+      setLogs(prevLogs);
+      return;
+    }
+
+    try {
+      if (newChecked) {
         const result = await processCheckIn(calculateStreak(new Map(logs).set(todayStr, 1)));
         if (result.newAchievements.length > 0) {
           setToast(null);
@@ -163,18 +175,13 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
             message: `Level up! You're now level ${result.newLevel}`,
           });
         }
-      } else {
-        await removeCheckIn(habit.id, todayStr);
       }
       if (newStreak > streak) {
         setStreakAnimating(true);
         setTimeout(() => setStreakAnimating(false), 300);
       }
     } catch (err) {
-      console.error('Failed to toggle check-in:', err);
-      // Rollback optimistic update
-      setTodayChecked(prevChecked);
-      setLogs(prevLogs);
+      console.error('Gamification processing failed:', err);
     }
     onCheckIn?.();
   }, [todayChecked, logs, todayStr, habit.id, onCheckIn, streak]);
