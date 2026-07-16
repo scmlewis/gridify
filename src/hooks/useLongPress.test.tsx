@@ -5,7 +5,7 @@ import { useLongPress } from './useLongPress';
 function createPointerEvent(
   type: 'pointerdown' | 'pointermove' | 'pointerup' | 'pointercancel',
   overrides: Partial<PointerEventInit> = {},
-): PointerEvent {
+): React.PointerEvent<HTMLDivElement> {
   return new PointerEvent(type, {
     bubbles: true,
     cancelable: true,
@@ -14,7 +14,7 @@ function createPointerEvent(
     pointerId: 1,
     pointerType: 'touch',
     ...overrides,
-  });
+  }) as unknown as React.PointerEvent<HTMLDivElement>;
 }
 
 describe('useLongPress', () => {

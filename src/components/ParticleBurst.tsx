@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { useState, useEffect, useId } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Particle {
   id: number;

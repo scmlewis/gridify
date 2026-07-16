@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, act } from '@testing-library/react';
 import { AnimatedRing } from './AnimatedRing';
 
 describe('AnimatedRing', () => {

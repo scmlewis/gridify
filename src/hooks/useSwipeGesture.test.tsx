@@ -5,7 +5,7 @@ import { useSwipeGesture } from './useSwipeGesture';
 function createPointerEvent(
   type: 'pointerdown' | 'pointermove' | 'pointerup' | 'pointercancel',
   overrides: Partial<PointerEventInit> = {},
-): PointerEvent {
+): React.PointerEvent<HTMLDivElement> {
   return new PointerEvent(type, {
     bubbles: true,
     cancelable: true,
@@ -14,39 +14,7 @@ function createPointerEvent(
     pointerId: 1,
     pointerType: 'touch',
     ...overrides,
-  });
-}
-
-function simulateSwipe(
-  element: HTMLElement,
-  startX: number,
-  endX: number,
-  steps = 10,
-) {
-  const stepSize = (endX - startX) / steps;
-
-  act(() => {
-    element.dispatchEvent(
-      createPointerEvent('pointerdown', { clientX: startX, clientY: 100 }),
-    );
-  });
-
-  for (let i = 1; i <= steps; i++) {
-    act(() => {
-      element.dispatchEvent(
-        createPointerEvent('pointermove', {
-          clientX: startX + stepSize * i,
-          clientY: 100,
-        }),
-      );
-    });
-  }
-
-  act(() => {
-    element.dispatchEvent(
-      createPointerEvent('pointerup', { clientX: endX, clientY: 100 }),
-    );
-  });
+  }) as unknown as React.PointerEvent<HTMLDivElement>;
 }
 
 describe('useSwipeGesture', () => {

@@ -1,12 +1,12 @@
 import { motion } from 'motion/react';
-import { useRef, useCallback, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { useCallback, useState } from 'react';
 import { useSwipeGesture } from '../hooks/useSwipeGesture';
 
 interface SwipeableHabitRowProps {
   id: string;
   name: string;
   icon: string;
-  color: string;
+  color?: string;
   isCompleted: boolean;
   streak?: number;
   onToggle: (id: string) => void;
@@ -19,12 +19,10 @@ export function SwipeableHabitRow({
   id,
   name,
   icon,
-  color,
   isCompleted,
   streak,
   onToggle,
   onSwipeDelete,
-  onSwipeFreeze,
 }: SwipeableHabitRowProps) {
   const [swipeProgress, setSwipeProgress] = useState(0);
 
@@ -44,8 +42,6 @@ export function SwipeableHabitRow({
     onSwipeProgress: setSwipeProgress,
     threshold: 0.3,
   });
-
-  const x = state.isSwiping ? state.deltaX : swipeProgress > 0 ? 0 : 0;
 
   return (
     <div

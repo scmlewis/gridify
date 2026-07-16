@@ -1,0 +1,593 @@
+{
+  "nodes": [
+    {
+      "id": "BLUEPRINT",
+      "label": "Technical Specification & Coding Agent Blueprint",
+      "file_type": "document",
+      "source_file": "BLUEPRINT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "README",
+      "label": "Gridify README",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "progressive_simplicity_redesign_plan",
+      "label": "Progressive Simplicity Redesign Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-07-01-progressive-simplicity-redesign-plan.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "premium_interactions_plan",
+      "label": "Premium Interactions & Motion Design Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-07-03-premium-interactions.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "grid_ux_fixes_plan",
+      "label": "Grid UX Fixes Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-07-04-grid-ux-fixes.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "gridify_2_enhancement_plan",
+      "label": "Gridify 2.0 Enhancement Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-07-04-gridify-2-enhancement-plan.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "progressive_simplicity_redesign_spec",
+      "label": "Progressive Simplicity Redesign Design Spec",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-07-01-progressive-simplicity-redesign-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "premium_interactions_spec",
+      "label": "Premium Interactions & Motion Design Spec",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-07-03-premium-interactions-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "index_html",
+      "label": "index.html Entry Point",
+      "file_type": "code",
+      "source_file": "index.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "favicon_svg",
+      "label": "App Favicon",
+      "file_type": "image",
+      "source_file": "public/favicon.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "icons_svg",
+      "label": "Social Media Icons Sprite",
+      "file_type": "image",
+      "source_file": "public/icons.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ContributionGrid_rationale",
+      "label": "Contribution Grid",
+      "file_type": "rationale",
+      "source_file": "BLUEPRINT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "HabitSchema_rationale",
+      "label": "Habit Schema",
+      "file_type": "rationale",
+      "source_file": "BLUEPRINT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "HabitLogSchema_rationale",
+      "label": "HabitLog Schema",
+      "file_type": "rationale",
+      "source_file": "BLUEPRINT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "CategorySystem_rationale",
+      "label": "Category System",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-07-01-progressive-simplicity-redesign-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "MotionTokens_rationale",
+      "label": "Motion Tokens",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-07-03-premium-interactions-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ProgressiveSimplicity_rationale",
+      "label": "Progressive Simplicity",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-07-01-progressive-simplicity-redesign-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "TwoTabNavigation_rationale",
+      "label": "Two-Tab Navigation",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-07-01-progressive-simplicity-redesign-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "GridVerticalOrientation_rationale",
+      "label": "Grid Vertical Orientation",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/2026-07-04-grid-ux-fixes.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ObservationsEngine_rationale",
+      "label": "Observations Engine",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/2026-07-04-gridify-2-enhancement-plan.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "StreakFreezeValidation_rationale",
+      "label": "Streak Freeze Validation",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/2026-07-04-grid-ux-fixes.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "GridifyProductPhilosophy_rationale",
+      "label": "Gridify Product Philosophy",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/2026-07-04-gridify-2-enhancement-plan.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "GamificationSystem_rationale",
+      "label": "Gamification System",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-07-01-progressive-simplicity-redesign-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "progressive_simplicity_redesign_plan",
+      "target": "progressive_simplicity_redesign_spec",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-01-progressive-simplicity-redesign-plan.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "premium_interactions_plan",
+      "target": "premium_interactions_spec",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-03-premium-interactions.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "BLUEPRINT",
+      "target": "README",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "BLUEPRINT.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "BLUEPRINT",
+      "target": "ContributionGrid_rationale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "BLUEPRINT.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "BLUEPRINT",
+      "target": "HabitSchema_rationale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "BLUEPRINT.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "BLUEPRINT",
+      "target": "HabitLogSchema_rationale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "BLUEPRINT.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "progressive_simplicity_redesign_plan",
+      "target": "CategorySystem_rationale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-01-progressive-simplicity-redesign-plan.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "progressive_simplicity_redesign_plan",
+      "target": "TwoTabNavigation_rationale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-01-progressive-simplicity-redesign-plan.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "premium_interactions_plan",
+      "target": "MotionTokens_rationale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-03-premium-interactions.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "grid_ux_fixes_plan",
+      "target": "GridVerticalOrientation_rationale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-04-grid-ux-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "grid_ux_fixes_plan",
+      "target": "StreakFreezeValidation_rationale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-04-grid-ux-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gridify_2_enhancement_plan",
+      "target": "ObservationsEngine_rationale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-04-gridify-2-enhancement-plan.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gridify_2_enhancement_plan",
+      "target": "GridifyProductPhilosophy_rationale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-04-gridify-2-enhancement-plan.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "progressive_simplicity_redesign_spec",
+      "target": "GamificationSystem_rationale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-01-progressive-simplicity-redesign-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "index_html",
+      "target": "favicon_svg",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "index.html",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "premium_interactions_plan",
+      "target": "progressive_simplicity_redesign_plan",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/2026-07-03-premium-interactions.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "grid_ux_fixes_plan",
+      "target": "progressive_simplicity_redesign_plan",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/2026-07-04-grid-ux-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gridify_2_enhancement_plan",
+      "target": "progressive_simplicity_redesign_plan",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/2026-07-04-gridify-2-enhancement-plan.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "gridify_2_enhancement_plan",
+      "target": "grid_ux_fixes_plan",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/2026-07-04-gridify-2-enhancement-plan.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "progressive_simplicity_redesign_spec",
+      "target": "premium_interactions_spec",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/superpowers/specs/2026-07-01-progressive-simplicity-redesign-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "GridVerticalOrientation_rationale",
+      "target": "ContributionGrid_rationale",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-04-grid-ux-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "StreakFreezeValidation_rationale",
+      "target": "HabitLogSchema_rationale",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-04-grid-ux-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "MotionTokens_rationale",
+      "target": "premium_interactions_plan",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-03-premium-interactions-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "TwoTabNavigation_rationale",
+      "target": "progressive_simplicity_redesign_plan",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-01-progressive-simplicity-redesign-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ProgressiveSimplicity_rationale",
+      "target": "TwoTabNavigation_rationale",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-01-progressive-simplicity-redesign-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "GridifyProductPhilosophy_rationale",
+      "target": "ContributionGrid_rationale",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-04-gridify-2-enhancement-plan.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ObservationsEngine_rationale",
+      "target": "ContributionGrid_rationale",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-04-gridify-2-enhancement-plan.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "GamificationSystem_rationale",
+      "target": "HabitLogSchema_rationale",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-01-progressive-simplicity-redesign-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "BLUEPRINT",
+      "target": "index_html",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "BLUEPRINT.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "premium_interactions_motion_design",
+      "label": "Premium Interactions Motion Design System",
+      "nodes": [
+        "premium_interactions_plan",
+        "premium_interactions_spec",
+        "MotionTokens_rationale"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.9,
+      "source_file": "docs/superpowers/plans/2026-07-03-premium-interactions.md"
+    },
+    {
+      "id": "gridify_roadmap",
+      "label": "Gridify Development Roadmap",
+      "nodes": [
+        "progressive_simplicity_redesign_plan",
+        "premium_interactions_plan",
+        "grid_ux_fixes_plan",
+        "gridify_2_enhancement_plan"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/2026-07-04-gridify-2-enhancement-plan.md"
+    },
+    {
+      "id": "grid_concept_system",
+      "label": "Contribution Grid System",
+      "nodes": [
+        "ContributionGrid_rationale",
+        "GridVerticalOrientation_rationale",
+        "grid_ux_fixes_plan"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "docs/superpowers/plans/2026-07-04-grid-ux-fixes.md"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
