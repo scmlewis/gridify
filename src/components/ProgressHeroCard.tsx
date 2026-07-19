@@ -27,7 +27,7 @@ export function ProgressHeroCard({ habitsDoneToday, totalHabits, level }: Progre
           : "Keep going!";
 
   return (
-    <div className="relative overflow-hidden rounded-3xl p-6 border border-white/5 bg-[#111] shadow-2xl">
+    <div className="relative overflow-hidden rounded-3xl p-6 border border-white/5 bg-surface-card shadow-2xl">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none" />
       <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
       <div className="relative z-10 flex items-center justify-between gap-6">

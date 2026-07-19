@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Plus, Target } from 'lucide-react';
 import { useHabits } from '../hooks/useHabits';
-import { getUserProfile, getLogsForDate, getAllLogsForDateRange } from '../db';
+import { getUserProfile, getLogsForDate, getAllLogsForDateRange, getCategories } from '../db';
 import { WeekStrip } from './WeekStrip';
 import { ProgressHeroCard } from './ProgressHeroCard';
 import { EmptyState } from './EmptyState';
@@ -10,7 +10,7 @@ import { OnboardingFlow } from './OnboardingFlow';
 import { AddHabitSheet } from './AddHabitSheet';
 import { HabitDetailSheet } from './HabitDetailSheet';
 import { formatDate } from '../utils/date-utils';
-import type { CreateHabitOptions } from '../db';
+import type { CreateHabitOptions, Category } from '../db';
 import type { Habit } from '../types';
 
 interface TodayTabProps {
@@ -29,12 +29,14 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories, 
   const [weekLogs, setWeekLogs] = useState<Map<string, number>>(new Map());
   const [dragOverHabitId, setDragOverHabitId] = useState<string | null>(null);
   const [level, setLevel] = useState(1);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     getUserProfile().then(p => {
       setOnboardingCompleted(p.onboardingCompleted);
       setLevel(p.level);
     });
+    getCategories().then(setCategories);
   }, [refreshKey]);
 
   useEffect(() => {
@@ -149,6 +151,14 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories, 
     });
   }, [habits]);
 
+  const categoryMap = useMemo(() => {
+    const map = new Map<string, Category>();
+    for (const cat of categories) {
+      map.set(cat.name, cat);
+    }
+    return map;
+  }, [categories]);
+
   if (onboardingCompleted === false) {
     return <OnboardingFlow onComplete={handleOnboardingComplete} />;
   }
@@ -191,29 +201,34 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories, 
             <WeekStrip logs={weekLogs} />
           </div>
           <div className="md:col-span-7 space-y-4">
-            {sortedCategories.map(([category, catHabits], index) => (
-              <CategoryGroup
-                key={category}
-                categoryName={category}
-                habits={catHabits}
-                onCheckIn={() => _onRefresh(n => n + 1)}
-                onHabitTap={setSelectedHabit}
-                onDragStart={handleDragStart}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                refreshKey={refreshKey}
-                dragOverHabitId={dragOverHabitId}
-                onDragLeave={handleDragLeave}
-                className="animate-group-enter"
-                style={{ animationDelay: `${index * 60}ms` }}
-              />
-            ))}
+            {sortedCategories.map(([category, catHabits], index) => {
+              const catData = categoryMap.get(category);
+              return (
+                <CategoryGroup
+                  key={category}
+                  categoryName={category}
+                  categoryIcon={catData?.icon}
+                  categoryColor={catData?.color}
+                  habits={catHabits}
+                  onCheckIn={() => _onRefresh(n => n + 1)}
+                  onHabitTap={setSelectedHabit}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  refreshKey={refreshKey}
+                  dragOverHabitId={dragOverHabitId}
+                  onDragLeave={handleDragLeave}
+                  className="animate-group-enter"
+                  style={{ animationDelay: `${index * 60}ms` }}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
       <button
         onClick={() => setShowAddSheet(true)}
-        className="fixed bottom-[calc(var(--nav-h)+0.75rem)] right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
+        className="fixed bottom-6 right-6 md:bottom-auto md:top-1/2 md:-translate-y-1/2 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
         title="Add new habit"
       >
         <Plus className="h-6 w-6" />

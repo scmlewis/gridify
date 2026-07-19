@@ -25,9 +25,9 @@ export function WeekStrip({ logs, onDayTap }: WeekStripProps) {
   }, [logs]);
 
   return (
-    <div className="rounded-3xl bg-[#111] border border-white/5 p-5 shadow-2xl">
+    <div className="rounded-3xl bg-surface-card border border-white/5 p-5 shadow-2xl">
       <div className="flex items-center justify-between mb-4 px-1">
-        <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Week Review</span>
+        <span className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-widest">Week Review</span>
       </div>
       <div className="grid grid-cols-7 gap-2">
         {days.map((d) => {
@@ -43,7 +43,7 @@ export function WeekStrip({ logs, onDayTap }: WeekStripProps) {
               }`}
             >
               <span className={`text-[10px] font-mono font-bold uppercase tracking-wider mb-1 ${
-                d.isToday ? 'text-primary' : 'text-slate-500'
+                d.isToday ? 'text-primary' : 'text-text-muted'
               }`}>
                 {d.day}
               </span>
@@ -52,7 +52,7 @@ export function WeekStrip({ logs, onDayTap }: WeekStripProps) {
                   ? 'bg-primary text-surface-base'
                   : hasCheckIn
                     ? 'bg-primary/20 text-primary'
-                    : 'bg-white/5 text-slate-400'
+                    : 'bg-white/5 text-text-muted'
               }`}>
                 {d.date.getDate()}
               </div>

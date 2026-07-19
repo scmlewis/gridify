@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { getCategories, updateCategories } from '../db';
+import { IconPicker } from './IconPicker';
 import type { Category } from '../db';
 
 interface CategoryManagementProps {
@@ -18,9 +19,11 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
   const [categories, setCategories] = useState<Category[]>([]);
   const [newName, setNewName] = useState('');
   const [newColor, setNewColor] = useState(PRESET_COLORS[0]);
+  const [newIcon, setNewIcon] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editColor, setEditColor] = useState('');
+  const [editIcon, setEditIcon] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -42,10 +45,11 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
   const handleAdd = async () => {
     const trimmed = newName.trim();
     if (!trimmed) return;
-    const newCat: Category = { id: nanoid(), name: trimmed, color: newColor };
+    const newCat: Category = { id: nanoid(), name: trimmed, color: newColor, icon: newIcon || undefined };
     await save([...categories, newCat]);
     setNewName('');
     setNewColor(PRESET_COLORS[0]);
+    setNewIcon('');
   };
 
   const handleDelete = async (id: string) => {
@@ -56,7 +60,7 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
   const handleRename = async (id: string) => {
     const trimmed = editName.trim();
     if (!trimmed) return;
-    await save(categories.map((c) => (c.id === id ? { ...c, name: trimmed, color: editColor } : c)));
+    await save(categories.map((c) => (c.id === id ? { ...c, name: trimmed, color: editColor, icon: editIcon || undefined } : c)));
     setEditingId(null);
   };
 
@@ -78,7 +82,7 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
         </div>
 
         {/* Add new category */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex gap-2 items-center">
             <input
               value={newName}
@@ -94,20 +98,27 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
               Add
             </button>
           </div>
-          <div className="flex flex-wrap gap-1.5">
-            {PRESET_COLORS.map((c) => (
-              <button
-                key={c}
-                title={c}
-                onClick={() => setNewColor(c)}
-                className="h-5 w-5 rounded-full transition-transform hover:scale-110"
-                style={{
-                  backgroundColor: c,
-                  outline: newColor === c ? '2px solid white' : 'none',
-                  outlineOffset: '1px',
-                }}
-              />
-            ))}
+          <div>
+            <span className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-widest mb-1.5 block">Icon</span>
+            <IconPicker value={newIcon} onChange={setNewIcon} />
+          </div>
+          <div>
+            <span className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-widest mb-1.5 block">Color</span>
+            <div className="flex flex-wrap gap-1.5">
+              {PRESET_COLORS.map((c) => (
+                <button
+                  key={c}
+                  title={c}
+                  onClick={() => setNewColor(c)}
+                  className="h-6 w-6 rounded-full transition-transform hover:scale-110"
+                  style={{
+                    backgroundColor: c,
+                    outline: newColor === c ? '2px solid white' : 'none',
+                    outlineOffset: '2px',
+                  }}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
@@ -119,7 +130,7 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
           {categories.map((cat) => (
             <li key={cat.id} className="flex items-center gap-2 rounded-lg bg-surface-elevated px-3 py-2">
               {editingId === cat.id ? (
-                <div className="w-full space-y-2">
+                <div className="w-full space-y-3">
                   <div className="flex items-center gap-2">
                     <input
                       autoFocus
@@ -129,25 +140,32 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
                         if (e.key === 'Enter') handleRename(cat.id);
                         if (e.key === 'Escape') setEditingId(null);
                       }}
-                      className="flex-1 rounded bg-surface-card border border-border px-2 py-0.5 text-sm text-text-primary focus:outline-none focus:border-primary"
+                      className="flex-1 rounded bg-surface-card border border-border px-2 py-1 text-sm text-text-primary focus:outline-none focus:border-primary"
                     />
                     <button onClick={() => handleRename(cat.id)} className="text-xs text-primary font-semibold hover:opacity-80">Save</button>
                     <button onClick={() => setEditingId(null)} className="text-xs text-text-muted hover:opacity-80">Cancel</button>
                   </div>
-                  <div className="flex flex-wrap gap-1">
-                    {PRESET_COLORS.map((c) => (
-                      <button
-                        key={c}
-                        title={c}
-                        onClick={() => setEditColor(c)}
-                        className="h-4 w-4 rounded-full transition-transform hover:scale-110"
-                        style={{
-                          backgroundColor: c,
-                          outline: editColor === c ? '2px solid white' : 'none',
-                          outlineOffset: '1px',
-                        }}
-                      />
-                    ))}
+                  <div>
+                    <span className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-widest mb-1 block">Icon</span>
+                    <IconPicker value={editIcon} onChange={setEditIcon} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-widest mb-1 block">Color</span>
+                    <div className="flex flex-wrap gap-1">
+                      {PRESET_COLORS.map((c) => (
+                        <button
+                          key={c}
+                          title={c}
+                          onClick={() => setEditColor(c)}
+                          className="h-5 w-5 rounded-full transition-transform hover:scale-110"
+                          style={{
+                            backgroundColor: c,
+                            outline: editColor === c ? '2px solid white' : 'none',
+                            outlineOffset: '2px',
+                          }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -155,7 +173,7 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
                   <span className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
                   <span className="flex-1 text-sm text-text-primary">{cat.name}</span>
                   <button
-                    onClick={() => { setEditingId(cat.id); setEditName(cat.name); setEditColor(cat.color); }}
+                    onClick={() => { setEditingId(cat.id); setEditName(cat.name); setEditColor(cat.color); setEditIcon(cat.icon || ''); }}
                     className="text-xs text-text-muted hover:text-primary transition-colors"
                   >
                     Edit

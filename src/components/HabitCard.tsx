@@ -242,7 +242,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
         onDragEnd={handleDragEnd}
         onDragLeave={onDragLeave}
         onClick={() => onTap?.(habit)}
-        className={`relative overflow-hidden rounded-3xl bg-[#111] p-5 border border-white/5 transition-all duration-200 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 active:scale-[0.98] shadow-xl ${onTap ? 'cursor-pointer' : ''} ${isDragging ? 'opacity-50 scale-[0.98]' : ''} ${isDropTarget ? 'ring-2 ring-primary/50' : ''}`}
+        className={`relative overflow-hidden rounded-3xl bg-surface-card p-5 border border-white/5 transition-all duration-200 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 active:scale-[0.98] shadow-xl ${onTap ? 'cursor-pointer' : ''} ${isDragging ? 'opacity-50 scale-[0.98]' : ''} ${isDropTarget ? 'ring-2 ring-primary/50' : ''}`}
         style={{ borderLeft: `3px solid ${habit.color ?? '#10b981'}` }}
       >
         <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-primary/5 blur-2xl pointer-events-none" />

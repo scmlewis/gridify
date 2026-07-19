@@ -68,7 +68,7 @@ export function SummaryCard({ habits, refreshKey }: SummaryCardProps) {
   const activeHabits = habits.filter((h) => !h.archived);
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-[#111] p-6 border border-white/5 shadow-2xl">
+    <div className="relative overflow-hidden rounded-3xl bg-surface-card p-6 border border-white/5 shadow-2xl">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
       <div className="relative z-10">
         <div className="mb-4 flex items-center justify-between">

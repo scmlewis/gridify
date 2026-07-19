@@ -90,10 +90,10 @@ export function AnalyticsTab({ refreshTrigger, tabDirection = 'right' }: Analyti
       <div className="space-y-6">
         <ObservationCard observations={observations} title="Overview" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="rounded-3xl bg-[#111] border border-white/5 p-6 shadow-2xl">
+          <div className="rounded-3xl bg-surface-card border border-white/5 p-6 shadow-2xl">
             <AnalyticsBarChart habits={habits} logs={logs} />
           </div>
-          <div className="rounded-3xl bg-[#111] border border-white/5 p-6 shadow-2xl">
+          <div className="rounded-3xl bg-surface-card border border-white/5 p-6 shadow-2xl">
             <InsightsPanel habits={habits} habitGrids={habitGrids} globalLogs={globalLogs} />
           </div>
         </div>

@@ -20,6 +20,8 @@ function saveCollapsedCategories(collapsed: Set<string>) {
 interface CategoryGroupProps {
   categoryName: string;
   habits: Habit[];
+  categoryIcon?: string;
+  categoryColor?: string;
   onCheckIn?: () => void;
   onHabitTap?: (habit: Habit) => void;
   onDragStart?: (e: React.DragEvent, habitId: string) => void;
@@ -35,6 +37,8 @@ interface CategoryGroupProps {
 export function CategoryGroup({
   categoryName,
   habits,
+  categoryIcon,
+  categoryColor,
   onCheckIn,
   onHabitTap,
   onDragStart,
@@ -65,20 +69,23 @@ export function CategoryGroup({
   const displayName = categoryName === 'uncategorized' ? 'Uncategorized' : categoryName;
 
   return (
-    <div className={`rounded-3xl bg-[#111] border border-white/5 overflow-hidden shadow-xl ${className}`} style={style}>
+    <div className={`rounded-3xl bg-surface-card border border-white/5 overflow-hidden shadow-xl ${className}`} style={style}>
       <button
         onClick={toggle}
         className="w-full flex items-center justify-between p-4 bg-white/3 hover:bg-white/5 border-b border-white/5 transition-colors"
       >
         <div className="flex items-center gap-2">
-          <span className="text-xl">📁</span>
-          <span className="text-xs font-mono font-bold uppercase tracking-widest text-slate-400">
+          {categoryColor && (
+            <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: categoryColor }} />
+          )}
+          <span className="text-xl">{categoryIcon || '📁'}</span>
+          <span className="text-xs font-mono font-bold uppercase tracking-widest text-text-secondary">
             {displayName}
           </span>
-          <span className="text-[10px] text-slate-500 ml-0.5">{habits.length}</span>
+          <span className="text-[10px] text-text-muted ml-0.5">{habits.length}</span>
         </div>
         <svg
-          className={`h-4 w-4 text-slate-500 transition-transform ${collapsed ? '' : 'rotate-90'}`}
+          className={`h-4 w-4 text-text-muted transition-transform ${collapsed ? '' : 'rotate-90'}`}
           viewBox="0 0 20 20"
           fill="currentColor"
         >
