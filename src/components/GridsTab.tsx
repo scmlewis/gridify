@@ -172,7 +172,8 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh, tabDirection =
         <ContributionGrid logs={globalLogs} cellSize={11} cellGap={2} showLegend={false} />
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="sticky top-[52px] z-30 bg-surface-base py-3 -mx-4 px-4 border-b border-border/30">
+        <div className="flex flex-wrap gap-2">
         <button
           onClick={() => setActiveCategory('All')}
           className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
@@ -196,6 +197,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh, tabDirection =
             {cat}
           </button>
         ))}
+        </div>
       </div>
 
       <div className="space-y-4">

@@ -58,7 +58,8 @@ export function AchievementsView() {
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="sticky top-[52px] z-30 bg-surface-base py-3 -mx-4 px-4 border-b border-border/30">
+        <div className="flex gap-2">
         {(['all', 'unlocked', 'locked'] as FilterType[]).map((f) => (
           <button
             key={f}
@@ -75,6 +76,7 @@ export function AchievementsView() {
             {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}
+        </div>
       </div>
 
       <motion.div
