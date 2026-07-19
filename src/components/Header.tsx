@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Menu, FolderOpen, FileText, Download, Upload, CheckCircle, Moon, Sun, Monitor, Info } from 'lucide-react';
 import { OnlineStatus } from './OnlineStatus';
 import { useTheme } from '../hooks/useTheme';
@@ -16,8 +17,41 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
   const [showReview, setShowReview] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
+  const [menuPos, setMenuPos] = useState<{ top: number; right: number }>({ top: 60, right: 16 });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
   const { theme, setTheme } = useTheme();
+
+  const updateMenuPos = useCallback(() => {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setMenuPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
+    }
+  }, []);
+
+  const toggleMenu = useCallback(() => {
+    if (!showMenu && btnRef.current) {
+      updateMenuPos();
+    }
+    setShowMenu(prev => !prev);
+  }, [showMenu, updateMenuPos]);
+
+  useEffect(() => {
+    if (!showMenu) return;
+    const onScroll = () => updateMenuPos();
+    const onClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-menu-dropdown]') && !target.closest('[data-menu-trigger]')) {
+        setShowMenu(false);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('mousedown', onClickOutside);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('mousedown', onClickOutside);
+    };
+  }, [showMenu, updateMenuPos]);
 
   const THEMES = [
     { id: 'dark' as const, label: 'Dark', icon: Moon },
@@ -59,16 +93,22 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
             <OnlineStatus />
             <div className="relative">
               <button
-                onClick={() => setShowMenu(!showMenu)}
+                ref={btnRef}
+                onClick={toggleMenu}
+                data-menu-trigger
                 className="rounded-full p-2.5 text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Menu"
               >
                 <Menu className="h-5 w-5" />
               </button>
-              {showMenu && (
+              {showMenu && createPortal(
                 <>
                   <div className="fixed inset-0 z-[9998]" onClick={() => setShowMenu(false)} />
-                  <div className="absolute right-0 top-full z-[9999] mt-1 w-56 rounded-xl bg-surface-elevated border border-border shadow-2xl overflow-hidden">
+                  <div
+                    data-menu-dropdown
+                    className="fixed z-[9999] w-56 rounded-xl bg-surface-elevated border border-border shadow-2xl overflow-hidden"
+                    style={{ top: menuPos.top, right: menuPos.right }}
+                  >
                     <div className="px-3 pt-3 pb-2">
                       <div className="text-[10px] font-semibold uppercase tracking-wider text-text-muted mb-2">Theme</div>
                       <div className="flex rounded-lg bg-surface-card p-0.5 border border-border/50">
@@ -156,7 +196,8 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
                       About
                     </button>
                   </div>
-                </>
+                </>,
+                document.body
               )}
             </div>
             <input
