@@ -67,8 +67,8 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
               </button>
               {showMenu && (
                 <>
-                  <div className="fixed inset-0 z-30" onClick={() => setShowMenu(false)} />
-                  <div className="absolute right-0 top-full z-40 mt-1 w-56 rounded-xl bg-surface-elevated border border-border shadow-lg overflow-hidden">
+                  <div className="fixed inset-0 z-50" onClick={() => setShowMenu(false)} />
+                  <div className="absolute right-0 top-full z-50 mt-1 w-56 rounded-xl bg-surface-elevated border border-border shadow-2xl overflow-hidden">
                     <div className="px-3 pt-3 pb-2">
                       <div className="text-[10px] font-semibold uppercase tracking-wider text-text-muted mb-2">Theme</div>
                       <div className="flex rounded-lg bg-surface-card p-0.5 border border-border/50">
