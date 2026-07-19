@@ -1,9 +1,12 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { getCategories } from '../db';
 import { ColorPicker } from './ColorPicker';
 import { IconPicker } from './IconPicker';
 import type { Category } from '../types';
+import { bottomSheet, backdrop, springTransition } from '../utils/animations';
+import { haptic } from '../utils/haptics';
 
 interface AddHabitSheetProps {
   isOpen: boolean;
@@ -47,6 +50,7 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) return;
+    haptic.success();
     onAdd({
       name: trimmed,
       category,
@@ -59,14 +63,28 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div className="fixed inset-0 bg-black/60 animate-backdrop-in backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl bg-surface-card p-6 pb-8 animate-slide-up-sheet sheet-open max-h-[90vh] overflow-y-auto">
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+          <motion.div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            variants={backdrop}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            onClick={onClose}
+          />
+          <motion.div
+            className="relative w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl bg-surface-card p-6 pb-8 overflow-hidden max-h-[90vh] overflow-y-auto"
+            variants={bottomSheet}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={springTransition}
+          >
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-text-primary">New Habit</h2>
+          <h2 className="text-lg font-bold text-text-primary font-display">New Habit</h2>
           <button
             type="button"
             onClick={onClose}
@@ -211,7 +229,9 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
             Create Habit
           </button>
         </form>
-      </div>
-    </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }

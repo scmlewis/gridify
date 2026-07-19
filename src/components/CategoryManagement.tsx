@@ -68,7 +68,7 @@ export function CategoryManagement({ isOpen, onClose }: CategoryManagementProps)
       <div className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl bg-surface-card border border-border shadow-2xl p-5 space-y-4 animate-slide-up-sheet sheet-open">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-text-primary">Manage Categories</h2>
+          <h2 className="text-lg font-bold text-text-primary font-display">Manage Categories</h2>
           <button
             onClick={onClose}
             className="rounded-md p-1.5 text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors"

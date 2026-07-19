@@ -49,7 +49,7 @@ export function WeeklyReview({ onClose }: WeeklyReviewProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-text-primary">Weekly Review</h2>
+          <h2 className="text-lg font-bold text-text-primary font-display">Weekly Review</h2>
           <button
             onClick={onClose}
             className="rounded-md p-1 text-text-muted hover:text-text-primary transition-colors"

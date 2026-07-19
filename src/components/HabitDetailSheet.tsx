@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ContributionGrid } from './ContributionGrid';
 import { StatsCard } from './StatsCard';
 import { DayOfWeekHeatmap } from './DayOfWeekHeatmap';
@@ -12,6 +13,8 @@ import { getHabitLogs, deleteHabit, updateHabit, getCategories } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
 import type { Habit, Category } from '../types';
+import { bottomSheet, backdrop, springTransition } from '../utils/animations';
+import { haptic } from '../utils/haptics';
 
 interface HabitDetailSheetProps {
   habit: Habit | null;
@@ -60,6 +63,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
       setConfirmDelete(true);
       return;
     }
+    haptic.heavy();
     await deleteHabit(habit.id);
     onDelete(habit.id);
     onClose();
@@ -68,6 +72,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
 
   const handleSaveEdit = useCallback(async () => {
     if (!habit) return;
+    haptic.success();
     await updateHabit(habit.id, { category: editCategory, color: editColor });
     setEditing(false);
     onRefresh?.();
@@ -75,16 +80,32 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
 
   if (!isOpen || !habit) return null;
 
-  const color = editColor || habit.color || '#2BA8A2';
+  const color = editColor || habit.color || '#10b981';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div className="fixed inset-0 bg-black/60 animate-backdrop-in backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl bg-surface-card animate-slide-up-sheet sheet-open overflow-hidden flex flex-col max-h-[85vh]">
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+          <motion.div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            variants={backdrop}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            onClick={onClose}
+          />
+          <motion.div
+            className="relative w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl bg-surface-card overflow-hidden flex flex-col max-h-[85vh]"
+            variants={bottomSheet}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={springTransition}
+          >
         <div className="flex items-center justify-between p-5 pb-3 border-b border-border shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
-            <h2 className="text-lg font-bold text-text-primary truncate">{habit.name}</h2>
+            <h2 className="text-lg font-bold text-text-primary truncate font-display">{habit.name}</h2>
           </div>
           <button
             onClick={onClose}
@@ -201,7 +222,9 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
             </>
           )}
         </div>
-      </div>
-    </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }

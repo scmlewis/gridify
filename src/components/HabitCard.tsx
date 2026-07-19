@@ -9,6 +9,7 @@ import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
 import { calculateStreak, calculateMomentum, getMilestone } from '../utils/streak';
 import { processCheckIn, type Achievement } from '../utils/gamification';
+import { haptic } from '../utils/haptics';
 import type { Habit } from '../types';
 
 interface HabitCardProps {
@@ -24,9 +25,7 @@ interface HabitCardProps {
 }
 
 function triggerHaptic() {
-  if (navigator.vibrate) {
-    navigator.vibrate(10);
-  }
+  haptic.light();
 }
 
 export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, onDragOver, onDrop, onDragLeave, isDropTarget }: HabitCardProps) {
@@ -243,9 +242,10 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
         onDragEnd={handleDragEnd}
         onDragLeave={onDragLeave}
         onClick={() => onTap?.(habit)}
-        className={`rounded-xl bg-surface-card p-4 border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.98] ${onTap ? 'cursor-pointer' : ''} ${isDragging ? 'opacity-50 scale-[0.98]' : ''} ${isDropTarget ? 'ring-2 ring-primary/50' : ''}`}
-        style={{ borderLeft: `3px solid ${habit.color ?? '#2BA8A2'}` }}
+        className={`relative overflow-hidden rounded-3xl bg-[#111] p-5 border border-white/5 transition-all duration-200 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 active:scale-[0.98] shadow-xl ${onTap ? 'cursor-pointer' : ''} ${isDragging ? 'opacity-50 scale-[0.98]' : ''} ${isDropTarget ? 'ring-2 ring-primary/50' : ''}`}
+        style={{ borderLeft: `3px solid ${habit.color ?? '#10b981'}` }}
       >
+        <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-primary/5 blur-2xl pointer-events-none" />
         <div className="flex items-center gap-3">
           <button
             onClick={(e) => {
@@ -272,7 +272,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
             )}
           </button>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-bold text-text-primary">{habit.name}</div>
+            <div className="truncate text-sm font-bold text-text-primary font-display">{habit.name}</div>
             <div className="flex items-center gap-2 text-xs font-medium">
               {streak > 0 ? (
                 <span className={`text-primary ${streakAnimating ? 'animate-streak-up' : ''}`}>{streak} day streak</span>

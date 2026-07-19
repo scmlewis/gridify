@@ -1,4 +1,6 @@
 import { X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { bottomSheet, backdrop, springTransition } from '../utils/animations';
 
 interface AboutSheetProps {
   isOpen: boolean;
@@ -22,14 +24,28 @@ const FEATURES = [
 ];
 
 export function AboutSheet({ isOpen, onClose }: AboutSheetProps) {
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div className="fixed inset-0 bg-black/60 animate-backdrop-in backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl bg-surface-card p-6 pb-8 animate-slide-up-sheet sheet-open max-h-[90vh] overflow-y-auto">
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+          <motion.div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            variants={backdrop}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            onClick={onClose}
+          />
+          <motion.div
+            className="relative w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl bg-surface-card p-6 pb-8 overflow-hidden max-h-[90vh] overflow-y-auto"
+            variants={bottomSheet}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={springTransition}
+          >
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-text-primary">About</h2>
+          <h2 className="text-lg font-bold text-text-primary font-display">About</h2>
           <button
             type="button"
             onClick={onClose}
@@ -41,7 +57,7 @@ export function AboutSheet({ isOpen, onClose }: AboutSheetProps) {
 
         <div className="space-y-6">
           <div>
-            <h3 className="text-base font-bold text-primary">Gridify</h3>
+            <h3 className="text-base font-bold text-primary font-display">Gridify</h3>
             <p className="mt-1 text-sm text-text-secondary leading-relaxed">
               A high-density, offline-first habit tracker with GitHub-style contribution grids, deep analytics, and rich gamification.
             </p>
@@ -91,7 +107,9 @@ export function AboutSheet({ isOpen, onClose }: AboutSheetProps) {
             <span>MIT License</span>
           </div>
         </div>
-      </div>
-    </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }

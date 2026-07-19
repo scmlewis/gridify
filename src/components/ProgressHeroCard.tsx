@@ -12,7 +12,7 @@ export function ProgressHeroCard({ habitsDoneToday, totalHabits, level }: Progre
     return Math.round((habitsDoneToday / totalHabits) * 100);
   }, [habitsDoneToday, totalHabits]);
 
-  const radius = 38;
+  const radius = 50;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (pct / 100) * circumference;
 
@@ -27,17 +27,15 @@ export function ProgressHeroCard({ habitsDoneToday, totalHabits, level }: Progre
           : "Keep going!";
 
   return (
-    <div className="relative overflow-hidden rounded-2xl p-5 border border-border/40"
-      style={{
-        background: 'linear-gradient(135deg, rgba(43,168,162,0.15) 0%, rgba(255,210,63,0.08) 50%, rgba(239,108,74,0.08) 100%)',
-      }}
-    >
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
+    <div className="relative overflow-hidden rounded-3xl p-6 border border-white/5 bg-[#111] shadow-2xl">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+      <div className="relative z-10 flex items-center justify-between gap-6">
+        <div className="space-y-2">
           <p className="text-sm font-bold text-text-primary">{message}</p>
           <div className="flex items-baseline gap-3">
             <div>
-              <span className="text-2xl font-extrabold text-primary">{habitsDoneToday}</span>
+              <span className="text-3xl font-extrabold text-primary font-display">{habitsDoneToday}</span>
               <span className="text-sm text-text-muted">/{totalHabits}</span>
               <span className="ml-1 text-xs text-text-secondary">habits</span>
             </div>
@@ -49,24 +47,24 @@ export function ProgressHeroCard({ habitsDoneToday, totalHabits, level }: Progre
           </div>
         </div>
 
-        <div className="relative flex h-[90px] w-[90px] items-center justify-center">
-          <svg className="h-full w-full -rotate-90" viewBox="0 0 90 90">
+        <div className="relative flex h-[132px] w-[132px] items-center justify-center">
+          <svg className="h-full w-full -rotate-90" viewBox="0 0 132 132">
             <circle
-              cx="45"
-              cy="45"
+              cx="66"
+              cy="66"
               r={radius}
               fill="none"
               stroke="currentColor"
-              strokeWidth="6"
-              className="text-border/40"
+              strokeWidth="8"
+              className="text-white/5"
             />
             <circle
-              cx="45"
-              cy="45"
+              cx="66"
+              cy="66"
               r={radius}
               fill="none"
               stroke="currentColor"
-              strokeWidth="6"
+              strokeWidth="8"
               strokeLinecap="round"
               className="text-primary transition-all duration-700 ease-out"
               strokeDasharray={circumference}
@@ -74,7 +72,7 @@ export function ProgressHeroCard({ habitsDoneToday, totalHabits, level }: Progre
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-lg font-extrabold text-text-primary">{pct}%</span>
+            <span className="text-2xl font-extrabold text-text-primary font-display">{pct}%</span>
           </div>
         </div>
       </div>

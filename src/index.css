@@ -1,13 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-surface-base: #0f1f1e;
-  --color-surface-card: #1a2e2d;
-  --color-surface-elevated: #213837;
-  --color-primary: #2BA8A2;
-  --color-primary-light: #3CC4BD;
-  --color-primary-dark: #1E8C86;
-  --color-primary-bg: #162b2a;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --color-surface-base: #0a0a0a;
+  --color-surface-card: #111111;
+  --color-surface-elevated: #1a1a1a;
+  --color-primary: #10b981;
+  --color-primary-light: #34d399;
+  --color-primary-dark: #059669;
+  --color-primary-bg: rgba(16, 185, 129, 0.1);
   --color-accent-gold: #FFD23F;
   --color-accent-light: #FFE47A;
   --color-accent-dark: #E6B800;
@@ -15,21 +19,21 @@
   --color-coral-light: #FF8A6A;
   --color-cream: #FFF8E7;
   --color-sky-blue: #5DADE2;
-  --color-success: #27AE60;
-  --color-error: #E74C3C;
-  --color-text-primary: #E8F6F5;
-  --color-text-secondary: #8AB4B0;
-  --color-text-muted: #5A8A86;
-  --color-border: #2A4442;
+  --color-success: #10b981;
+  --color-error: #EF4444;
+  --color-text-primary: #f5f5f5;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #52525b;
+  --color-border: rgba(255, 255, 255, 0.05);
 }
 
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 500;
   color-scheme: dark;
-  color: #E8F6F5;
-  background-color: #0f1f1e;
+  color: #f5f5f5;
+  background-color: #0a0a0a;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -45,6 +49,34 @@
   --stagger-step: 50ms;
 }
 
+/* Light theme */
+[data-theme="light"] {
+  --color-surface-base: #fafafa;
+  --color-surface-card: #ffffff;
+  --color-surface-elevated: #f5f5f5;
+  --color-primary: #059669;
+  --color-primary-light: #10b981;
+  --color-primary-dark: #047857;
+  --color-primary-bg: rgba(5, 150, 105, 0.08);
+  --color-text-primary: #18181b;
+  --color-text-secondary: #71717a;
+  --color-text-muted: #a1a1aa;
+  --color-border: rgba(0, 0, 0, 0.08);
+  color-scheme: light;
+  color: #18181b;
+  background-color: #fafafa;
+}
+
+/* OLED theme */
+[data-theme="oled"] {
+  --color-surface-base: #000000;
+  --color-surface-card: #0a0a0a;
+  --color-surface-elevated: #111111;
+  color-scheme: dark;
+  color: #f5f5f5;
+  background-color: #000000;
+}
+
 body {
   margin: 0;
   min-width: 320px;
@@ -58,8 +90,8 @@ body {
 }
 
 ::selection {
-  background: rgba(43, 168, 162, 0.3);
-  color: #E8F6F5;
+  background: rgba(16, 185, 129, 0.3);
+  color: #f5f5f5;
 }
 
 input:focus-visible,
@@ -71,6 +103,55 @@ button:focus-visible {
 
 .safe-area-pb {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Terminal aesthetic utilities */
+.label-terminal {
+  @apply text-[10px] font-semibold uppercase tracking-widest text-text-muted font-mono;
+}
+
+.data-terminal {
+  @apply font-mono tabular-nums;
+}
+
+.card-terminal {
+  @apply rounded-3xl border border-white/5 bg-[#111];
+}
+
+/* Ambient gradient for cards */
+.ambient-gradient {
+  position: relative;
+  overflow: hidden;
+}
+
+.ambient-gradient::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Thin scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 
@@ -129,9 +210,9 @@ button:focus-visible {
   animation: scale-in var(--duration-normal) var(--ease-spring) forwards;
 }
 
-/* Flip7-inspired glow shadows */
+/* Glow shadows */
 .shadow-teal-glow {
-  box-shadow: 0 4px 20px rgba(43, 168, 162, 0.3);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
 }
 .shadow-accent-glow {
   box-shadow: 0 4px 20px rgba(255, 210, 63, 0.4);
@@ -140,7 +221,7 @@ button:focus-visible {
   box-shadow: 0 4px 20px rgba(239, 108, 74, 0.35);
 }
 .shadow-card {
-  box-shadow: 0 4px 20px rgba(43, 168, 162, 0.1);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
 }
 
 /* Motion utility classes */

@@ -65,25 +65,28 @@ export function CategoryGroup({
   const displayName = categoryName === 'uncategorized' ? 'Uncategorized' : categoryName;
 
   return (
-    <div className={className} style={style}>
+    <div className={`rounded-3xl bg-[#111] border border-white/5 overflow-hidden shadow-xl ${className}`} style={style}>
       <button
         onClick={toggle}
-        className="flex w-full items-center gap-2 py-2.5 px-1 text-left group"
+        className="w-full flex items-center justify-between p-4 bg-white/3 hover:bg-white/5 border-b border-white/5 transition-colors"
       >
+        <div className="flex items-center gap-2">
+          <span className="text-xl">📁</span>
+          <span className="text-xs font-mono font-bold uppercase tracking-widest text-slate-400">
+            {displayName}
+          </span>
+          <span className="text-[10px] text-slate-500 ml-0.5">{habits.length}</span>
+        </div>
         <svg
-          className={`h-4 w-4 text-text-muted transition-transform ${collapsed ? '' : 'rotate-90'}`}
+          className={`h-4 w-4 text-slate-500 transition-transform ${collapsed ? '' : 'rotate-90'}`}
           viewBox="0 0 20 20"
           fill="currentColor"
         >
           <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
         </svg>
-        <span className="text-xs font-bold uppercase tracking-wider text-text-secondary group-hover:text-text-primary transition-colors">
-          {displayName}
-        </span>
-        <span className="text-[10px] text-text-muted ml-0.5">{habits.length}</span>
       </button>
       {!collapsed && (
-        <div className="space-y-2 pb-2">
+        <div className="divide-y divide-white/5">
           {habits.map((habit) => (
             <HabitRow 
               key={habit.id} 

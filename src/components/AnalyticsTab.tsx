@@ -87,11 +87,15 @@ export function AnalyticsTab({ refreshTrigger, tabDirection = 'right' }: Analyti
 
   return (
     <div className={tabDirection === 'right' ? 'animate-tab-enter-right' : 'animate-tab-enter-left'}>
-      <div className="space-y-4">
+      <div className="space-y-6">
         <ObservationCard observations={observations} title="Overview" />
-        <InsightsPanel habits={habits} habitGrids={habitGrids} globalLogs={globalLogs} />
-        <div className="rounded-xl bg-surface-card p-4 border border-border/60">
-          <AnalyticsBarChart habits={habits} logs={logs} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="rounded-3xl bg-[#111] border border-white/5 p-6 shadow-2xl">
+            <AnalyticsBarChart habits={habits} logs={logs} />
+          </div>
+          <div className="rounded-3xl bg-[#111] border border-white/5 p-6 shadow-2xl">
+            <InsightsPanel habits={habits} habitGrids={habitGrids} globalLogs={globalLogs} />
+          </div>
         </div>
       </div>
     </div>

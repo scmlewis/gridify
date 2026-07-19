@@ -185,26 +185,30 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories, 
   return (
     <>
       <div className={tabDirection === 'right' ? 'animate-tab-enter-right' : 'animate-tab-enter-left'}>
-        <div className="space-y-4">
-          <WeekStrip logs={weekLogs} />
-          <ProgressHeroCard habitsDoneToday={habitsDoneToday} totalHabits={habits.length} level={level} />
-          {sortedCategories.map(([category, catHabits], index) => (
-            <CategoryGroup
-              key={category}
-              categoryName={category}
-              habits={catHabits}
-              onCheckIn={() => _onRefresh(n => n + 1)}
-              onHabitTap={setSelectedHabit}
-              onDragStart={handleDragStart}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              refreshKey={refreshKey}
-              dragOverHabitId={dragOverHabitId}
-              onDragLeave={handleDragLeave}
-              className="animate-group-enter"
-              style={{ animationDelay: `${index * 60}ms` }}
-            />
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          <div className="md:col-span-5 space-y-6">
+            <ProgressHeroCard habitsDoneToday={habitsDoneToday} totalHabits={habits.length} level={level} />
+            <WeekStrip logs={weekLogs} />
+          </div>
+          <div className="md:col-span-7 space-y-4">
+            {sortedCategories.map(([category, catHabits], index) => (
+              <CategoryGroup
+                key={category}
+                categoryName={category}
+                habits={catHabits}
+                onCheckIn={() => _onRefresh(n => n + 1)}
+                onHabitTap={setSelectedHabit}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                refreshKey={refreshKey}
+                dragOverHabitId={dragOverHabitId}
+                onDragLeave={handleDragLeave}
+                className="animate-group-enter"
+                style={{ animationDelay: `${index * 60}ms` }}
+              />
+            ))}
+          </div>
         </div>
       </div>
       <button

@@ -68,32 +68,35 @@ export function SummaryCard({ habits, refreshKey }: SummaryCardProps) {
   const activeHabits = habits.filter((h) => !h.archived);
 
   return (
-    <div className="rounded-xl bg-surface-card p-4 border border-border/60">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-bold text-text-primary">Today's Progress</h3>
-        <span className="text-xs font-medium text-text-secondary">
-          {doneToday.size}/{activeHabits.length} done
-        </span>
-      </div>
-      <div className="flex gap-1.5 mb-3">
-        {activeHabits.map((h) => (
-          <div
-            key={h.id}
-            className={`h-2.5 w-2.5 rounded-full transition-colors ${
-              doneToday.has(h.id) ? 'bg-primary' : 'bg-border'
-            }`}
-            title={h.name}
-          />
-        ))}
-      </div>
-      <div className="flex items-center gap-4 text-xs">
-        <div className="flex items-center gap-1.5">
-          <Star className="h-3.5 w-3.5 text-accent-gold" fill="currentColor" />
-          <span className="text-text-secondary">Best: <span className="font-bold text-text-primary">{bestStreak}d</span></span>
+    <div className="relative overflow-hidden rounded-3xl bg-[#111] p-6 border border-white/5 shadow-2xl">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+      <div className="relative z-10">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-sm font-bold text-text-primary font-display">Today's Progress</h3>
+          <span className="text-xs font-medium text-text-secondary">
+            {doneToday.size}/{activeHabits.length} done
+          </span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <Calendar className="h-3.5 w-3.5 text-primary" />
-          <span className="text-text-secondary">Active: <span className="font-bold text-text-primary">{weeklyPct}%</span></span>
+        <div className="flex gap-2 mb-4">
+          {activeHabits.map((h) => (
+            <div
+              key={h.id}
+              className={`h-3 w-3 rounded-full transition-colors ${
+                doneToday.has(h.id) ? 'bg-primary' : 'bg-white/10'
+              }`}
+              title={h.name}
+            />
+          ))}
+        </div>
+        <div className="flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-1.5">
+            <Star className="h-3.5 w-3.5 text-accent-gold" fill="currentColor" />
+            <span className="text-text-secondary">Best: <span className="font-bold text-text-primary">{bestStreak}d</span></span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Calendar className="h-3.5 w-3.5 text-primary" />
+            <span className="text-text-secondary">Active: <span className="font-bold text-text-primary">{weeklyPct}%</span></span>
+          </div>
         </div>
       </div>
     </div>

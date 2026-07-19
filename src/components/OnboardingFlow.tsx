@@ -70,7 +70,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         {step === 0 && (
           <div className="text-center space-y-6">
             <div className="text-5xl">🎯</div>
-            <h1 className="text-2xl font-bold text-text-primary">Welcome to Gridify</h1>
+            <h1 className="text-2xl font-bold text-text-primary font-display">Welcome to Gridify</h1>
             <p className="text-sm text-text-secondary">Build better habits, one day at a time.</p>
             <div className="rounded-lg bg-surface-elevated p-3 text-left">
               <div className="flex items-center gap-2 mb-1.5">
@@ -102,7 +102,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         {step === 1 && (
           <div className="space-y-5">
             <div>
-              <h2 className="text-lg font-bold text-text-primary">Choose Categories</h2>
+              <h2 className="text-lg font-bold text-text-primary font-display">Choose Categories</h2>
               <p className="text-xs text-text-secondary">Select at least one. Categories group your habits for easier tracking.</p>
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -172,7 +172,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         {step === 2 && (
           <div className="space-y-5">
             <div>
-              <h2 className="text-lg font-bold text-text-primary">Create Your First Habit</h2>
+              <h2 className="text-lg font-bold text-text-primary font-display">Create Your First Habit</h2>
               <p className="text-xs text-text-secondary">You can skip and add one later.</p>
             </div>
             <div className="space-y-3">

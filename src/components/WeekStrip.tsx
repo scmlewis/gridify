@@ -25,37 +25,44 @@ export function WeekStrip({ logs, onDayTap }: WeekStripProps) {
   }, [logs]);
 
   return (
-    <div className="flex items-center justify-between gap-1">
-      {days.map((d) => {
-        const hasCheckIn = d.value > 0;
-        return (
-          <button
-            key={d.dateStr}
-            onClick={() => onDayTap?.(d.dateStr)}
-            className="flex flex-1 flex-col items-center gap-1.5 py-1"
-          >
-            <span className={`text-[10px] font-semibold tracking-wide ${
-              d.isToday ? 'text-primary' : 'text-text-muted'
-            }`}>
-              {d.day}
-            </span>
-            <div className={`relative flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold transition-all duration-200 ${
-              d.isToday
-                ? 'bg-primary text-surface-base shadow-md shadow-primary/30'
-                : hasCheckIn
-                  ? 'bg-primary/20 text-primary border border-primary/30'
-                  : d.isPast
-                    ? 'bg-surface-elevated text-text-muted border border-border/40'
-                    : 'bg-surface-elevated text-text-muted border border-border/40'
-            }`}>
-              {d.date.getDate()}
-              {hasCheckIn && !d.isToday && (
-                <div className="absolute -bottom-0.5 h-1 w-1 rounded-full bg-primary" />
+    <div className="rounded-3xl bg-[#111] border border-white/5 p-5 shadow-2xl">
+      <div className="flex items-center justify-between mb-4 px-1">
+        <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Week Review</span>
+      </div>
+      <div className="grid grid-cols-7 gap-2">
+        {days.map((d) => {
+          const hasCheckIn = d.value > 0;
+          return (
+            <button
+              key={d.dateStr}
+              onClick={() => onDayTap?.(d.dateStr)}
+              className={`flex flex-col items-center p-2 rounded-2xl transition-all duration-200 ${
+                d.isToday
+                  ? 'bg-primary/10 border-2 border-primary text-white shadow-[0_0_15px_rgba(16,185,129,0.15)]'
+                  : 'border border-transparent hover:bg-white/3'
+              }`}
+            >
+              <span className={`text-[10px] font-mono font-bold uppercase tracking-wider mb-1 ${
+                d.isToday ? 'text-primary' : 'text-slate-500'
+              }`}>
+                {d.day}
+              </span>
+              <div className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold transition-all duration-200 ${
+                d.isToday
+                  ? 'bg-primary text-surface-base'
+                  : hasCheckIn
+                    ? 'bg-primary/20 text-primary'
+                    : 'bg-white/5 text-slate-400'
+              }`}>
+                {d.date.getDate()}
+              </div>
+              {hasCheckIn && (
+                <div className="mt-1.5 h-1 w-1 rounded-full bg-primary" />
               )}
-            </div>
-          </button>
-        );
-      })}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

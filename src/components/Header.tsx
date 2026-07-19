@@ -54,7 +54,7 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
     <>
       <header className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-extrabold tracking-wide text-primary">Gridify</h1>
+          <h1 className="text-xl font-extrabold tracking-wide text-primary font-display">Gridify</h1>
           <div className="flex items-center gap-2">
             <OnlineStatus />
             <div className="relative">

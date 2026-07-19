@@ -71,7 +71,7 @@ function computeDayOfWeekStats(logs: Map<string, number>): { best: string; worst
   };
 }
 
-export function StatsCard({ logs, createdAt, color = '#2BA8A2' }: StatsCardProps) {
+export function StatsCard({ logs, createdAt, color = '#10b981' }: StatsCardProps) {
   const stats = useMemo(() => {
     const streak = calculateStreak(logs);
     const bestStreak = computeBestStreak(logs);
@@ -176,7 +176,7 @@ export function StatsCard({ logs, createdAt, color = '#2BA8A2' }: StatsCardProps
         label="Trend"
         value={stats.trend > 0 ? `+${stats.trend}` : `${stats.trend}`}
         sub="vs prev 2wk"
-        color={stats.trend > 0 ? '#27AE60' : stats.trend < 0 ? '#E74C3C' : color}
+        color={stats.trend > 0 ? '#10b981' : stats.trend < 0 ? '#EF4444' : color}
       />
       <div className="col-span-2 rounded-lg bg-surface-elevated p-3">
         <div className="text-[10px] font-semibold uppercase tracking-wider text-text-muted mb-1.5">Patterns</div>
@@ -208,7 +208,7 @@ function StatBox({ label, value, sub, color }: { label: string; value: string; s
   return (
     <div className="rounded-lg bg-surface-elevated p-3">
       <div className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">{label}</div>
-      <div className="mt-1 text-xl font-bold" style={{ color }}>{value}</div>
+      <div className="mt-1 text-xl font-bold font-mono" style={{ color }}>{value}</div>
       <div className="text-[10px] text-text-muted">{sub}</div>
     </div>
   );

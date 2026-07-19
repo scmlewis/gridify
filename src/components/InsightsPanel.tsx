@@ -117,7 +117,7 @@ export function InsightsPanel({ habits, habitGrids, globalLogs }: InsightsPanelP
     <div className="rounded-xl bg-surface-card border border-border/60 p-4 space-y-2" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
       <div className="flex items-center gap-2">
         <Sparkles className="h-4 w-4 text-accent-gold" />
-        <span className="text-sm font-bold text-text-primary">Insights</span>
+        <span className="text-sm font-bold text-text-primary font-display">Insights</span>
         <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
           {insights.length}
         </span>
