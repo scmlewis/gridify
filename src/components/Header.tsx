@@ -1,5 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useState, useRef } from 'react';
 import { Menu, FolderOpen, FileText, Download, Upload, CheckCircle, Moon, Sun, Monitor, Info } from 'lucide-react';
 import { OnlineStatus } from './OnlineStatus';
 import { useTheme } from '../hooks/useTheme';
@@ -17,25 +16,8 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
   const [showReview, setShowReview] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
-  const [menuPos, setMenuPos] = useState<{ top: number; right: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const btnRef = useRef<HTMLButtonElement>(null);
   const { theme, setTheme } = useTheme();
-
-  const toggleMenu = useCallback(() => {
-    if (!showMenu && btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect();
-      setMenuPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
-    }
-    setShowMenu(prev => !prev);
-  }, [showMenu]);
-
-  useEffect(() => {
-    if (!showMenu) return;
-    const close = () => setShowMenu(false);
-    window.addEventListener('resize', close);
-    return () => window.removeEventListener('resize', close);
-  }, [showMenu]);
 
   const THEMES = [
     { id: 'dark' as const, label: 'Dark', icon: Moon },
@@ -75,22 +57,18 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
           <h1 className="text-xl font-extrabold tracking-wide text-primary font-display">Gridify</h1>
           <div className="flex items-center gap-2">
             <OnlineStatus />
-            <div>
+            <div className="relative">
               <button
-                ref={btnRef}
-                onClick={toggleMenu}
+                onClick={() => setShowMenu(!showMenu)}
                 className="rounded-full p-2.5 text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Menu"
               >
                 <Menu className="h-5 w-5" />
               </button>
-              {showMenu && createPortal(
+              {showMenu && (
                 <>
                   <div className="fixed inset-0 z-[9998]" onClick={() => setShowMenu(false)} />
-                  <div
-                    className="fixed z-[9999] w-56 rounded-xl bg-surface-elevated border border-border shadow-2xl overflow-hidden"
-                    style={menuPos ? { top: menuPos.top, right: menuPos.right } : { top: 60, right: 16 }}
-                  >
+                  <div className="absolute right-0 top-full z-[9999] mt-1 w-56 rounded-xl bg-surface-elevated border border-border shadow-2xl overflow-hidden">
                     <div className="px-3 pt-3 pb-2">
                       <div className="text-[10px] font-semibold uppercase tracking-wider text-text-muted mb-2">Theme</div>
                       <div className="flex rounded-lg bg-surface-card p-0.5 border border-border/50">
@@ -178,8 +156,7 @@ export function Header({ onImport, onShowCategories }: HeaderProps) {
                       About
                     </button>
                   </div>
-                </>,
-                document.body
+                </>
               )}
             </div>
             <input
