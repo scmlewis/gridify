@@ -21,7 +21,7 @@ function App() {
   const [showAbout, setShowAbout] = useState(false);
 
   return (
-    <div className="min-h-screen bg-surface-base pb-24 md:pb-8 flex flex-col">
+    <div className="min-h-screen bg-surface-base pb-24 md:pb-20 flex flex-col">
       <header className="sticky top-0 z-40 backdrop-blur-md border-b border-border/40">
         <div className="mx-auto max-w-5xl px-4 py-3">
           <ErrorBoundary>
