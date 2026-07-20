@@ -13,7 +13,6 @@ import { calculateStreak } from '../utils/streak';
 interface GridsTabProps {
   refreshTrigger?: number;
   onRefresh: React.Dispatch<React.SetStateAction<number>>;
-  tabDirection?: 'left' | 'right';
 }
 
 interface HabitGridData {
@@ -22,7 +21,7 @@ interface HabitGridData {
   streak: number;
 }
 
-export function GridsTab({ refreshTrigger, onRefresh: _onRefresh, tabDirection = 'right' }: GridsTabProps) {
+export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProps) {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [globalLogs, setGlobalLogs] = useState<Map<string, number>>(new Map());
   const [habitGrids, setHabitGrids] = useState<HabitGridData[]>([]);
@@ -152,7 +151,6 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh, tabDirection =
 
   return (
     <div className="space-y-6">
-      <div className={tabDirection === 'right' ? 'animate-tab-enter-right' : 'animate-tab-enter-left'}>
       <div className="rounded-xl bg-surface-card p-4 border border-border/60" style={{ boxShadow: '0 4px 16px rgba(43, 168, 162, 0.08)' }}>
         <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">Overall Activity</div>
         <p className="mb-3 text-[11px] text-text-muted">Your combined check-ins across all habits. Darker cells = more activity.</p>
@@ -170,7 +168,6 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh, tabDirection =
           <span className="text-[10px] text-text-muted">More</span>
         </div>
         <ContributionGrid logs={globalLogs} cellSize={11} cellGap={2} showLegend={false} />
-      </div>
       </div>
 
       <div className="sticky top-[52px] z-30 bg-surface-base py-3 -mx-4 px-4 border-b border-border/30">

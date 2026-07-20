@@ -12,7 +12,6 @@ import type { HabitLog } from '../types';
 
 interface AnalyticsTabProps {
   refreshTrigger?: number;
-  tabDirection?: 'left' | 'right';
 }
 
 interface HabitGridData {
@@ -20,7 +19,7 @@ interface HabitGridData {
   logs: Map<string, number>;
 }
 
-export function AnalyticsTab({ refreshTrigger, tabDirection = 'right' }: AnalyticsTabProps) {
+export function AnalyticsTab({ refreshTrigger }: AnalyticsTabProps) {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [logs, setLogs] = useState<HabitLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -86,7 +85,6 @@ export function AnalyticsTab({ refreshTrigger, tabDirection = 'right' }: Analyti
   }
 
   return (
-    <div className={tabDirection === 'right' ? 'animate-tab-enter-right' : 'animate-tab-enter-left'}>
       <div className="space-y-6">
         <ObservationCard observations={observations} title="Overview" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -98,6 +96,5 @@ export function AnalyticsTab({ refreshTrigger, tabDirection = 'right' }: Analyti
           </div>
         </div>
       </div>
-    </div>
   );
 }

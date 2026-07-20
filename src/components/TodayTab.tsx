@@ -17,10 +17,9 @@ interface TodayTabProps {
   onRefresh: React.Dispatch<React.SetStateAction<number>>;
   refreshKey?: number;
   onShowCategories?: () => void;
-  tabDirection?: 'left' | 'right';
 }
 
-export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories, tabDirection = 'right' }: TodayTabProps) {
+export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }: TodayTabProps) {
   const { habits, isLoading, addHabit, reorder } = useHabits(refreshKey);
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [showAddSheet, setShowAddSheet] = useState(false);
@@ -194,8 +193,7 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories, 
 
   return (
     <>
-      <div className={tabDirection === 'right' ? 'animate-tab-enter-right' : 'animate-tab-enter-left'}>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
           <div className="md:col-span-5 space-y-6">
             <ProgressHeroCard habitsDoneToday={habitsDoneToday} totalHabits={habits.length} level={level} />
             <WeekStrip logs={weekLogs} />
@@ -225,7 +223,6 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories, 
             })}
           </div>
         </div>
-      </div>
       <button
         onClick={() => setShowAddSheet(true)}
         className="fixed bottom-24 right-4 md:bottom-28 md:right-8 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
