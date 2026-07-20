@@ -22,7 +22,7 @@ A high-density, offline-first Progressive Web App for habit tracking with a GitH
 ## Features
 
 ### Core
-- **3-Tab Navigation** — Today, Grids, and Analytics tabs for focused workflows
+- **5-Tab Navigation** — Today, Grids, Analytics, Awards, and Settings tabs for focused workflows
 - **Contribution Grid** — 53-week heatmap showing daily habit completion intensity
 - **One-Tap Check-in** — Toggle habits with haptic feedback on mobile
 - **Boolean & Numeric Habits** — Track yes/no habits or numeric values with units and weekly targets
@@ -67,14 +67,13 @@ A high-density, offline-first Progressive Web App for habit tracking with a GitH
 - **Level Progression** — 15 levels with increasing XP thresholds
 
 ### Categories
-- **Category System** — Organize habits with custom categories
-- **Default Categories** — Fitness, Mindfulness, Learning, Productivity, Health
+- **Category System** — Organize habits with custom categories created during onboarding
 - **Full CRUD** — Create, edit, and delete categories with custom colors and icons
 - **Collapsible Groups** — Expand/collapse categories (state persisted in localStorage)
 
 ### Customization
 - **3 Themes** — Dark, Light, and OLED modes
-- **Custom Icons** — Searchable emoji picker with 37 icons
+- **Custom Icons** — Searchable emoji picker with 40+ icons
 - **Custom Colors** — 12-color preset picker for habits and categories
 - **Flexible Scheduling** — Daily, weekly, or monthly target frequencies
 
