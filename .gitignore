@@ -50,3 +50,9 @@ coverage/
 # Misc
 *.local
 *.tsbuildinfo
+
+# Tool-generated / local agent artifacts (not part of the app)
+graphify-out/
+.superpowers/
+.opencode/
+[(]ref for revamp[)]/
