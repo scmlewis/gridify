@@ -7,5 +7,5 @@
     </linearGradient>
   </defs>
   <rect x="12" y="12" width="168" height="168" rx="42" fill="url(#gridCell)"/>
-  <rect x="33" y="33" width="126" height="54" rx="24" fill="#a7f3d0" opacity="0.35"/>
+  <rect x="30" y="28" width="132" height="60" rx="30" fill="#ffffff" opacity="0.6"/>
 </svg>
