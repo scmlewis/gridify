@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export interface ToastAction {
   label: string;
@@ -14,15 +14,17 @@ interface ToastProps {
 
 export function Toast({ message, action, duration = 5000, onDismiss }: ToastProps) {
   const [visible, setVisible] = useState(true);
+  const onDismissRef = useRef(onDismiss);
+  onDismissRef.current = onDismiss;
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(false);
-      onDismiss?.();
+      onDismissRef.current?.();
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration, onDismiss]);
+  }, [duration]);
 
   if (!visible) return null;
 

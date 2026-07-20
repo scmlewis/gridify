@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Moon, Sun, Monitor, Download, Upload, FolderOpen, Info, ChevronRight } from 'lucide-react';
+import { Moon, Sun, Monitor, Download, Upload, FolderOpen, Info, ChevronRight, FileText } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTheme } from '../hooks/useTheme';
 import { exportCSV, exportJSON } from '../utils/export';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import { haptic } from '../utils/haptics';
+import { WeeklyReview } from './WeeklyReview';
 
 interface SettingsPanelProps {
   onShowCategories?: () => void;
@@ -15,6 +16,7 @@ interface SettingsPanelProps {
 export function SettingsPanel({ onShowCategories, onShowAbout, onImport }: SettingsPanelProps) {
   const { theme, setTheme } = useTheme();
   const [importStatus, setImportStatus] = useState<string | null>(null);
+  const [showReview, setShowReview] = useState(false);
 
   const THEMES = [
     { id: 'dark' as const, label: 'Dark', icon: Moon },
@@ -112,6 +114,20 @@ export function SettingsPanel({ onShowCategories, onShowAbout, onImport }: Setti
             <button
               onClick={() => {
                 haptic.light();
+                setShowReview(true);
+              }}
+              className="flex w-full items-center justify-between rounded-xl p-3 text-left hover:bg-surface-elevated transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <FileText className="h-4 w-4 text-text-muted" />
+                <span className="text-sm text-text-primary">Weekly Review</span>
+              </div>
+              <ChevronRight className="h-4 w-4 text-text-muted" />
+            </button>
+
+            <button
+              onClick={() => {
+                haptic.light();
                 exportCSV();
               }}
               className="flex w-full items-center justify-between rounded-xl p-3 text-left hover:bg-surface-elevated transition-colors"
@@ -176,6 +192,8 @@ export function SettingsPanel({ onShowCategories, onShowAbout, onImport }: Setti
           </button>
         </motion.div>
       </motion.div>
+
+      {showReview && <WeeklyReview onClose={() => setShowReview(false)} />}
     </div>
   );
 }

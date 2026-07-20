@@ -1,5 +1,6 @@
-import { getUserProfile, addXP, unlockAchievement, getHabits, getTotalCheckInCount, getLogsForDate, getAllLogsForDateRange, getHabitLogsCount } from '../db';
+import { getUserProfile, addXP, unlockAchievement, getHabits, getTotalCheckInCount, getLogsForDate, getAllLogsForDateRange, getHabitLogsCount, getHabitDailyTotals } from '../db';
 import { formatDate, addDays, getSunday, parseDate } from './date-utils';
+import { calculateStreak } from './streak';
 
 export interface Achievement {
   id: string;
@@ -21,6 +22,7 @@ export interface AchievementContext {
   categoryCount: number;
   allCategoriesCheckedToday: boolean;
   isComeback: boolean;
+  freezesUsed: number;
 }
 
 const ACHIEVEMENTS: Achievement[] = [
@@ -36,10 +38,10 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'committed', name: 'Committed', description: 'Complete 100 check-ins total', icon: '🤝', xpReward: 400, condition: async (ctx) => ctx.totalCheckIns >= 100 },
   { id: 'legend', name: 'Legend', description: 'Complete 500 check-ins total', icon: '⭐', xpReward: 1000, condition: async (ctx) => ctx.totalCheckIns >= 500 },
   { id: 'momentum-master', name: 'Momentum Master', description: 'Complete 12 of last 14 days', icon: '📈', xpReward: 200, condition: async (ctx) => ctx.momentum.completed >= 12 },
-  { id: 'perfect-week', name: 'Perfect Week', description: 'Complete all habits for 7 days straight', icon: '🌟', xpReward: 300, condition: async () => false },
+  { id: 'perfect-week', name: 'Perfect Week', description: 'Complete all habits for 7 days straight', icon: '🌟', xpReward: 300, condition: async (ctx) => ctx.weeklyTargetHit >= 1 },
   { id: 'early-bird', name: 'Early Bird', description: 'Check in before 8 AM', icon: '🌅', xpReward: 50, condition: async () => new Date().getHours() < 8 },
   { id: 'night-owl', name: 'Night Owl', description: 'Check in after 10 PM', icon: '🦉', xpReward: 50, condition: async () => new Date().getHours() >= 22 },
-  { id: 'streak-freezer', name: 'Streak Freezer', description: 'Use a streak freeze', icon: '🧊', xpReward: 25, condition: async () => false },
+  { id: 'streak-freezer', name: 'Streak Freezer', description: 'Use a streak freeze', icon: '🧊', xpReward: 25, condition: async (ctx) => ctx.freezesUsed > 0 },
   { id: 'marathon', name: 'Marathon', description: '30-day streak', icon: '🏃', xpReward: 300, condition: async (ctx) => ctx.streak >= 30 },
   { id: 'half-year', name: 'Half Year Hero', description: '180-day streak', icon: '🏆', xpReward: 1000, condition: async (ctx) => ctx.streak >= 180 },
   { id: 'on-fire', name: 'On Fire', description: '5-day streak', icon: '🔥', xpReward: 75, condition: async (ctx) => ctx.streak >= 5 },
@@ -57,7 +59,7 @@ export function calculateCheckInXP(streak: number): number {
   return baseXP + streakBonus;
 }
 
-export async function processCheckIn(streak: number): Promise<{
+export async function processCheckIn(habitId: string): Promise<{
   xpEarned: number;
   newAchievements: Achievement[];
   leveledUp: boolean;
@@ -67,12 +69,17 @@ export async function processCheckIn(streak: number): Promise<{
   const today = formatDate(todayDate);
 
   // Parallelize independent DB queries
-  const [profile, habits, totalCheckIns, todayLogs] = await Promise.all([
+  const [profile, habits, totalCheckIns, todayLogs, habitLogs] = await Promise.all([
     getUserProfile(),
     getHabits(),
     getTotalCheckInCount(),
     getLogsForDate(today),
+    getHabitDailyTotals(habitId),
   ]);
+
+  // Compute the streak from the real DB logs (source of truth), not unsynced
+  // component state. This prevents wrong XP / achievement awards.
+  const streak = calculateStreak(habitLogs);
 
   const habitMap = new Map(habits.map((h) => [h.id, h]));
 
@@ -194,6 +201,7 @@ export async function processCheckIn(streak: number): Promise<{
     categoryCount: categoriesWithHabitsCount,
     allCategoriesCheckedToday: categoriesCheckedInTodayCount === categoriesWithHabitsCount && categoriesWithHabitsCount > 0,
     isComeback: hasLargeGap,
+    freezesUsed: habitMap.get(habitId)?.freezesUsed ?? 0,
   };
 
   const xpEarned = calculateCheckInXP(streak);

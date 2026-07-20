@@ -22,13 +22,14 @@ interface HabitCardProps {
   onDrop?: (e: React.DragEvent, habitId: string) => void;
   onDragLeave?: () => void;
   isDropTarget?: boolean;
+  refreshKey?: number;
 }
 
 function triggerHaptic() {
   haptic.light();
 }
 
-export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, onDragOver, onDrop, onDragLeave, isDropTarget }: HabitCardProps) {
+export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, onDragOver, onDrop, onDragLeave, isDropTarget, refreshKey }: HabitCardProps) {
   const [logs, setLogs] = useState<Map<string, number>>(new Map());
   const [todayChecked, setTodayChecked] = useState(false);
   const streak = useMemo(() => calculateStreak(logs), [logs]);
@@ -58,7 +59,8 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
 
   const todayStr = formatDate(new Date());
 
-  // Load habit logs once on mount or when habit.id changes
+  // Load habit logs on mount, when the habit changes, or when a global
+  // refresh is triggered (check-in elsewhere, undo, import, etc.)
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -84,7 +86,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
     return () => {
       cancelled = true;
     };
-  }, [habit.id, todayStr]);
+  }, [habit.id, todayStr, refreshKey]);
 
   const toggleToday = useCallback(async () => {
     const newChecked = !todayChecked;
@@ -163,7 +165,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
 
     try {
       if (newChecked) {
-        const result = await processCheckIn(calculateStreak(new Map(logs).set(todayStr, 1)));
+        const result = await processCheckIn(habit.id);
         if (result.newAchievements.length > 0) {
           setToast(null);
           setCurrentAchievement(result.newAchievements[0]);

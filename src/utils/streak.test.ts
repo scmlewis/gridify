@@ -63,6 +63,13 @@ describe('calculateStreak', () => {
     const logs = makeLogs([daysAgo(3)]);
     expect(calculateStreak(logs)).toBe(0);
   });
+
+  it('uses only a single grace day across the whole streak', () => {
+    // today, missed yesterday (grace), -2, missed -3, -4 -> grace already
+    // spent, so the second missed day (-3) breaks the streak at 2.
+    const logs = makeLogs([todayStr(), daysAgo(2), daysAgo(4)]);
+    expect(calculateStreak(logs)).toBe(2);
+  });
 });
 
 describe('calculateMomentum', () => {

@@ -31,6 +31,10 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
   const [editing, setEditing] = useState(false);
   const [editCategory, setEditCategory] = useState('');
   const [editColor, setEditColor] = useState('');
+  const [editValueType, setEditValueType] = useState<'boolean' | 'numeric'>('boolean');
+  const [editUnit, setEditUnit] = useState('');
+  const [editTargetFrequency, setEditTargetFrequency] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+  const [editTargetValue, setEditTargetValue] = useState(1);
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -50,6 +54,10 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
       setLogs(map);
       setEditCategory(habit!.category || 'uncategorized');
       setEditColor(habit!.color || '#2BA8A2');
+      setEditValueType(habit!.valueType || 'boolean');
+      setEditUnit(habit!.unit || '');
+      setEditTargetFrequency(habit!.targetFrequency || 'daily');
+      setEditTargetValue(habit!.targetValue ?? 1);
       setCategories(await getCategories());
       setIsLoading(false);
     }
@@ -73,10 +81,17 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
   const handleSaveEdit = useCallback(async () => {
     if (!habit) return;
     haptic.success();
-    await updateHabit(habit.id, { category: editCategory, color: editColor });
+    await updateHabit(habit.id, {
+      category: editCategory,
+      color: editColor,
+      valueType: editValueType,
+      unit: editValueType === 'numeric' ? editUnit : '',
+      targetFrequency: editTargetFrequency,
+      targetValue: editValueType === 'numeric' ? editTargetValue : 1,
+    });
     setEditing(false);
     onRefresh?.();
-  }, [habit, editCategory, editColor, onRefresh]);
+  }, [habit, editCategory, editColor, editValueType, editUnit, editTargetFrequency, editTargetValue, onRefresh]);
 
   if (!isOpen || !habit) return null;
 
@@ -160,7 +175,15 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
                   <div className="text-xs font-semibold uppercase tracking-wider text-text-muted">Settings</div>
                   {!editing && (
                     <button
-                      onClick={() => { setEditCategory(habit.category || 'uncategorized'); setEditColor(habit.color || '#2BA8A2'); setEditing(true); }}
+                      onClick={() => {
+                        setEditCategory(habit.category || 'uncategorized');
+                        setEditColor(habit.color || '#2BA8A2');
+                        setEditValueType(habit.valueType || 'boolean');
+                        setEditUnit(habit.unit || '');
+                        setEditTargetFrequency(habit.targetFrequency || 'daily');
+                        setEditTargetValue(habit.targetValue ?? 1);
+                        setEditing(true);
+                      }}
                       className="text-xs text-primary font-semibold hover:opacity-80 transition-opacity"
                     >
                       Edit
@@ -182,6 +205,72 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
                         ))}
                       </select>
                     </div>
+                    <div>
+                      <label className="mb-1 block text-[10px] text-text-muted">Type</label>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setEditValueType('boolean')}
+                          className={`flex-1 rounded-md border px-2 py-1.5 text-sm transition-colors ${
+                            editValueType === 'boolean' ? 'border-primary bg-primary/20 text-primary' : 'border-border text-text-muted'
+                          }`}
+                        >
+                          Binary
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditValueType('numeric')}
+                          className={`flex-1 rounded-md border px-2 py-1.5 text-sm transition-colors ${
+                            editValueType === 'numeric' ? 'border-primary bg-primary/20 text-primary' : 'border-border text-text-muted'
+                          }`}
+                        >
+                          Numeric
+                        </button>
+                      </div>
+                    </div>
+                    {editValueType === 'numeric' && (
+                      <>
+                        <div>
+                          <label className="mb-1 block text-[10px] text-text-muted">Unit</label>
+                          <input
+                            type="text"
+                            value={editUnit}
+                            onChange={(e) => setEditUnit(e.target.value)}
+                            placeholder="e.g., minutes, reps, pages"
+                            className="w-full rounded-md bg-surface-card border border-border px-2.5 py-1.5 text-sm text-text-primary outline-none focus:border-primary transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-1 block text-[10px] text-text-muted">Target Frequency</label>
+                          <select
+                            value={editTargetFrequency}
+                            onChange={(e) => setEditTargetFrequency(e.target.value as 'daily' | 'weekly' | 'monthly')}
+                            className="w-full rounded-md bg-surface-card border border-border px-2.5 py-1.5 text-sm text-text-primary outline-none focus:border-primary transition-colors"
+                          >
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="mb-1 block text-[10px] text-text-muted">
+                            {editTargetFrequency === 'daily'
+                              ? 'Days per week'
+                              : editTargetFrequency === 'weekly'
+                                ? 'Times per week'
+                                : 'Times per month'}
+                          </label>
+                          <input
+                            type="number"
+                            min={1}
+                            max={editTargetFrequency === 'monthly' ? 31 : 7}
+                            value={editTargetValue}
+                            onChange={(e) => setEditTargetValue(Math.max(1, Number(e.target.value) || 1))}
+                            className="w-full rounded-md bg-surface-card border border-border px-2.5 py-1.5 text-sm text-text-primary outline-none focus:border-primary transition-colors"
+                          />
+                        </div>
+                      </>
+                    )}
                     <div>
                       <label className="mb-1 block text-[10px] text-text-muted">Color</label>
                       <ColorPicker value={editColor} onChange={setEditColor} />

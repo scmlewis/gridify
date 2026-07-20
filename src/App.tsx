@@ -25,10 +25,7 @@ function App() {
       <header className="sticky top-0 z-40 backdrop-blur-md border-b border-border/40">
         <div className="mx-auto max-w-5xl px-4 py-3">
           <ErrorBoundary>
-            <Header
-              onImport={() => setRefreshTrigger(r => r + 1)}
-              onShowCategories={() => setShowCategories(true)}
-            />
+            <Header />
           </ErrorBoundary>
         </div>
       </header>

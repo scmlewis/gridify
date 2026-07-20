@@ -211,6 +211,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
             onDrop={handleDrop}
             onDragLeave={handleDragLeave}
             isDropTarget={overId === habit.id && draggedId !== habit.id}
+            refreshKey={refreshTrigger}
           />
         ))}
       </div>

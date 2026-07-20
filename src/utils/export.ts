@@ -36,16 +36,18 @@ function downloadFile(content: string, filename: string, mimeType: string) {
 }
 
 export async function exportCSV() {
-  const habits = await db.table('habits').toArray() as Habit[];
-  const logs = await db.table('habitLogs').toArray() as HabitLog[];
+  const habits = (await db.table('habits').toArray() as Habit[]).filter((h) => !h.archived);
+  const habitIds = new Set(habits.map((h) => h.id));
+  const logs = (await db.table('habitLogs').toArray() as HabitLog[]).filter((l) => habitIds.has(l.habitId));
   const csv = habitsToCSV(habits, logs);
   const date = new Date().toISOString().split('T')[0];
   downloadFile(csv, `habits-export-${date}.csv`, 'text/csv');
 }
 
 export async function exportJSON() {
-  const habits = await db.table('habits').toArray() as Habit[];
-  const logs = await db.table('habitLogs').toArray() as HabitLog[];
+  const habits = (await db.table('habits').toArray() as Habit[]).filter((h) => !h.archived);
+  const habitIds = new Set(habits.map((h) => h.id));
+  const logs = (await db.table('habitLogs').toArray() as HabitLog[]).filter((l) => habitIds.has(l.habitId));
   const json = habitsToJSON(habits, logs);
   const date = new Date().toISOString().split('T')[0];
   downloadFile(json, `habits-export-${date}.json`, 'application/json');
@@ -149,14 +151,34 @@ export async function importCSV(csvText: string): Promise<{ imported: number; sk
     }
   }
 
+  const createdIds: string[] = [];
   for (const name of newHabitNames) {
     const id = await createHabit(name);
     habitNameMap.set(name.toLowerCase(), id);
+    createdIds.push(id);
+  }
+
+  // Track dates already logged per habit so a re-import doesn't duplicate.
+  const existingLogKeys = new Set<string>();
+  const allHabitIds = [
+    ...existingHabits.map((h) => h.id),
+    ...createdIds,
+  ];
+  for (const habitId of allHabitIds) {
+    const logs = await db.table('habitLogs').where('habitId').equals(habitId).toArray() as HabitLog[];
+    for (const log of logs) {
+      existingLogKeys.add(`${log.habitId}|${log.date}`);
+    }
   }
 
   for (const entry of entries) {
     const habitId = habitNameMap.get(entry.habitName.toLowerCase());
     if (!habitId) {
+      skipped++;
+      continue;
+    }
+
+    if (existingLogKeys.has(`${habitId}|${entry.date}`)) {
       skipped++;
       continue;
     }

@@ -88,16 +88,21 @@ db.version(5).stores({
   habits: 'id, archived, sortOrder, category',
   habitLogs: 'id, habitId, date, [habitId+date]',
   userProfile: 'id'
+}).upgrade(async (tx) => {
+  // v5 introduced the [habitId+date] compound index and backfills the new
+  // `icon` field on existing habits so the schema stays consistent.
+  await tx.table('habits').toCollection().modify((habit: any) => {
+    habit.icon = habit.icon ?? '';
+  });
 });
 
+// No-op version bump retained so existing databases already migrated to v6
+// (which only backfilled `icon`) remain openable. Dexie rejects a DB whose
+// stored version exceeds the highest declared version.
 db.version(6).stores({
   habits: 'id, archived, sortOrder, category',
   habitLogs: 'id, habitId, date, [habitId+date]',
   userProfile: 'id'
-}).upgrade(async (tx) => {
-  await tx.table('habits').toCollection().modify((habit: any) => {
-    habit.icon = habit.icon ?? '';
-  });
 });
 
 export { db };
@@ -330,19 +335,13 @@ function getLevelForXP(xp: number): number {
   return level;
 }
 
+/**
+ * Count of check-in *days* (one log row per habit per day). For boolean habits
+ * this equals the number of days checked in; for numeric habits each logged
+ * day counts once. Used by count-based achievements.
+ */
 export async function getTotalCheckInCount(): Promise<number> {
   return await db.table('habitLogs').where('value').above(0).count();
-}
-
-export async function getNumericEntryCount(): Promise<number> {
-  const habits = await getHabits();
-  const numericHabitIds = new Set(habits.filter(h => h.valueType === 'numeric').map(h => h.id));
-  if (numericHabitIds.size === 0) return 0;
-  let count = 0;
-  for (const id of numericHabitIds) {
-    count += await db.table('habitLogs').where('habitId').equals(id).count();
-  }
-  return count;
 }
 
 export async function getLogsForDate(date: string): Promise<HabitLog[]> {
@@ -351,4 +350,18 @@ export async function getLogsForDate(date: string): Promise<HabitLog[]> {
 
 export async function getHabitLogsCount(habitId: string): Promise<number> {
   return await db.table('habitLogs').where('habitId').equals(habitId).count();
+}
+
+/**
+ * Build a date->total-value map for a single habit from the real DB logs.
+ * Used by gamification so streak/achievement evaluation is based on the
+ * source of truth rather than unsynced component state.
+ */
+export async function getHabitDailyTotals(habitId: string): Promise<Map<string, number>> {
+  const logs = await db.table('habitLogs').where('habitId').equals(habitId).toArray() as HabitLog[];
+  const totals = new Map<string, number>();
+  for (const log of logs) {
+    totals.set(log.date, (totals.get(log.date) || 0) + log.value);
+  }
+  return totals;
 }
