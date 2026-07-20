@@ -15,8 +15,8 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   ];
 
   return (
-    <nav className="fixed z-40 bottom-0 left-0 right-0 border-t border-border/60 bg-surface-card/95 backdrop-blur-md safe-area-pb md:bottom-6 md:left-1/2 md:right-auto md:w-max md:-translate-x-1/2 md:border md:rounded-full md:shadow-lg md:shadow-black/30 md:bg-surface-elevated/90">
-      <div className="mx-auto flex w-full max-w-md items-center justify-center gap-1 px-2 py-1.5 md:gap-2 md:px-3 md:py-1.5">
+    <nav className="fixed z-40 bottom-4 left-1/2 right-auto w-max -translate-x-1/2 rounded-full border border-border/60 bg-surface-elevated/90 backdrop-blur-md shadow-lg shadow-black/30 safe-area-pb md:bottom-6 md:px-1">
+      <div className="mx-auto flex w-full max-w-md items-center justify-center gap-1.5 px-3 py-1.5 md:gap-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
