@@ -60,7 +60,10 @@ export default defineConfig(({ mode }) => {
         display: 'standalone',
         icons: [
           { src: '/gridify/favicon.svg', sizes: '192x192', type: 'image/svg+xml' },
-          { src: '/gridify/favicon.svg', sizes: '512x512', type: 'image/svg+xml' }
+          { src: '/gridify/favicon.svg', sizes: '512x512', type: 'image/svg+xml' },
+          { src: '/gridify/icon-192.svg', sizes: '192x192', type: 'image/svg+xml' },
+          { src: '/gridify/icon-512.svg', sizes: '512x512', type: 'image/svg+xml' },
+          { src: '/gridify/icon-maskable.svg', sizes: '512x512', type: 'image/svg+xml', purpose: 'maskable' }
         ]
       }
     }),

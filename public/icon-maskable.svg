@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Gridify">
+  <defs>
+    <linearGradient id="gridCell" x1="0" y1="0" x2="0" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#34d399"/>
+      <stop offset="0.55" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="#111827"/>
+  <rect x="96" y="96" width="320" height="320" rx="80" fill="url(#gridCell)"/>
+  <rect x="136" y="136" width="240" height="104" rx="48" fill="#a7f3d0" opacity="0.35"/>
+</svg>
