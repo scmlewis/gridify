@@ -30,6 +30,20 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  // Instead of a single global trigger that re-renders every card, we record
+  // which habit was last affected plus a nonce. Only the matching card reloads.
+  const [refreshHabitId, setRefreshHabitId] = useState<string | null>(null);
+  const [refreshNonce, setRefreshNonce] = useState(0);
+
+  const requestRefresh = useCallback((habitId?: string) => {
+    if (habitId) {
+      setRefreshHabitId(habitId);
+      setRefreshNonce(n => n + 1);
+    } else {
+      // No specific habit: force a full reload of the tab's grids.
+      _onRefresh(n => n + 1);
+    }
+  }, [_onRefresh]);
 
   useEffect(() => {
     let cancelled = false;
@@ -53,20 +67,22 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
       if (cancelled) return;
       setHabits(habitsList);
 
-      const grids: HabitGridData[] = [];
-      for (const habit of habitsList) {
-        if (cancelled) return;
-        const logs = await getHabitLogs(habit.id, startStr, endStr);
-        const logMap = new Map<string, number>();
-        for (const log of logs) {
-          logMap.set(log.date, log.value);
-        }
-        grids.push({
-          habit,
-          logs: logMap,
-          streak: calculateStreak(logMap),
-        });
-      }
+      // Fetch all habits' logs in parallel instead of one serial round-trip
+      // per habit, which was a noticeable source of latency in the grids tab.
+      const grids = await Promise.all(
+        habitsList.map(async (habit) => {
+          const logs = await getHabitLogs(habit.id, startStr, endStr);
+          const logMap = new Map<string, number>();
+          for (const log of logs) {
+            logMap.set(log.date, log.value);
+          }
+          return {
+            habit,
+            logs: logMap,
+            streak: calculateStreak(logMap),
+          };
+        })
+      );
       if (!cancelled) {
         setHabitGrids(grids);
         setIsLoading(false);
@@ -203,15 +219,15 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
           <HabitCard
             key={habit.id}
             habit={habit}
-            onArchived={() => _onRefresh(n => n + 1)}
-            onCheckIn={() => _onRefresh(n => n + 1)}
+            onArchived={() => requestRefresh(habit.id)}
+            onCheckIn={() => requestRefresh(habit.id)}
             onTap={setSelectedHabit}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
             onDragLeave={handleDragLeave}
             isDropTarget={overId === habit.id && draggedId !== habit.id}
-            refreshKey={refreshTrigger}
+            refreshSignal={refreshHabitId === habit.id ? `${refreshNonce}:${habit.id}` : undefined}
           />
         ))}
       </div>
@@ -219,8 +235,8 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
         habit={selectedHabit}
         isOpen={selectedHabit !== null}
         onClose={() => setSelectedHabit(null)}
-        onDelete={() => _onRefresh(n => n + 1)}
-        onRefresh={() => _onRefresh(n => n + 1)}
+        onDelete={() => requestRefresh(selectedHabit?.id)}
+        onRefresh={() => requestRefresh(selectedHabit?.id)}
       />
     </div>
   );

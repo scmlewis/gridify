@@ -22,14 +22,17 @@ interface HabitCardProps {
   onDrop?: (e: React.DragEvent, habitId: string) => void;
   onDragLeave?: () => void;
   isDropTarget?: boolean;
-  refreshKey?: number;
+  // Opaque key that changes only when THIS card should reload its logs
+  // (e.g. after its own check-in/undo/delete). It must NOT be a global
+  // refresh trigger shared across all cards.
+  refreshSignal?: string | number;
 }
 
 function triggerHaptic() {
   haptic.light();
 }
 
-export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, onDragOver, onDrop, onDragLeave, isDropTarget, refreshKey }: HabitCardProps) {
+export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, onDragOver, onDrop, onDragLeave, isDropTarget, refreshSignal }: HabitCardProps) {
   const [logs, setLogs] = useState<Map<string, number>>(new Map());
   const [todayChecked, setTodayChecked] = useState(false);
   const streak = useMemo(() => calculateStreak(logs), [logs]);
@@ -59,8 +62,11 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
 
   const todayStr = formatDate(new Date());
 
-  // Load habit logs on mount, when the habit changes, or when a global
-  // refresh is triggered (check-in elsewhere, undo, import, etc.)
+  // Load habit logs on mount or when the habit changes. We deliberately do NOT
+  // re-run on a global refreshTrigger: that would re-fetch and rebuild every
+  // card's grid whenever any unrelated habit is checked in. Instead we expose
+  // a self-contained refresh via `refreshSignal` (an opaque key that changes
+  // only for THIS card) so unrelated interactions never trigger a reload.
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -86,7 +92,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
     return () => {
       cancelled = true;
     };
-  }, [habit.id, todayStr, refreshKey]);
+  }, [habit.id, todayStr, refreshSignal]);
 
   const toggleToday = useCallback(async () => {
     const newChecked = !todayChecked;

@@ -44,6 +44,7 @@ export function ContributionGrid({
   const scrollRef = useRef<HTMLDivElement>(null);
   const todayStr = formatDate(new Date());
   const [selectedCell, setSelectedCell] = useState<string | null>(null);
+  const [hoveredCell, setHoveredCell] = useState<string | null>(null);
   const hasScrolledRef = useRef(false);
 
   useEffect(() => {
@@ -110,6 +111,13 @@ export function ContributionGrid({
     setSelectedCell(prev => prev === cellKey ? null : cellKey);
   }, []);
 
+  // Resolve the active cell (selected or hovered) so we can render a single
+  // shared tooltip instead of one hidden tooltip node per cell.
+  const activeCell = useMemo(
+    () => cells.find(c => (selectedCell !== null && c.key === selectedCell) || (hoveredCell !== null && c.key === hoveredCell)),
+    [cells, selectedCell, hoveredCell]
+  );
+
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -168,7 +176,7 @@ export function ContributionGrid({
           )}
 
           <div
-            className="grid shrink-0"
+            className="relative grid shrink-0"
             style={{
               gridTemplateColumns: `repeat(53, ${cellSize}px)`,
               gridTemplateRows: `repeat(7, ${cellSize}px)`,
@@ -178,18 +186,28 @@ export function ContributionGrid({
             {cells.map((cell) => (
               <div
                 key={cell.key}
+                onMouseEnter={() => setHoveredCell(cell.key)}
+                onMouseLeave={() => setHoveredCell(prev => prev === cell.key ? null : prev)}
                 onClick={() => handleCellClick(cell.key)}
-                className={`relative rounded-sm cursor-default group ${cell.isFuture ? 'opacity-25' : LEVEL_CLASSES[cell.level]}`}
+                className={`relative rounded-sm cursor-default ${cell.isFuture ? 'opacity-25' : LEVEL_CLASSES[cell.level]}`}
                 style={{ width: cellSize, height: cellSize }}
-              >
-                <div className={`pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-surface-elevated px-2.5 py-1.5 text-xs text-text-primary shadow-md border border-border ${cell.isFuture ? 'hidden' : 'hidden group-hover:block'} ${selectedCell === cell.key ? '!block' : ''}`}>
-                  <span className="font-semibold">{formatTooltipDate(cell.dateStr)}</span>
-                  <span className="ml-1.5 text-text-secondary">
-                    {LEVEL_LABELS[cell.level]}
-                  </span>
-                </div>
-              </div>
+              />
             ))}
+            {activeCell && !activeCell.isFuture && (
+              <div
+                className="pointer-events-none absolute z-50 whitespace-nowrap rounded-md bg-surface-elevated px-2.5 py-1.5 text-xs text-text-primary shadow-md border border-border"
+                style={{
+                  left: activeCell.col * (cellSize + cellGap) + cellSize / 2,
+                  top: activeCell.row * (cellSize + cellGap) - 8,
+                  transform: 'translate(-50%, -100%)',
+                }}
+              >
+                <span className="font-semibold">{formatTooltipDate(activeCell.dateStr)}</span>
+                <span className="ml-1.5 text-text-secondary">
+                  {LEVEL_LABELS[activeCell.level]}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
