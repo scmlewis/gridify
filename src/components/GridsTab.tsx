@@ -94,6 +94,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
 
   const handleDragStart = useCallback((e: React.DragEvent, id: string) => {
     setDraggedId(id);
+    e.dataTransfer.setData('text/plain', id);
     e.dataTransfer.effectAllowed = 'move';
   }, []);
 
@@ -104,16 +105,21 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
 
   const handleDrop = useCallback(async (e: React.DragEvent, dropId: string) => {
     e.preventDefault();
-    if (!draggedId || draggedId === dropId) {
+    const fromId = draggedId || e.dataTransfer.getData('text/plain');
+    if (!fromId || fromId === dropId) {
       setDraggedId(null);
       setOverId(null);
       return;
     }
 
     const sorted = [...habits].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
-    const fromIdx = sorted.findIndex(h => h.id === draggedId);
+    const fromIdx = sorted.findIndex(h => h.id === fromId);
     const toIdx = sorted.findIndex(h => h.id === dropId);
-    if (fromIdx === -1 || toIdx === -1) return;
+    if (fromIdx === -1 || toIdx === -1) {
+      setDraggedId(null);
+      setOverId(null);
+      return;
+    }
 
     const moved = sorted[fromIdx];
     sorted.splice(fromIdx, 1);
@@ -122,16 +128,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
     const reorderUpdates = sorted.map((h, i) => ({ id: h.id, sortOrder: i }));
     await reorderHabits(reorderUpdates);
 
-    setHabits(prev => {
-      const updated = [...prev].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
-      const fromI = updated.findIndex(h => h.id === draggedId);
-      const toI = updated.findIndex(h => h.id === dropId);
-      if (fromI === -1 || toI === -1) return updated;
-      const m = updated[fromI];
-      updated.splice(fromI, 1);
-      updated.splice(toI, 0, m);
-      return updated;
-    });
+    setHabits(sorted);
 
     setDraggedId(null);
     setOverId(null);
