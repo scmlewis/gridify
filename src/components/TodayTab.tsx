@@ -193,45 +193,43 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
 
   return (
     <>
-      <div className="relative">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-            <div className="md:col-span-5 space-y-6">
-              <ProgressHeroCard habitsDoneToday={habitsDoneToday} totalHabits={habits.length} level={level} />
-              <WeekStrip logs={weekLogs} />
-            </div>
-            <div className="md:col-span-7 space-y-4">
-              {sortedCategories.map(([category, catHabits], index) => {
-                const catData = categoryMap.get(category);
-                return (
-                  <CategoryGroup
-                    key={category}
-                    categoryName={category}
-                    categoryIcon={catData?.icon}
-                    categoryColor={catData?.color}
-                    habits={catHabits}
-                    onCheckIn={() => _onRefresh(n => n + 1)}
-                    onHabitTap={setSelectedHabit}
-                    onDragStart={handleDragStart}
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                    refreshKey={refreshKey}
-                    dragOverHabitId={dragOverHabitId}
-                    onDragLeave={handleDragLeave}
-                    className="animate-group-enter"
-                    style={{ animationDelay: `${index * 60}ms` }}
-                  />
-                );
-              })}
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          <div className="md:col-span-5 space-y-6">
+            <ProgressHeroCard habitsDoneToday={habitsDoneToday} totalHabits={habits.length} level={level} />
+            <WeekStrip logs={weekLogs} />
           </div>
+          <div className="md:col-span-7 space-y-4">
+            {sortedCategories.map(([category, catHabits], index) => {
+              const catData = categoryMap.get(category);
+              return (
+                <CategoryGroup
+                  key={category}
+                  categoryName={category}
+                  categoryIcon={catData?.icon}
+                  categoryColor={catData?.color}
+                  habits={catHabits}
+                  onCheckIn={() => _onRefresh(n => n + 1)}
+                  onHabitTap={setSelectedHabit}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  refreshKey={refreshKey}
+                  dragOverHabitId={dragOverHabitId}
+                  onDragLeave={handleDragLeave}
+                  className="animate-group-enter"
+                  style={{ animationDelay: `${index * 60}ms` }}
+                />
+              );
+            })}
+          </div>
+        </div>
         <button
           onClick={() => setShowAddSheet(true)}
-          className="absolute bottom-4 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
+          className="fixed bottom-24 right-4 md:bottom-28 md:right-[calc(100vw-max(100vw,1024px)/2+16px)] z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
           title="Add new habit"
         >
           <Plus className="h-6 w-6" />
         </button>
-      </div>
       <AddHabitSheet
         isOpen={showAddSheet}
         onClose={() => setShowAddSheet(false)}
