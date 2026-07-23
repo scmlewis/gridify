@@ -43,6 +43,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
   const [showConfetti, setShowConfetti] = useState(false);
   const [milestone, setMilestone] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [confirmArchive, setConfirmArchive] = useState(false);
 
   // Effect to handle milestone detection and trigger confetti when streak reaches a new milestone
   useEffect(() => {
@@ -206,12 +207,17 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
   }, [habit.id, freezesUsed, maxFreezes, canFreeze]);
 
   const handleArchive = useCallback(async () => {
+    if (!confirmArchive) {
+      setConfirmArchive(true);
+      return;
+    }
+    triggerHaptic();
     try {
       onArchived(habit.id);
     } catch (err) {
       console.error('Failed to archive habit:', err);
     }
-  }, [habit.id, onArchived]);
+  }, [habit.id, onArchived, confirmArchive]);
 
   const handleDragStart = (e: React.DragEvent) => {
     setIsDragging(true);
@@ -314,8 +320,12 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
                 e.stopPropagation();
                 handleArchive();
               }}
-              className="shrink-0 rounded-full p-2 text-text-muted hover:bg-coral/10 hover:text-coral transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-              title="Archive habit"
+              className={`shrink-0 rounded-full p-2 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+                confirmArchive
+                  ? 'bg-coral/20 text-coral border border-coral/40'
+                  : 'text-text-muted hover:bg-coral/10 hover:text-coral'
+              }`}
+              title={confirmArchive ? 'Confirm archive' : 'Archive habit'}
             >
               <Archive className="h-4 w-4" />
             </button>

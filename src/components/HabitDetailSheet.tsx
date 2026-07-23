@@ -9,7 +9,7 @@ import { StreakTimeline } from './StreakTimeline';
 import { CompletionDistribution } from './CompletionDistribution';
 import { YearComparison } from './YearComparison';
 import { ColorPicker } from './ColorPicker';
-import { getHabitLogs, deleteHabit, updateHabit, getCategories } from '../db';
+import { getHabitLogs, deleteHabit, archiveHabit, unarchiveHabit, updateHabit, getCategories } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
 import type { Habit, Category } from '../types';
@@ -21,13 +21,15 @@ interface HabitDetailSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onDelete: (id: string) => void;
+  onArchive?: (id: string) => void;
   onRefresh?: () => void;
 }
 
-export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }: HabitDetailSheetProps) {
+export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onArchive, onRefresh }: HabitDetailSheetProps) {
   const [logs, setLogs] = useState<Map<string, number>>(new Map());
   const [isLoading, setIsLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmArchive, setConfirmArchive] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editCategory, setEditCategory] = useState('');
   const [editColor, setEditColor] = useState('');
@@ -42,6 +44,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
     let cancelled = false;
     setIsLoading(true);
     setConfirmDelete(false);
+    setConfirmArchive(false);
     setEditing(false);
 
     async function load() {
@@ -77,6 +80,23 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
     onClose();
     onRefresh?.();
   }, [habit, confirmDelete, onDelete, onClose, onRefresh]);
+
+  const handleArchive = useCallback(async () => {
+    if (!habit) return;
+    if (!confirmArchive) {
+      setConfirmArchive(true);
+      return;
+    }
+    haptic.heavy();
+    if (habit.archived) {
+      await unarchiveHabit(habit.id);
+    } else {
+      await archiveHabit(habit.id);
+    }
+    onArchive?.(habit.id);
+    onClose();
+    onRefresh?.();
+  }, [habit, confirmArchive, onArchive, onClose, onRefresh]);
 
   const handleSaveEdit = useCallback(async () => {
     if (!habit) return;
@@ -297,6 +317,23 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onRefresh }
                   </div>
                 )}
               </div>
+
+              <button
+                onClick={handleArchive}
+                className={`w-full rounded-full py-3 text-sm font-bold transition-all duration-200 active:scale-[0.98] ${
+                  confirmArchive
+                    ? habit?.archived
+                      ? 'bg-primary text-white shadow-md shadow-primary/25'
+                      : 'bg-coral text-white shadow-md shadow-coral/25'
+                    : habit?.archived
+                      ? 'bg-surface-elevated text-primary border border-primary/30 hover:bg-primary/10 hover:border-primary/50'
+                      : 'bg-surface-elevated text-coral border border-coral/30 hover:bg-coral/10 hover:border-coral/50'
+                }`}
+              >
+                {confirmArchive
+                  ? habit?.archived ? 'Confirm Restore' : 'Confirm Archive'
+                  : habit?.archived ? 'Restore Habit' : 'Archive Habit'}
+              </button>
 
               <button
                 onClick={handleDelete}

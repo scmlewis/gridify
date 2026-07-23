@@ -153,6 +153,10 @@ export async function archiveHabit(id: string): Promise<void> {
   await db.table('habits').update(id, { archived: true });
 }
 
+export async function unarchiveHabit(id: string): Promise<void> {
+  await db.table('habits').update(id, { archived: false });
+}
+
 export async function reorderHabits(updates: {id: string, sortOrder: number}[]): Promise<void> {
   await db.transaction('rw', db.table('habits'), async () => {
     for (const update of updates) {
@@ -341,7 +345,14 @@ function getLevelForXP(xp: number): number {
  * day counts once. Used by count-based achievements.
  */
 export async function getTotalCheckInCount(): Promise<number> {
-  return await db.table('habitLogs').where('value').above(0).count();
+  const allHabits = await db.table('habits').toArray();
+  const activeIds = allHabits.filter((h: any) => !h.archived).map((h: any) => h.id);
+  if (activeIds.length === 0) return 0;
+  let count = 0;
+  for (const id of activeIds) {
+    count += await db.table('habitLogs').where('habitId').equals(id).and((l: any) => l.value > 0).count();
+  }
+  return count;
 }
 
 export async function getLogsForDate(date: string): Promise<HabitLog[]> {
