@@ -9,7 +9,7 @@ import { StreakTimeline } from './StreakTimeline';
 import { CompletionDistribution } from './CompletionDistribution';
 import { YearComparison } from './YearComparison';
 import { ColorPicker } from './ColorPicker';
-import { getHabitLogs, deleteHabit, archiveHabit, unarchiveHabit, updateHabit, getCategories } from '../db';
+import { getHabitLogs, deleteHabit, updateHabit, getCategories } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
 import type { Habit, Category } from '../types';
@@ -21,7 +21,7 @@ interface HabitDetailSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onDelete: (id: string) => void;
-  onArchive?: (id: string) => void;
+  onArchive?: (id: string, archived: boolean) => void;
   onRefresh?: () => void;
 }
 
@@ -88,12 +88,9 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onArchive, 
       return;
     }
     haptic.heavy();
-    if (habit.archived) {
-      await unarchiveHabit(habit.id);
-    } else {
-      await archiveHabit(habit.id);
-    }
-    onArchive?.(habit.id);
+    const isCurrentlyArchived = habit.archived;
+    setConfirmArchive(false);
+    onArchive?.(habit.id, !isCurrentlyArchived);
     onClose();
     onRefresh?.();
   }, [habit, confirmArchive, onArchive, onClose, onRefresh]);

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Plus, Target } from 'lucide-react';
 import { useHabits } from '../hooks/useHabits';
-import { getUserProfile, getLogsForDate, getAllLogsForDateRange, getCategories } from '../db';
+import { getUserProfile, getLogsForDate, getAllLogsForDateRange, getCategories, unarchiveHabit } from '../db';
 import { WeekStrip } from './WeekStrip';
 import { ProgressHeroCard } from './ProgressHeroCard';
 import { EmptyState } from './EmptyState';
@@ -223,13 +223,14 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
             })}
           </div>
         </div>
-        <button
-          onClick={() => setShowAddSheet(true)}
-          className="fixed bottom-24 right-[max(16px,calc(100vw-1008px))] md:bottom-28 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
-          title="Add new habit"
-        >
-          <Plus className="h-6 w-6" />
-        </button>
+      <button
+        onClick={() => setShowAddSheet(true)}
+        className="fixed bottom-24 right-4 md:bottom-28 z-40 h-14 w-14 flex items-center justify-center rounded-full bg-accent-gold text-surface-base shadow-accent-glow transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-accent-gold/50 active:scale-95"
+        style={{ right: 'max(1rem, calc((100vw - 1024px) / 2 - 4.5rem))' }}
+        title="Add new habit"
+      >
+        <Plus className="h-6 w-6" />
+      </button>
       <AddHabitSheet
         isOpen={showAddSheet}
         onClose={() => setShowAddSheet(false)}
@@ -241,7 +242,14 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
         isOpen={selectedHabit !== null}
         onClose={() => setSelectedHabit(null)}
         onDelete={() => _onRefresh(n => n + 1)}
-        onArchive={async (id) => { await archiveHabit(id); _onRefresh(n => n + 1); }}
+        onArchive={async (id, isNowArchived) => {
+          if (isNowArchived) {
+            await archiveHabit(id);
+          } else {
+            await unarchiveHabit(id);
+          }
+          _onRefresh(n => n + 1);
+        }}
         onRefresh={() => _onRefresh(n => n + 1)}
       />
     </>

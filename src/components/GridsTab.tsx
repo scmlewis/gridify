@@ -4,7 +4,7 @@ import { ContributionGrid } from './ContributionGrid';
 import { EmptyState } from './EmptyState';
 import { HabitDetailSheet } from './HabitDetailSheet';
 import { HabitCard } from './HabitCard';
-import { getHabits, getHabitLogs, getAllLogsForDateRange, reorderHabits, archiveHabit } from '../db';
+import { getHabits, getHabitLogs, getAllLogsForDateRange, reorderHabits, archiveHabit, unarchiveHabit } from '../db';
 import type { Habit } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
@@ -128,7 +128,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
     const reorderUpdates = sorted.map((h, i) => ({ id: h.id, sortOrder: i }));
     await reorderHabits(reorderUpdates);
 
-    setHabits(sorted);
+    setHabits(sorted.map((h, i) => ({ ...h, sortOrder: i })));
 
     setDraggedId(null);
     setOverId(null);
@@ -218,7 +218,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
           <HabitCard
             key={habit.id}
             habit={habit}
-            onArchived={async (id: string) => { await archiveHabit(id); requestRefresh(id); }}
+            onArchived={async (id: string) => { await archiveHabit(id); setHabits(prev => prev.filter(h => h.id !== id)); requestRefresh(id); }}
             onCheckIn={() => requestRefresh(habit.id)}
             onTap={setSelectedHabit}
             onDragStart={handleDragStart}
@@ -234,8 +234,16 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
         habit={selectedHabit}
         isOpen={selectedHabit !== null}
         onClose={() => setSelectedHabit(null)}
-        onDelete={() => requestRefresh(selectedHabit?.id)}
-        onArchive={async (id) => { await archiveHabit(id); requestRefresh(id); }}
+        onDelete={(id: string) => { setHabits(prev => prev.filter(h => h.id !== id)); requestRefresh(id); }}
+        onArchive={async (id, isNowArchived) => {
+          if (isNowArchived) {
+            await archiveHabit(id);
+            setHabits(prev => prev.filter(h => h.id !== id));
+          } else {
+            await unarchiveHabit(id);
+            setHabits(await getHabits());
+          }
+        }}
         onRefresh={() => requestRefresh(selectedHabit?.id)}
       />
     </div>
