@@ -38,7 +38,7 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'committed', name: 'Committed', description: 'Complete 100 check-ins total', icon: '🤝', xpReward: 400, condition: async (ctx) => ctx.totalCheckIns >= 100 },
   { id: 'legend', name: 'Legend', description: 'Complete 500 check-ins total', icon: '⭐', xpReward: 1000, condition: async (ctx) => ctx.totalCheckIns >= 500 },
   { id: 'momentum-master', name: 'Momentum Master', description: 'Complete 12 of last 14 days', icon: '📈', xpReward: 200, condition: async (ctx) => ctx.momentum.completed >= 12 },
-  { id: 'perfect-week', name: 'Perfect Week', description: 'Complete all habits for 7 days straight', icon: '🌟', xpReward: 300, condition: async (ctx) => ctx.weeklyTargetHit >= 1 },
+  { id: 'perfect-week', name: 'Perfect Week', description: 'All habits hit their weekly targets for the current week', icon: '🌟', xpReward: 300, condition: async (ctx) => ctx.consecutiveWeeksAtTarget >= 1 },
   { id: 'early-bird', name: 'Early Bird', description: 'Check in before 8 AM', icon: '🌅', xpReward: 50, condition: async () => new Date().getHours() < 8 },
   { id: 'night-owl', name: 'Night Owl', description: 'Check in after 10 PM', icon: '🦉', xpReward: 50, condition: async () => new Date().getHours() >= 22 },
   { id: 'streak-freezer', name: 'Streak Freezer', description: 'Use a streak freeze', icon: '🧊', xpReward: 25, condition: async (ctx) => ctx.freezesUsed > 0 },
@@ -55,7 +55,7 @@ const ACHIEVEMENTS: Achievement[] = [
 ];
 export function calculateCheckInXP(streak: number): number {
   const baseXP = 10;
-  const streakBonus = Math.min(streak * 2, 50);
+  const streakBonus = Math.min(streak * 2, 100);
   return baseXP + streakBonus;
 }
 
@@ -204,8 +204,10 @@ export async function processCheckIn(habitId: string): Promise<{
     freezesUsed: habitMap.get(habitId)?.freezesUsed ?? 0,
   };
 
+  const startingLevel = profile.level;
+
   const xpEarned = calculateCheckInXP(streak);
-  const { level, leveledUp } = await addXP(xpEarned);
+  await addXP(xpEarned);
 
   const newAchievements: Achievement[] = [];
   for (const achievement of ACHIEVEMENTS) {
@@ -221,7 +223,10 @@ export async function processCheckIn(habitId: string): Promise<{
     }
   }
 
-  return { xpEarned, newAchievements, leveledUp, newLevel: level };
+  const finalProfile = await getUserProfile();
+  const leveledUp = finalProfile.level > startingLevel;
+
+  return { xpEarned, newAchievements, leveledUp, newLevel: finalProfile.level };
 }
 
 export function getAchievementById(id: string): Achievement | undefined {

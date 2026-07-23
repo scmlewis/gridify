@@ -323,7 +323,7 @@ export async function completeOnboarding(categories: Category[]): Promise<void> 
 }
 
 function getLevelForXP(xp: number): number {
-  const thresholds = [0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500, 5500, 6600, 7800, 9100, 10500];
+  const thresholds = [0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500, 5500, 6600, 7800, 9100, 10500, 12000, 13600, 15300, 17100, 19000];
   let level = 1;
   for (let i = 1; i < thresholds.length; i++) {
     if (xp >= thresholds[i]) {

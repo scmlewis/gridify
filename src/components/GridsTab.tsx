@@ -160,7 +160,9 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
   }
 
   const categories = Array.from(new Set(habits.map(h => h.category || 'uncategorized'))).sort();
-  const sortedGrids = [...habitGrids].sort((a, b) => (a.habit.sortOrder ?? 0) - (b.habit.sortOrder ?? 0));
+  const gridByHabitId = new Map(habitGrids.map(g => [g.habit.id, g]));
+  const sortedHabits = [...habits].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+  const sortedGrids = sortedHabits.map(h => gridByHabitId.get(h.id)).filter((g): g is HabitGridData => g !== undefined);
   const filteredGrids = activeCategory === 'All'
     ? sortedGrids
     : sortedGrids.filter(g => (g.habit.category || 'uncategorized') === activeCategory);

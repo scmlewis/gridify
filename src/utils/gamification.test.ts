@@ -7,17 +7,17 @@ describe('calculateCheckInXP', () => {
   });
 
   it('adds streak bonus', () => {
-    // streak 5: base 10 + min(10, 50) = 20
+    // streak 5: base 10 + min(10, 100) = 20
     expect(calculateCheckInXP(5)).toBe(20);
   });
 
-  it('caps streak bonus at 50', () => {
-    // streak 100: base 10 + min(200, 50) = 60
-    expect(calculateCheckInXP(100)).toBe(60);
+  it('caps streak bonus at 100', () => {
+    // streak 100: base 10 + min(200, 100) = 110
+    expect(calculateCheckInXP(100)).toBe(110);
   });
 
-  it('returns 60 for max streak', () => {
-    expect(calculateCheckInXP(365)).toBe(60);
+  it('returns 110 for max streak', () => {
+    expect(calculateCheckInXP(365)).toBe(110);
   });
 });
 
