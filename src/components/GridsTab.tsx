@@ -57,6 +57,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
     const [allHabits, archived] = await Promise.all([getHabits(), getArchivedHabits()]);
     setHabits(allHabits);
     setArchivedHabits(archived);
+    if (archived.length === 0) setShowArchived(false);
   }, []);
 
   useEffect(() => {
