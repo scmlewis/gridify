@@ -7,6 +7,7 @@ interface NumericInputProps {
   value: number;
   unit?: string;
   targetValue?: number;
+  date?: string;
   onChange?: (value: number) => void;
 }
 
@@ -14,8 +15,8 @@ function triggerHaptic() {
   if (navigator.vibrate) navigator.vibrate(10);
 }
 
-export function NumericInput({ habitId, value, unit, targetValue, onChange }: NumericInputProps) {
-  const todayStr = formatDate(new Date());
+export function NumericInput({ habitId, value, unit, targetValue, date, onChange }: NumericInputProps) {
+  const todayStr = date ?? formatDate(new Date());
 
   async function handleChange(newValue: number) {
     triggerHaptic();
