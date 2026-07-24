@@ -9,7 +9,7 @@ import { CategoryGroup } from './CategoryGroup';
 import { OnboardingFlow } from './OnboardingFlow';
 import { AddHabitSheet } from './AddHabitSheet';
 import { HabitDetailSheet } from './HabitDetailSheet';
-import { formatDate } from '../utils/date-utils';
+import { formatDate, addDays } from '../utils/date-utils';
 import type { CreateHabitOptions, Category } from '../db';
 import type { Habit } from '../types';
 
@@ -29,6 +29,8 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
   const [dragOverHabitId, setDragOverHabitId] = useState<string | null>(null);
   const [level, setLevel] = useState(1);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>(() => formatDate(new Date()));
+  const isToday = selectedDate === formatDate(new Date());
 
   useEffect(() => {
     getUserProfile().then(p => {
@@ -40,8 +42,7 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
 
   useEffect(() => {
     async function loadLogs() {
-      const todayStr = formatDate(new Date());
-      const todayData = await getLogsForDate(todayStr);
+      const todayData = await getLogsForDate(selectedDate);
       const map = new Map<string, number>();
       for (const log of todayData) {
         map.set(log.habitId, log.value);
@@ -64,7 +65,7 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
       setWeekLogs(weekMap);
     }
     if (onboardingCompleted) loadLogs();
-  }, [onboardingCompleted, refreshKey]);
+  }, [onboardingCompleted, refreshKey, selectedDate]);
 
   const habitsDoneToday = useMemo(() => {
     let count = 0;
@@ -199,6 +200,31 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
             <WeekStrip logs={weekLogs} />
           </div>
           <div className="md:col-span-7 space-y-4">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSelectedDate(formatDate(addDays(new Date(), -1)))}
+                className={`text-xs px-2 py-1 rounded-full transition-colors ${
+                  !isToday
+                    ? 'bg-primary/20 text-primary'
+                    : 'bg-white/5 text-text-muted hover:bg-white/10'
+                }`}
+              >
+                Yesterday
+              </button>
+            </div>
+            {!isToday && (
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-sm text-text-secondary">
+                  Viewing: Yesterday
+                </span>
+                <button
+                  onClick={() => setSelectedDate(formatDate(new Date()))}
+                  className="text-xs text-primary hover:text-primary/80 font-medium"
+                >
+                  Back to Today
+                </button>
+              </div>
+            )}
             {sortedCategories.map(([category, catHabits], index) => {
               const catData = categoryMap.get(category);
               return (
@@ -218,6 +244,7 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
                   onDragLeave={handleDragLeave}
                   className="animate-group-enter"
                   style={{ animationDelay: `${index * 60}ms` }}
+                  date={selectedDate}
                 />
               );
             })}
