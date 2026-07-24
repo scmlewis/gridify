@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Check, Circle } from 'lucide-react';
 import { getHabitLogs, logCheckIn, removeCheckIn } from '../db';
-import { formatDate, addDays } from '../utils/date-utils';
+import { formatDate, addDays, parseDate } from '../utils/date-utils';
 import { calculateStreak } from '../utils/streak';
 import { NumericInput } from './NumericInput';
 import type { Habit } from '../types';
@@ -37,8 +37,9 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
   useEffect(() => {
     let cancelled = false;
     async function load() {
-      const end = addDays(new Date(), 1);
-      const weekAgo = formatDate(addDays(new Date(), -30));
+      const todayDate = parseDate(todayStr);
+      const end = addDays(todayDate, 1);
+      const weekAgo = formatDate(addDays(todayDate, -30));
       const raw = await getHabitLogs(habit.id, weekAgo, formatDate(end));
       if (cancelled) return;
       const map = new Map<string, number>();
@@ -49,9 +50,8 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
       setStreak(calculateStreak(map));
 
       // Calculate this week's count
-      const now = new Date();
-      const dayOfWeek = now.getDay();
-      const monday = addDays(now, -((dayOfWeek + 6) % 7));
+      const dayOfWeek = todayDate.getDay();
+      const monday = addDays(todayDate, -((dayOfWeek + 6) % 7));
       const mondayStr = formatDate(monday);
       let count = 0;
       for (const log of raw) {
@@ -62,6 +62,14 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
     load();
     return () => { cancelled = true; };
   }, [habit.id, todayStr, refreshKey]);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   const toggle = useCallback(async () => {
     const next = !checked;

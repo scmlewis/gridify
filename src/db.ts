@@ -49,7 +49,7 @@ db.version(3).stores({
   habitLogs: 'id, habitId, date',
   userProfile: 'id'
 }).upgrade(async (tx) => {
-  await tx.table('habits').toCollection().modify((habit: any) => {
+  await tx.table('habits').toCollection().modify((habit: Partial<Habit>) => {
     habit.freezesUsed = habit.freezesUsed ?? 0;
     habit.maxFreezes = habit.maxFreezes ?? 2;
   });
@@ -70,7 +70,7 @@ db.version(4).stores({
   habitLogs: 'id, habitId, date',
   userProfile: 'id'
 }).upgrade(async (tx) => {
-  await tx.table('habits').toCollection().modify((habit: any) => {
+  await tx.table('habits').toCollection().modify((habit: Partial<Habit>) => {
     habit.category = habit.category ?? 'uncategorized';
     habit.valueType = habit.valueType ?? 'boolean';
     habit.unit = habit.unit ?? '';
@@ -78,7 +78,7 @@ db.version(4).stores({
     habit.targetValue = habit.targetValue ?? 1;
     habit.color = habit.color ?? '#2BA8A2';
   });
-  await tx.table('userProfile').toCollection().modify((profile: any) => {
+  await tx.table('userProfile').toCollection().modify((profile: Partial<UserProfile>) => {
     profile.onboardingCompleted = profile.onboardingCompleted ?? false;
     profile.categories = profile.categories ?? [];
   });
@@ -91,7 +91,7 @@ db.version(5).stores({
 }).upgrade(async (tx) => {
   // v5 introduced the [habitId+date] compound index and backfills the new
   // `icon` field on existing habits so the schema stays consistent.
-  await tx.table('habits').toCollection().modify((habit: any) => {
+  await tx.table('habits').toCollection().modify((habit: Partial<Habit>) => {
     habit.icon = habit.icon ?? '';
   });
 });
@@ -160,8 +160,8 @@ export async function unarchiveHabit(id: string): Promise<void> {
 export async function getArchivedHabits(): Promise<Habit[]> {
   const all = await db.table('habits').toArray();
   return all
-    .filter((h: any) => h.archived)
-    .sort((a: any, b: any) => a.sortOrder - b.sortOrder);
+    .filter((h: Habit) => h.archived)
+    .sort((a: Habit, b: Habit) => a.sortOrder - b.sortOrder);
 }
 
 export async function reorderHabits(updates: {id: string, sortOrder: number}[]): Promise<void> {
@@ -249,8 +249,8 @@ export async function removeCheckIn(habitId: string, date: string): Promise<void
 export async function getHabits(): Promise<Habit[]> {
   const all = await db.table('habits').toArray();
   return all
-    .filter((h: any) => !h.archived)
-    .sort((a: any, b: any) => a.sortOrder - b.sortOrder);
+    .filter((h: Habit) => !h.archived)
+    .sort((a: Habit, b: Habit) => a.sortOrder - b.sortOrder);
 }
 
 export async function getHabitLogs(habitId: string, startDate: string, endDate: string): Promise<HabitLog[]> {
@@ -353,11 +353,11 @@ function getLevelForXP(xp: number): number {
  */
 export async function getTotalCheckInCount(): Promise<number> {
   const allHabits = await db.table('habits').toArray();
-  const activeIds = allHabits.filter((h: any) => !h.archived).map((h: any) => h.id);
+  const activeIds = allHabits.filter((h: Habit) => !h.archived).map((h: Habit) => h.id);
   if (activeIds.length === 0) return 0;
   let count = 0;
   for (const id of activeIds) {
-    count += await db.table('habitLogs').where('habitId').equals(id).and((l: any) => l.value > 0).count();
+    count += await db.table('habitLogs').where('habitId').equals(id).and((l: HabitLog) => l.value > 0).count();
   }
   return count;
 }

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Moon, Sun, Monitor, Download, Upload, FolderOpen, Info, ChevronRight, FileText } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTheme } from '../hooks/useTheme';
-import { exportCSV, exportJSON } from '../utils/export';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import { haptic } from '../utils/haptics';
 import { WeeklyReview } from './WeeklyReview';
@@ -126,8 +125,9 @@ export function SettingsPanel({ onShowCategories, onShowAbout, onImport }: Setti
             </button>
 
             <button
-              onClick={() => {
+              onClick={async () => {
                 haptic.light();
+                const { exportCSV } = await import('../utils/export');
                 exportCSV();
               }}
               className="flex w-full items-center justify-between rounded-xl p-3 text-left hover:bg-surface-elevated transition-colors"
@@ -140,8 +140,9 @@ export function SettingsPanel({ onShowCategories, onShowAbout, onImport }: Setti
             </button>
 
             <button
-              onClick={() => {
+              onClick={async () => {
                 haptic.light();
+                const { exportJSON } = await import('../utils/export');
                 exportJSON();
               }}
               className="flex w-full items-center justify-between rounded-xl p-3 text-left hover:bg-surface-elevated transition-colors"

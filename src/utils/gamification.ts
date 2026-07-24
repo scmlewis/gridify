@@ -23,6 +23,7 @@ export interface AchievementContext {
   allCategoriesCheckedToday: boolean;
   isComeback: boolean;
   freezesUsed: number;
+  checkInHour: number;
 }
 
 const ACHIEVEMENTS: Achievement[] = [
@@ -39,8 +40,8 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'legend', name: 'Legend', description: 'Complete 500 check-ins total', icon: '⭐', xpReward: 1000, condition: async (ctx) => ctx.totalCheckIns >= 500 },
   { id: 'momentum-master', name: 'Momentum Master', description: 'Complete 12 of last 14 days', icon: '📈', xpReward: 200, condition: async (ctx) => ctx.momentum.completed >= 12 },
   { id: 'perfect-week', name: 'Perfect Week', description: 'All habits hit their weekly targets for the current week', icon: '🌟', xpReward: 300, condition: async (ctx) => ctx.consecutiveWeeksAtTarget >= 1 },
-  { id: 'early-bird', name: 'Early Bird', description: 'Check in before 8 AM', icon: '🌅', xpReward: 50, condition: async () => new Date().getHours() < 8 },
-  { id: 'night-owl', name: 'Night Owl', description: 'Check in after 10 PM', icon: '🦉', xpReward: 50, condition: async () => new Date().getHours() >= 22 },
+  { id: 'early-bird', name: 'Early Bird', description: 'Check in before 8 AM', icon: '🌅', xpReward: 50, condition: async (ctx) => ctx.checkInHour < 8 },
+  { id: 'night-owl', name: 'Night Owl', description: 'Check in after 10 PM', icon: '🦉', xpReward: 50, condition: async (ctx) => ctx.checkInHour >= 22 },
   { id: 'streak-freezer', name: 'Streak Freezer', description: 'Use a streak freeze', icon: '🧊', xpReward: 25, condition: async (ctx) => ctx.freezesUsed > 0 },
   { id: 'marathon', name: 'Marathon', description: '30-day streak', icon: '🏃', xpReward: 300, condition: async (ctx) => ctx.streak >= 30 },
   { id: 'half-year', name: 'Half Year Hero', description: '180-day streak', icon: '🏆', xpReward: 1000, condition: async (ctx) => ctx.streak >= 180 },
@@ -67,6 +68,7 @@ export async function processCheckIn(habitId: string, date?: string): Promise<{
 }> {
   const todayDate = date ? new Date(date + 'T12:00:00') : new Date();
   const today = formatDate(todayDate);
+  const checkInHour = todayDate.getHours();
 
   // Parallelize independent DB queries
   const [profile, habits, totalCheckIns, todayLogs, habitLogs] = await Promise.all([
@@ -202,6 +204,7 @@ export async function processCheckIn(habitId: string, date?: string): Promise<{
     allCategoriesCheckedToday: categoriesCheckedInTodayCount === categoriesWithHabitsCount && categoriesWithHabitsCount > 0,
     isComeback: hasLargeGap,
     freezesUsed: habitMap.get(habitId)?.freezesUsed ?? 0,
+    checkInHour,
   };
 
   const startingLevel = profile.level;
