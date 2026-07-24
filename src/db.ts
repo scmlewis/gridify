@@ -157,6 +157,13 @@ export async function unarchiveHabit(id: string): Promise<void> {
   await db.table('habits').update(id, { archived: false });
 }
 
+export async function getArchivedHabits(): Promise<Habit[]> {
+  const all = await db.table('habits').toArray();
+  return all
+    .filter((h: any) => h.archived)
+    .sort((a: any, b: any) => a.sortOrder - b.sortOrder);
+}
+
 export async function reorderHabits(updates: {id: string, sortOrder: number}[]): Promise<void> {
   await db.transaction('rw', db.table('habits'), async () => {
     for (const update of updates) {
