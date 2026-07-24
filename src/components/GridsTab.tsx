@@ -58,6 +58,20 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
     setHabits(allHabits);
     setArchivedHabits(archived);
     if (archived.length === 0) setShowArchived(false);
+
+    const start = getGridStartDate();
+    const end = addDays(new Date(), 1);
+    const startStr = formatDate(start);
+    const endStr = formatDate(end);
+    const grids = await Promise.all(
+      allHabits.map(async (habit) => {
+        const logs = await getHabitLogs(habit.id, startStr, endStr);
+        const logMap = new Map<string, number>();
+        for (const log of logs) logMap.set(log.date, log.value);
+        return { habit, logs: logMap, streak: calculateStreak(logMap) };
+      })
+    );
+    setHabitGrids(grids);
   }, []);
 
   useEffect(() => {
