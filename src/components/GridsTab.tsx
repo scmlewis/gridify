@@ -4,7 +4,7 @@ import { ContributionGrid } from './ContributionGrid';
 import { EmptyState } from './EmptyState';
 import { HabitDetailSheet } from './HabitDetailSheet';
 import { HabitCard } from './HabitCard';
-import { getHabits, getHabitLogs, getAllLogsForDateRange, reorderHabits, archiveHabit, unarchiveHabit } from '../db';
+import { getHabits, getHabitLogs, getAllLogsForDateRange, reorderHabits, archiveHabit, unarchiveHabit, getArchivedHabits } from '../db';
 import type { Habit } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
@@ -34,6 +34,8 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
   // which habit was last affected plus a nonce. Only the matching card reloads.
   const [refreshHabitId, setRefreshHabitId] = useState<string | null>(null);
   const [refreshNonce, setRefreshNonce] = useState(0);
+  const [archivedHabits, setArchivedHabits] = useState<Habit[]>([]);
+  const [showArchived, setShowArchived] = useState(false);
 
   const requestRefresh = useCallback((habitId?: string) => {
     if (habitId) {
@@ -44,6 +46,18 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
       _onRefresh(n => n + 1);
     }
   }, [_onRefresh]);
+
+  const loadArchived = useCallback(async () => {
+    const archived = await getArchivedHabits();
+    setArchivedHabits(archived);
+  }, []);
+
+  const handleUnarchive = useCallback(async (id: string) => {
+    await unarchiveHabit(id);
+    const [allHabits, archived] = await Promise.all([getHabits(), getArchivedHabits()]);
+    setHabits(allHabits);
+    setArchivedHabits(archived);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -89,8 +103,9 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
       }
     }
     load();
+    loadArchived();
     return () => { cancelled = true; };
-  }, [refreshTrigger]);
+  }, [refreshTrigger, loadArchived]);
 
   const handleDragStart = useCallback((e: React.DragEvent, id: string) => {
     setDraggedId(id);
@@ -230,6 +245,48 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
           />
         ))}
       </div>
+
+      {archivedHabits.length > 0 && (
+        <div className="mt-6">
+          <button
+            onClick={() => setShowArchived(prev => !prev)}
+            className="flex items-center gap-2 w-full px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
+          >
+            <svg
+              className={`h-4 w-4 transition-transform ${showArchived ? 'rotate-90' : ''}`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            </svg>
+            Archived Habits
+            <span className="text-xs text-text-muted bg-white/5 px-1.5 py-0.5 rounded-full">{archivedHabits.length}</span>
+          </button>
+          {showArchived && (
+            <div className="mt-2 space-y-2 pl-2">
+              {archivedHabits.map(habit => (
+                <div
+                  key={habit.id}
+                  className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/3 border border-white/5 opacity-60"
+                >
+                  {habit.icon && <span className="text-sm">{habit.icon}</span>}
+                  <span className="flex-1 text-sm text-text-primary truncate">{habit.name}</span>
+                  {habit.category && (
+                    <span className="text-[10px] text-text-muted">{habit.category}</span>
+                  )}
+                  <button
+                    onClick={() => handleUnarchive(habit.id)}
+                    className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                  >
+                    Restore
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <HabitDetailSheet
         habit={selectedHabit}
         isOpen={selectedHabit !== null}
