@@ -52,17 +52,27 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
     setArchivedHabits(archived);
   }, []);
 
-  const handleUnarchive = useCallback(async (id: string) => {
-    await unarchiveHabit(id);
-    const [allHabits, archived] = await Promise.all([getHabits(), getArchivedHabits()]);
-    setHabits(allHabits);
-    setArchivedHabits(archived);
-    if (archived.length === 0) setShowArchived(false);
-
+  const refreshAll = useCallback(async () => {
     const start = getGridStartDate();
     const end = addDays(new Date(), 1);
     const startStr = formatDate(start);
     const endStr = formatDate(end);
+
+    const [allHabits, archived, allLogs] = await Promise.all([
+      getHabits(),
+      getArchivedHabits(),
+      getAllLogsForDateRange(startStr, endStr),
+    ]);
+
+    setHabits(allHabits);
+    setArchivedHabits(archived);
+
+    const totals = new Map<string, number>();
+    for (const log of allLogs) {
+      totals.set(log.date, (totals.get(log.date) ?? 0) + log.value);
+    }
+    setGlobalLogs(totals);
+
     const grids = await Promise.all(
       allHabits.map(async (habit) => {
         const logs = await getHabitLogs(habit.id, startStr, endStr);
@@ -73,6 +83,11 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
     );
     setHabitGrids(grids);
   }, []);
+
+  const handleUnarchive = useCallback(async (id: string) => {
+    await unarchiveHabit(id);
+    await refreshAll();
+  }, [refreshAll]);
 
   useEffect(() => {
     let cancelled = false;
@@ -248,7 +263,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
           <HabitCard
             key={habit.id}
             habit={habit}
-            onArchived={async (id: string) => { await archiveHabit(id); setHabits(prev => prev.filter(h => h.id !== id)); requestRefresh(id); }}
+            onArchived={async (id: string) => { await archiveHabit(id); await refreshAll(); }}
             onCheckIn={() => requestRefresh(habit.id)}
             onTap={setSelectedHabit}
             onDragStart={handleDragStart}
@@ -306,15 +321,14 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
         habit={selectedHabit}
         isOpen={selectedHabit !== null}
         onClose={() => setSelectedHabit(null)}
-        onDelete={(id: string) => { setHabits(prev => prev.filter(h => h.id !== id)); requestRefresh(id); }}
+        onDelete={async (id: string) => { await refreshAll(); }}
         onArchive={async (id, isNowArchived) => {
           if (isNowArchived) {
             await archiveHabit(id);
-            setHabits(prev => prev.filter(h => h.id !== id));
           } else {
             await unarchiveHabit(id);
-            setHabits(await getHabits());
           }
+          await refreshAll();
         }}
         onRefresh={() => requestRefresh(selectedHabit?.id)}
       />
