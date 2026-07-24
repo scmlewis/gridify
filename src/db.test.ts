@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { db, createHabit, archiveHabit, getArchivedHabits, unarchiveHabit } from './db';
+import { db, createHabit, archiveHabit, getArchivedHabits } from './db';
 
 beforeEach(async () => {
-  await db.habits.clear();
-  await db.habitLogs.clear();
+  await db.table('habits').clear();
+  await db.table('habitLogs').clear();
 });
 
 describe('getArchivedHabits', () => {
   it('returns only archived habits', async () => {
-    const id1 = await createHabit('Active Habit');
+    await createHabit('Active Habit');
     const id2 = await createHabit('Archived Habit');
     await archiveHabit(id2);
 
