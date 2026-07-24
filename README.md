@@ -63,7 +63,7 @@ A high-density, offline-first Progressive Web App for habit tracking with a GitH
 
 ### Gamification
 - **XP System** — Earn XP for check-ins with streak multipliers
-- **26 Achievements** — "First Steps", "Week Warrior", "Centurion", "Momentum Master", and more
+- **25 Achievements** — "First Steps", "Week Warrior", "Centurion", "Momentum Master", and more
 - **Level Progression** — 15 levels with increasing XP thresholds
 
 ### Categories
@@ -85,7 +85,7 @@ A high-density, offline-first Progressive Web App for habit tracking with a GitH
 ### UX Polish
 - **Onboarding Flow** — 3-step wizard for new users
 - **Skeleton Shimmer Loading** — Animated loading placeholders
-- **Tab Transition Animations** — Slide animations between tabs
+- **Tab Transition Animations** — Fade animations between tabs
 - **Reduced Motion Support** — Respects `prefers-reduced-motion`
 - **Error Boundary** — Graceful error handling with retry
 - **Toast Notifications** — With undo action for accidental check-ins
@@ -106,6 +106,7 @@ A high-density, offline-first Progressive Web App for habit tracking with a GitH
 | Testing | Vitest + coverage-v8 |
 | Linting | OxLint |
 | Icons | lucide-react |
+| Animation | motion (Framer Motion) |
 | ID Generation | nanoid |
 
 ---
@@ -160,16 +161,23 @@ npm run lint
 gridify/
 ├── public/
 │   ├── favicon.svg
-│   └── icons.svg
+│   ├── icon-192.svg
+│   ├── icon-512.svg
+│   ├── icon-maskable.svg
+│   ├── icons.svg
+│   ├── og-image.svg
+│   ├── robots.txt
+│   └── sitemap.xml
 ├── src/
-│   ├── assets/
 │   ├── components/
 │   │   ├── AboutSheet.tsx
+│   │   ├── AchievementsView.tsx
 │   │   ├── AchievementToast.tsx
 │   │   ├── AddHabitForm.tsx
 │   │   ├── AddHabitSheet.tsx
 │   │   ├── AnalyticsBarChart.tsx
 │   │   ├── AnalyticsTab.tsx
+│   │   ├── AnimatedRing.tsx
 │   │   ├── BottomNav.tsx
 │   │   ├── CategoryGroup.tsx
 │   │   ├── CategoryManagement.tsx
@@ -191,10 +199,13 @@ gridify/
 │   │   ├── ObservationCard.tsx
 │   │   ├── OnlineStatus.tsx
 │   │   ├── OnboardingFlow.tsx
+│   │   ├── ParticleBurst.tsx
 │   │   ├── ProgressHeroCard.tsx
+│   │   ├── SettingsPanel.tsx
 │   │   ├── StatsCard.tsx
 │   │   ├── StreakTimeline.tsx
 │   │   ├── SummaryCard.tsx
+│   │   ├── SwipeableHabitRow.tsx
 │   │   ├── ThemeToggle.tsx
 │   │   ├── Toast.tsx
 │   │   ├── TodayTab.tsx
@@ -208,9 +219,12 @@ gridify/
 │   │   └── ThemeProvider.tsx
 │   ├── hooks/
 │   │   ├── useHabits.ts
+│   │   ├── useLongPress.ts
+│   │   ├── useSwipeGesture.ts
 │   │   └── useTheme.ts
 │   ├── utils/
 │   │   ├── analytics.ts
+│   │   ├── animations.ts
 │   │   ├── csv.test.ts
 │   │   ├── date-utils.ts
 │   │   ├── date-utils.test.ts
@@ -219,6 +233,7 @@ gridify/
 │   │   ├── gamification.test.ts
 │   │   ├── grid-math.ts
 │   │   ├── grid-math.test.ts
+│   │   ├── haptics.ts
 │   │   ├── insights.ts
 │   │   ├── insights.test.ts
 │   │   ├── observations.ts
@@ -231,12 +246,12 @@ gridify/
 │   ├── db.ts
 │   ├── index.css
 │   ├── main.tsx
+│   ├── test-setup.ts
 │   ├── types.ts
 │   └── vite-env.d.ts
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml
-├── docs/
 ├── .oxlintrc.json
 ├── index.html
 ├── package.json
@@ -354,7 +369,7 @@ The app is fully installable on:
 - **Bundle:** Tree-shaken with Vite, lazy-loaded where applicable
 - **Offline:** Full functionality without network via service worker
 - **Storage:** IndexedDB for persistence, no server required
-- **Rendering:** Optimized React re-renders with memoized hooks
+- **Rendering:** Optimized React re-renders with memoized hooks and per-card refresh signals
 - **Animations:** Respects `prefers-reduced-motion` for accessibility
 
 ---
