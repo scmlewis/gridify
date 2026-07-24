@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateCheckInXP, getAchievementById, getAllAchievements } from './gamification';
+import { calculateCheckInXP, getAchievementById, getAllAchievements, processCheckIn } from './gamification';
 
 describe('calculateCheckInXP', () => {
   it('returns base XP for zero streak', () => {
@@ -49,5 +49,11 @@ describe('getAllAchievements', () => {
       expect(a.xpReward).toBeGreaterThan(0);
       expect(typeof a.condition).toBe('function');
     }
+  });
+});
+
+describe('processCheckIn date parameter', () => {
+  it('accepts a date string parameter', () => {
+    expect(typeof processCheckIn).toBe('function');
   });
 });

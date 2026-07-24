@@ -59,13 +59,13 @@ export function calculateCheckInXP(streak: number): number {
   return baseXP + streakBonus;
 }
 
-export async function processCheckIn(habitId: string): Promise<{
+export async function processCheckIn(habitId: string, date?: string): Promise<{
   xpEarned: number;
   newAchievements: Achievement[];
   leveledUp: boolean;
   newLevel: number;
 }> {
-  const todayDate = new Date();
+  const todayDate = date ? new Date(date + 'T12:00:00') : new Date();
   const today = formatDate(todayDate);
 
   // Parallelize independent DB queries
