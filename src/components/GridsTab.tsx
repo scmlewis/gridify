@@ -321,7 +321,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
         habit={selectedHabit}
         isOpen={selectedHabit !== null}
         onClose={() => setSelectedHabit(null)}
-        onDelete={async (id: string) => { await refreshAll(); }}
+        onDelete={async () => { await refreshAll(); }}
         onArchive={async (id, isNowArchived) => {
           if (isNowArchived) {
             await archiveHabit(id);
