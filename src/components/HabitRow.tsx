@@ -16,19 +16,20 @@ interface HabitRowProps {
   refreshKey?: number;
   isDropTarget?: boolean;
   onDragLeave?: () => void;
+  date?: string;
 }
 
 function triggerHaptic() {
   if (navigator.vibrate) navigator.vibrate(10);
 }
 
-export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onDrop, refreshKey, isDropTarget, onDragLeave }: HabitRowProps) {
+export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onDrop, refreshKey, isDropTarget, onDragLeave, date }: HabitRowProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [checked, setChecked] = useState(false);
   const [numericValue, setNumericValue] = useState(0);
   const [streak, setStreak] = useState(0);
   const [weekCount, setWeekCount] = useState(0);
-  const todayStr = formatDate(new Date());
+  const todayStr = date ?? formatDate(new Date());
   const isNumeric = habit.valueType === 'numeric';
   const isLongPressRef = useRef(false);
   const timerRef = useRef<number | null>(null);
@@ -155,6 +156,7 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
           value={numericValue}
           unit={habit.unit}
           targetValue={habit.targetValue}
+          date={date}
           onChange={handleNumericChange}
         />
       ) : (
