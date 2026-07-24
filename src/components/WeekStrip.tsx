@@ -4,25 +4,27 @@ import { formatDate, addDays } from '../utils/date-utils';
 interface WeekStripProps {
   logs: Map<string, number>;
   onDayTap?: (date: string) => void;
+  selectedDate?: string;
 }
 
 const DAY_ABBRS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-export function WeekStrip({ logs, onDayTap }: WeekStripProps) {
+export function WeekStrip({ logs, onDayTap, selectedDate }: WeekStripProps) {
   const days = useMemo(() => {
-    const today = new Date();
-    const todayDay = today.getDay();
-    const monday = addDays(today, -((todayDay + 6) % 7));
+    const refDate = selectedDate ? new Date(selectedDate + 'T12:00:00') : new Date();
+    const refDay = refDate.getDay();
+    const monday = addDays(refDate, -((refDay + 6) % 7));
 
     return Array.from({ length: 7 }, (_, i) => {
       const date = addDays(monday, i);
       const dateStr = formatDate(date);
       const value = logs.get(dateStr) ?? 0;
-      const isToday = dateStr === formatDate(today);
-      const isPast = date < new Date(formatDate(today));
-      return { date, dateStr, value, isToday, isPast, day: DAY_ABBRS[i] };
+      const isToday = dateStr === formatDate(new Date());
+      const isSelected = dateStr === selectedDate;
+      const isPast = date < new Date(formatDate(new Date()));
+      return { date, dateStr, value, isToday, isSelected, isPast, day: DAY_ABBRS[i] };
     });
-  }, [logs]);
+  }, [logs, selectedDate]);
 
   return (
     <div className="rounded-3xl bg-surface-card border border-white/5 p-5 shadow-2xl">
@@ -39,7 +41,9 @@ export function WeekStrip({ logs, onDayTap }: WeekStripProps) {
               className={`flex flex-col items-center p-2 rounded-2xl transition-all duration-200 ${
                 d.isToday
                   ? 'bg-primary/10 border-2 border-primary text-white shadow-[0_0_15px_rgba(16,185,129,0.15)]'
-                  : 'border border-transparent hover:bg-white/3'
+                  : d.isSelected && !d.isToday
+                    ? 'bg-primary/5 border-2 border-primary/50 text-white'
+                    : 'border border-transparent hover:bg-white/3'
               }`}
             >
               <span className={`text-[10px] font-mono font-bold uppercase tracking-wider mb-1 ${

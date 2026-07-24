@@ -197,7 +197,7 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
           <div className="md:col-span-5 space-y-6">
             <ProgressHeroCard habitsDoneToday={habitsDoneToday} totalHabits={habits.length} level={level} />
-            <WeekStrip logs={weekLogs} />
+            <WeekStrip logs={weekLogs} selectedDate={selectedDate} />
           </div>
           <div className="md:col-span-7 space-y-4">
             <div className="flex items-center gap-2">
