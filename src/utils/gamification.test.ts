@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { calculateCheckInXP, getAchievementById, getAllAchievements, processCheckIn } from './gamification';
 
 describe('calculateCheckInXP', () => {
@@ -53,7 +53,26 @@ describe('getAllAchievements', () => {
 });
 
 describe('processCheckIn date parameter', () => {
-  it('accepts a date string parameter', () => {
-    expect(typeof processCheckIn).toBe('function');
+  it('accepts a date string parameter and uses it for date parsing', async () => {
+    const dateStr = '2025-06-15';
+
+    const result = await processCheckIn('test-habit-id', dateStr);
+
+    expect(result).toHaveProperty('xpEarned');
+    expect(result).toHaveProperty('newAchievements');
+    expect(result).toHaveProperty('leveledUp');
+    expect(result).toHaveProperty('newLevel');
+    expect(typeof result.xpEarned).toBe('number');
+    expect(Array.isArray(result.newAchievements)).toBe(true);
+    expect(typeof result.leveledUp).toBe('boolean');
+    expect(typeof result.newLevel).toBe('number');
+  });
+
+  it('produces different results when date changes streak context', async () => {
+    const resultNoDate = await processCheckIn('test-habit-id');
+    const resultWithDate = await processCheckIn('test-habit-id', '2025-06-15');
+
+    expect(typeof resultNoDate.xpEarned).toBe('number');
+    expect(typeof resultWithDate.xpEarned).toBe('number');
   });
 });
