@@ -32,6 +32,7 @@ interface CategoryGroupProps {
   onDragLeave?: () => void;
   className?: string;
   style?: React.CSSProperties;
+  date?: string;
 }
 
 export function CategoryGroup({
@@ -49,6 +50,7 @@ export function CategoryGroup({
   onDragLeave,
   className,
   style,
+  date,
 }: CategoryGroupProps) {
   const [collapsed, setCollapsed] = useState<boolean>(() => getCollapsedCategories().has(categoryName));
 
@@ -106,6 +108,7 @@ export function CategoryGroup({
               refreshKey={refreshKey}
               isDropTarget={dragOverHabitId === habit.id}
               onDragLeave={onDragLeave}
+              date={date}
             />
           ))}
         </div>
