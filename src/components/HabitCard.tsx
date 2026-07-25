@@ -286,10 +286,16 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
             )}
           </button>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-bold text-text-primary font-display">{habit.name}</div>
+            <div className="truncate text-sm font-bold text-text-primary font-display">
+              {habit.icon && <span className="mr-1">{habit.icon}</span>}
+              {habit.name}
+            </div>
             <div className="flex items-center gap-2 text-xs font-medium">
               {streak > 0 ? (
-                <span className={`text-primary ${streakAnimating ? 'animate-streak-up' : ''}`}>{streak} day streak</span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-accent-orange/10 px-2 py-0.5 text-accent-orange">
+                  <span className={streakAnimating ? 'animate-bounce' : ''}>🔥</span>
+                  <span>{streak}</span>
+                </span>
               ) : momentum.completed > 0 ? (
                 <span className="text-text-muted">{momentum.completed} of last {momentum.total} days</span>
               ) : (
