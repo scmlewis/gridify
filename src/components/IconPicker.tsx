@@ -1,74 +1,24 @@
 import { useState, useMemo } from 'react';
+import { ICON_CATEGORIES, HabitIcon } from './icons';
 
 interface IconPickerProps {
   value: string;
   onChange: (icon: string) => void;
 }
 
-const ICON_DATA: [string, string][] = [
-  ['🏃', 'run'],
-  ['📖', 'read'],
-  ['🧘', 'meditate'],
-  ['💪', 'strength'],
-  ['🎯', 'goal'],
-  ['📝', 'write'],
-  ['💤', 'sleep'],
-  ['🥗', 'salad'],
-  ['💧', 'water'],
-  ['🧠', 'brain'],
-  ['🎨', 'art'],
-  ['🎵', 'music'],
-  ['📱', 'phone'],
-  ['⏰', 'alarm'],
-  ['🌿', 'nature'],
-  ['🧹', 'clean'],
-  ['💰', 'money'],
-  ['❤️', 'heart'],
-  ['🏋️', 'gym'],
-  ['🚴', 'bike'],
-  ['📚', 'books'],
-  ['✍️', 'pencil'],
-  ['🗂️', 'organize'],
-  ['🗣️', 'speak'],
-  ['🌅', 'sunrise'],
-  ['🚿', 'shower'],
-  ['🍎', 'apple'],
-  ['🩺', 'health'],
-  ['🐕', 'dog'],
-  ['🎮', 'game'],
-  ['📸', 'photo'],
-  ['✈️', 'travel'],
-  ['🎸', 'guitar'],
-  ['🧑‍💻', 'code'],
-  ['📊', 'data'],
-  ['🧑‍🎓', 'study'],
-  ['🧑‍🍳', 'cook'],
-  ['🧑‍⚕️', 'doctor'],
-  ['💤', 'rest'],
-  ['🧹', 'tidy'],
-];
-
-function getUniqueIcons(): [string, string][] {
-  const seen = new Set<string>();
-  const unique: [string, string][] = [];
-  for (const [icon, label] of ICON_DATA) {
-    if (!seen.has(icon)) {
-      seen.add(icon);
-      unique.push([icon, label]);
-    }
-  }
-  return unique;
-}
-
 export function IconPicker({ value, onChange }: IconPickerProps) {
   const [search, setSearch] = useState('');
-  const uniqueIcons = useMemo(getUniqueIcons, []);
+  const [activeCategory, setActiveCategory] = useState(ICON_CATEGORIES[0]?.name ?? '');
 
-  const filtered = useMemo(() => {
-    if (!search.trim()) return uniqueIcons;
+  const allIcons = useMemo(() => ICON_CATEGORIES.flatMap((cat) => cat.icons), []);
+
+  const filteredAll = useMemo(() => {
+    if (!search.trim()) return null;
     const q = search.toLowerCase();
-    return uniqueIcons.filter(([, label]) => label.includes(q));
-  }, [search, uniqueIcons]);
+    return allIcons.filter((icon) => icon.label.toLowerCase().includes(q));
+  }, [search, allIcons]);
+
+  const displayIcons = filteredAll ?? ICON_CATEGORIES.find((c) => c.name === activeCategory)?.icons ?? [];
 
   return (
     <div className="space-y-2">
@@ -79,6 +29,26 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
         placeholder="Search icons..."
         className="w-full rounded-lg border border-border/60 bg-surface-elevated px-3 py-1.5 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-primary/50"
       />
+
+      {!filteredAll && (
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
+          {ICON_CATEGORIES.map((cat) => (
+            <button
+              key={cat.name}
+              type="button"
+              onClick={() => setActiveCategory(cat.name)}
+              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-all duration-150 ${
+                activeCategory === cat.name
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-surface-elevated text-text-muted hover:bg-surface-hover'
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-1.5">
         <button
           type="button"
@@ -91,23 +61,23 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
         >
           —
         </button>
-        {filtered.map(([icon, label]) => (
+        {displayIcons.map((icon) => (
           <button
-            key={icon}
+            key={icon.key}
             type="button"
-            onClick={() => onChange(icon)}
-            title={label}
-            className={`flex h-9 w-9 items-center justify-center rounded-lg border text-lg transition-all duration-150 ${
-              value === icon
+            onClick={() => onChange(icon.key)}
+            title={icon.label}
+            className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-all duration-150 ${
+              value === icon.key
                 ? 'border-primary bg-primary/15 scale-110'
                 : 'border-border/60 bg-surface-elevated hover:border-primary/40 hover:scale-105'
             }`}
           >
-            {icon}
+            <HabitIcon name={icon.key} size={18} />
           </button>
         ))}
-        {filtered.length === 0 && (
-          <span className="text-xs text-text-muted py-2">No icons match "{search}"</span>
+        {displayIcons.length === 0 && (
+          <span className="text-xs text-text-muted py-2">No icons match &quot;{search}&quot;</span>
         )}
       </div>
     </div>
