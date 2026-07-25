@@ -192,8 +192,20 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
       )}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          {habit.icon && <span className="text-sm shrink-0">{habit.icon}</span>}
+          {habit.icon && (
+            <span
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm"
+              style={{ backgroundColor: `${color}20` }}
+            >
+              {habit.icon}
+            </span>
+          )}
           <span className="truncate text-sm font-medium text-text-primary">{habit.name}</span>
+          {streak > 0 && (
+            <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold text-accent-orange bg-accent-orange/10">
+              🔥 {streak}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-2 mt-0.5">
           <span className="text-[10px] text-text-muted">
@@ -202,9 +214,6 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
           <span className="ml-auto text-[10px] text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">drag to reorder</span>
         </div>
       </div>
-      {streak > 0 && (
-        <span className="shrink-0 text-xs font-bold text-primary">{streak}d</span>
-      )}
     </div>
   );
 }
