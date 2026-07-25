@@ -332,7 +332,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
           </div>
         </div>
         <div className="mt-3">
-          <ContributionGrid logs={logs} cellSize={10} cellGap={2} showLabels={false} showLegend={false} />
+          <ContributionGrid logs={logs} cellSize={10} cellGap={2} showLabels={false} showLegend={false} color={habit.color} />
         </div>
       </div>
     </>
