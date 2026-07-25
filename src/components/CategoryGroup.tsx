@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 import { HabitRow } from './HabitRow';
+import { HabitIcon } from './icons';
+import { FolderOpen } from 'lucide-react';
 import type { Habit } from '../types';
 
 const STORAGE_KEY = 'habit-tracker-collapsed-categories';
@@ -80,7 +82,13 @@ export function CategoryGroup({
           {categoryColor && (
             <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: categoryColor }} />
           )}
-          <span className="text-xl">{categoryIcon || '📁'}</span>
+          <span className="text-xl flex items-center justify-center">
+            {categoryIcon ? (
+              <HabitIcon name={categoryIcon} size={20} />
+            ) : (
+              <FolderOpen size={20} className="text-text-muted" />
+            )}
+          </span>
           <span className="text-xs font-mono font-bold uppercase tracking-widest text-text-secondary">
             {displayName}
           </span>
