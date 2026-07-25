@@ -55,4 +55,8 @@ coverage/
 graphify-out/
 .superpowers/
 .opencode/
+.sisyphus/
 [(]ref for revamp[)]/
+
+# Planning docs (local use only)
+docs/superpowers/
