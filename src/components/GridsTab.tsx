@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Grid3x3 } from 'lucide-react';
 import { ContributionGrid } from './ContributionGrid';
+import { HabitIcon } from './icons';
 import { EmptyState } from './EmptyState';
 import { HabitDetailSheet } from './HabitDetailSheet';
 import { HabitCard } from './HabitCard';
@@ -299,7 +300,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
                   key={habit.id}
                   className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/3 border border-white/5 opacity-60"
                 >
-                  {habit.icon && <span className="text-sm">{habit.icon}</span>}
+                  {habit.icon && <HabitIcon name={habit.icon} size={14} className="text-text-muted" />}
                   <span className="flex-1 text-sm text-text-primary truncate">{habit.name}</span>
                   {habit.category && (
                     <span className="text-[10px] text-text-muted">{habit.category}</span>

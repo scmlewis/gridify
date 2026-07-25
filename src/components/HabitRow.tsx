@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Check, Circle, Flame } from 'lucide-react';
+import { HabitIcon } from './icons';
 import { getHabitLogs, logCheckIn, removeCheckIn } from '../db';
 import { formatDate, addDays, parseDate } from '../utils/date-utils';
 import { calculateStreak } from '../utils/streak';
@@ -194,10 +195,10 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
         <div className="flex items-center gap-2">
           {habit.icon && (
             <span
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
               style={{ backgroundColor: `${color}20` }}
             >
-              {habit.icon}
+              <HabitIcon name={habit.icon} size={16} className="text-text-primary" />
             </span>
           )}
           <span className="truncate text-sm font-medium text-text-primary">{habit.name}</span>

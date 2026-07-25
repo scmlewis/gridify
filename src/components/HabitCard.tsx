@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Check, Circle, Snowflake, Archive, Flame } from 'lucide-react';
 import { ContributionGrid } from './ContributionGrid';
+import { HabitIcon } from './icons';
 import { Confetti } from './Confetti';
 import { Toast } from './Toast';
 import { AchievementToast } from './AchievementToast';
@@ -292,7 +293,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
           </button>
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-bold text-text-primary font-display">
-              {habit.icon && <span className="mr-1">{habit.icon}</span>}
+              {habit.icon && <span className="mr-1"><HabitIcon name={habit.icon} size={14} className="text-text-secondary" /></span>}
               {habit.name}
             </div>
             <div className="flex items-center gap-2 text-xs font-medium">
