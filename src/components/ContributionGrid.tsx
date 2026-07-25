@@ -71,10 +71,10 @@ function generateColorScale(baseColor: string): string[] {
   const { h, s } = hexToHsl(baseColor);
   return [
     'rgba(5, 150, 105, 0.12)',
-    hslToHex(h, Math.max(s, 0.5), 0.3),
-    hslToHex(h, Math.max(s, 0.6), 0.42),
-    hslToHex(h, Math.max(s, 0.7), 0.52),
-    hslToHex(h, Math.min(1, Math.max(s, 0.8) * 1.1), 0.62),
+    hslToHex(h, Math.max(s, 0.5), 0.45),
+    hslToHex(h, Math.max(s, 0.6), 0.55),
+    hslToHex(h, Math.max(s, 0.7), 0.65),
+    hslToHex(h, Math.min(1, Math.max(s, 0.8) * 1.1), 0.75),
   ];
 }
 
