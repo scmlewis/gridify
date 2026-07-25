@@ -105,6 +105,19 @@ db.version(6).stores({
   userProfile: 'id'
 });
 
+db.version(7).stores({
+  habits: 'id, archived, sortOrder, category',
+  habitLogs: 'id, habitId, date, [habitId+date]',
+  userProfile: 'id'
+}).upgrade(async (tx) => {
+  const { migrateIcon } = await import('./utils/icon-migration');
+  await tx.table('habits').toCollection().modify((habit: Partial<Habit>) => {
+    if (habit.icon) {
+      habit.icon = migrateIcon(habit.icon) ?? '';
+    }
+  });
+});
+
 export { db };
 
 export interface CreateHabitOptions {
@@ -140,7 +153,7 @@ export async function createHabit(nameOrOptions: string | CreateHabitOptions): P
     targetFrequency: options.targetFrequency ?? 'daily',
     targetValue: options.targetValue ?? 1,
     color: options.color ?? '#2BA8A2',
-    icon: options.icon ?? ''
+    icon: options.icon ?? undefined
   });
   return id;
 }
