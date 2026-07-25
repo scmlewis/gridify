@@ -8,6 +8,7 @@ export interface ContributionGridProps {
   cellGap?: number;
   showLabels?: boolean;
   showLegend?: boolean;
+  color?: string;
 }
 
 const LEVEL_CLASSES: Record<number, string> = {
@@ -17,6 +18,65 @@ const LEVEL_CLASSES: Record<number, string> = {
   3: 'bg-primary-light',
   4: 'bg-accent-gold',
 };
+
+function hexToHsl(hex: string): { h: number; s: number; l: number } {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16) / 255;
+  const g = parseInt(h.substring(2, 4), 16) / 255;
+  const b = parseInt(h.substring(4, 6), 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+
+  if (max === min) return { h: 0, s: 0, l };
+
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+  let hDeg = 0;
+  if (max === r) hDeg = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+  else if (max === g) hDeg = ((b - r) / d + 2) / 6;
+  else hDeg = ((r - g) / d + 4) / 6;
+
+  return { h: hDeg * 360, s, l };
+}
+
+function hslToHex(h: number, s: number, l: number): string {
+  const hue = ((h % 360) + 360) % 360;
+  const sat = Math.max(0, Math.min(1, s));
+  const light = Math.max(0, Math.min(1, l));
+
+  const c = (1 - Math.abs(2 * light - 1)) * sat;
+  const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+  const m = light - c / 2;
+
+  let r1: number, g1: number, b1: number;
+  if (hue < 60) { r1 = c; g1 = x; b1 = 0; }
+  else if (hue < 120) { r1 = x; g1 = c; b1 = 0; }
+  else if (hue < 180) { r1 = 0; g1 = c; b1 = x; }
+  else if (hue < 240) { r1 = 0; g1 = x; b1 = c; }
+  else if (hue < 300) { r1 = x; g1 = 0; b1 = c; }
+  else { r1 = c; g1 = 0; b1 = x; }
+
+  const toHex = (v: number) =>
+    Math.round((v + m) * 255)
+      .toString(16)
+      .padStart(2, '0');
+
+  return `#${toHex(r1)}${toHex(g1)}${toHex(b1)}`;
+}
+
+function generateColorScale(baseColor: string): string[] {
+  const { h, s } = hexToHsl(baseColor);
+  return [
+    hslToHex(h, s * 0.3, 0.92),
+    hslToHex(h, s * 0.6, 0.72),
+    hslToHex(h, s * 0.8, 0.55),
+    hslToHex(h, s, 0.45),
+    hslToHex(h, Math.min(1, s * 1.1), 0.35),
+  ];
+}
 
 const LEVEL_LABELS = ['No activity', '1 check-in', '2 check-ins', '3 check-ins', '4+ check-ins'];
 
@@ -39,7 +99,9 @@ export function ContributionGrid({
   cellGap = 2,
   showLabels = true,
   showLegend = true,
+  color,
 }: ContributionGridProps) {
+  const colorScale = useMemo(() => (color ? generateColorScale(color) : null), [color]);
   const startDate = useMemo(() => getGridStartDate(), []);
   const scrollRef = useRef<HTMLDivElement>(null);
   const todayStr = formatDate(new Date());
@@ -183,16 +245,23 @@ export function ContributionGrid({
               gap: `${cellGap}px`,
             }}
           >
-            {cells.map((cell) => (
-              <div
-                key={cell.key}
-                onMouseEnter={() => setHoveredCell(cell.key)}
-                onMouseLeave={() => setHoveredCell(prev => prev === cell.key ? null : prev)}
-                onClick={() => handleCellClick(cell.key)}
-                className={`relative rounded-sm cursor-default ${cell.isFuture ? 'opacity-25' : LEVEL_CLASSES[cell.level]}`}
-                style={{ width: cellSize, height: cellSize }}
-              />
-            ))}
+            {cells.map((cell) => {
+              const levelClass = !colorScale && !cell.isFuture ? LEVEL_CLASSES[cell.level] : '';
+              return (
+                <div
+                  key={cell.key}
+                  onMouseEnter={() => setHoveredCell(cell.key)}
+                  onMouseLeave={() => setHoveredCell(prev => prev === cell.key ? null : prev)}
+                  onClick={() => handleCellClick(cell.key)}
+                  className={`relative rounded-sm cursor-default ${cell.isFuture ? 'opacity-25' : ''} ${levelClass}`}
+                  style={{
+                    width: cellSize,
+                    height: cellSize,
+                    ...(colorScale ? { backgroundColor: colorScale[cell.level] } : {}),
+                  }}
+                />
+              );
+            })}
             {activeCell && !activeCell.isFuture && (
               <div
                 className="pointer-events-none absolute z-50 whitespace-nowrap rounded-md bg-surface-elevated px-2.5 py-1.5 text-xs text-text-primary shadow-md border border-border"
@@ -220,8 +289,12 @@ export function ContributionGrid({
             {[0, 1, 2, 3, 4].map((level) => (
               <div
                 key={level}
-                className={`rounded-sm ${LEVEL_CLASSES[level]}`}
-                style={{ width: cellSize, height: cellSize }}
+                className={`rounded-sm ${colorScale ? '' : LEVEL_CLASSES[level]}`}
+                style={{
+                  width: cellSize,
+                  height: cellSize,
+                  ...(colorScale ? { backgroundColor: colorScale[level] } : {}),
+                }}
               />
             ))}
             <span className="text-[10px] text-text-muted">More</span>
