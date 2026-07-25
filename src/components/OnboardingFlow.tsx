@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { completeOnboarding, createHabit, type Category } from '../db';
+import { HabitIcon } from './icons';
 
 const DEFAULT_CATEGORIES: Category[] = [
-  { id: 'fitness', name: 'Fitness', color: '#ef4444', icon: '💪' },
-  { id: 'mindfulness', name: 'Mindfulness', color: '#8b5cf6', icon: '🧘' },
-  { id: 'learning', name: 'Learning', color: '#3b82f6', icon: '📚' },
-  { id: 'productivity', name: 'Productivity', color: '#f59e0b', icon: '⚡' },
-  { id: 'health', name: 'Health', color: '#10b981', icon: '🏥' },
+  { id: 'fitness', name: 'Fitness', color: '#ef4444', icon: 'Dumbbell' },
+  { id: 'mindfulness', name: 'Mindfulness', color: '#8b5cf6', icon: 'Brain' },
+  { id: 'learning', name: 'Learning', color: '#3b82f6', icon: 'BookOpen' },
+  { id: 'productivity', name: 'Productivity', color: '#f59e0b', icon: 'Zap' },
+  { id: 'health', name: 'Health', color: '#10b981', icon: 'Stethoscope' },
 ];
 
 interface OnboardingFlowProps {
@@ -116,7 +117,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                       : 'border-border bg-surface-elevated text-text-secondary hover:border-border/80'
                   }`}
                 >
-                  <span>{cat.icon}</span>
+                  <HabitIcon name={cat.icon} size={18} />
                   <span>{cat.name}</span>
                 </button>
               ))}
