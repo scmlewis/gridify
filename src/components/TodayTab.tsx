@@ -200,31 +200,28 @@ export function TodayTab({ onRefresh: _onRefresh, refreshKey, onShowCategories }
             <WeekStrip logs={weekLogs} selectedDate={selectedDate} />
           </div>
           <div className="md:col-span-7 space-y-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center bg-surface-elevated rounded-lg p-1">
+              <button
+                onClick={() => setSelectedDate(formatDate(new Date()))}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  isToday
+                    ? 'bg-primary text-white'
+                    : 'text-text-muted hover:text-text-primary'
+                }`}
+              >
+                Today
+              </button>
               <button
                 onClick={() => setSelectedDate(formatDate(addDays(new Date(), -1)))}
-                className={`text-xs px-2 py-1 rounded-full transition-colors ${
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   !isToday
-                    ? 'bg-primary/20 text-primary'
-                    : 'bg-white/5 text-text-muted hover:bg-white/10'
+                    ? 'bg-primary text-white'
+                    : 'text-text-muted hover:text-text-primary'
                 }`}
               >
                 Yesterday
               </button>
             </div>
-            {!isToday && (
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-sm text-text-secondary">
-                  Viewing: Yesterday
-                </span>
-                <button
-                  onClick={() => setSelectedDate(formatDate(new Date()))}
-                  className="text-xs text-primary hover:text-primary/80 font-medium"
-                >
-                  Back to Today
-                </button>
-              </div>
-            )}
             {sortedCategories.map(([category, catHabits], index) => {
               const catData = categoryMap.get(category);
               return (

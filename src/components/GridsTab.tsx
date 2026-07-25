@@ -4,7 +4,6 @@ import { ContributionGrid } from './ContributionGrid';
 import { EmptyState } from './EmptyState';
 import { HabitDetailSheet } from './HabitDetailSheet';
 import { HabitCard } from './HabitCard';
-import { WeeklyView } from './WeeklyView';
 import { getHabits, getHabitLogs, getAllLogsForDateRange, reorderHabits, archiveHabit, unarchiveHabit, getArchivedHabits } from '../db';
 import type { Habit } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
@@ -37,7 +36,6 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
   const [refreshNonce, setRefreshNonce] = useState(0);
   const [archivedHabits, setArchivedHabits] = useState<Habit[]>([]);
   const [showArchived, setShowArchived] = useState(false);
-  const [view, setView] = useState<'weekly' | 'yearly'>('yearly');
 
   const requestRefresh = useCallback((habitId?: string) => {
     if (habitId) {
@@ -232,29 +230,6 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
         <ContributionGrid logs={globalLogs} cellSize={11} cellGap={2} showLegend={false} />
       </div>
 
-      <div className="flex justify-center gap-2">
-        <button
-          onClick={() => setView('weekly')}
-          className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${
-            view === 'weekly'
-              ? 'bg-primary text-white'
-              : 'text-text-muted hover:text-text-primary'
-          }`}
-        >
-          Weekly
-        </button>
-        <button
-          onClick={() => setView('yearly')}
-          className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${
-            view === 'yearly'
-              ? 'bg-primary text-white'
-              : 'text-text-muted hover:text-text-primary'
-          }`}
-        >
-          Yearly
-        </button>
-      </div>
-
       <div className="sticky top-[52px] z-30 bg-surface-base py-3 -mx-4 px-4 border-b border-border/30">
         <div className="flex flex-wrap gap-2">
         <button
@@ -283,10 +258,7 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
         </div>
       </div>
 
-      {view === 'weekly' ? (
-        <WeeklyView habitGrids={filteredGrids} />
-      ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {filteredGrids.map(({ habit }) => (
             <HabitCard
               key={habit.id}
@@ -303,7 +275,6 @@ export function GridsTab({ refreshTrigger, onRefresh: _onRefresh }: GridsTabProp
             />
           ))}
         </div>
-      )}
 
       {archivedHabits.length > 0 && (
         <div className="mt-6">
