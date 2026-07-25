@@ -292,9 +292,9 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
             )}
           </button>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-bold text-text-primary font-display">
-              {habit.icon && <span className="mr-1"><HabitIcon name={habit.icon} size={14} className="text-text-secondary" /></span>}
-              {habit.name}
+            <div className="flex items-center gap-1.5">
+              {habit.icon && <HabitIcon name={habit.icon} size={14} className="shrink-0 text-text-secondary" />}
+              <span className="truncate text-sm font-bold text-text-primary font-display">{habit.name}</span>
             </div>
             <div className="flex items-center gap-2 text-xs font-medium">
               {streak > 0 ? (
