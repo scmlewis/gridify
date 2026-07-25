@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Achievement } from '../utils/gamification';
+import { HabitIcon } from './icons';
 
 interface AchievementToastProps {
   achievement: Achievement | null;
@@ -25,7 +26,7 @@ export function AchievementToast({ achievement, onDismiss }: AchievementToastPro
   return (
     <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2 animate-slide-down">
       <div className="flex items-center gap-3 rounded-xl bg-accent-gold/15 backdrop-blur-md border border-accent-gold/25 px-4 py-3 shadow-xl shadow-accent-gold/10">
-        <span className="text-2xl">{achievement.icon}</span>
+        <span className="text-accent-gold"><HabitIcon name={achievement.icon} size={28} /></span>
         <div>
           <div className="text-xs font-semibold uppercase tracking-wider text-accent-gold">Achievement Unlocked!</div>
           <div className="text-sm font-bold text-text-primary">{achievement.name}</div>

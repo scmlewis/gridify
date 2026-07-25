@@ -7,6 +7,7 @@ import {
   Palette, Paintbrush, Music, Music2, Mic, Guitar, Camera, PenLine, Pencil,
   TreePine, Sunrise, Coins, ShoppingBag, Users, MessageCircle, Dog, Plane,
   Gamepad2, Trash2, Smartphone, ChefHat, Trophy,
+  Layers, Snowflake, Star, Award, RotateCcw, CheckCircle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -19,6 +20,7 @@ export const ICON_MAP: Record<string, LucideIcon> = {
   Palette, Paintbrush, Music, Music2, Mic, Guitar, Camera, PenLine, Pencil,
   TreePine, Sunrise, Coins, ShoppingBag, Users, MessageCircle, Dog, Plane,
   Gamepad2, Trash2, Smartphone, ChefHat, Trophy,
+  Layers, Snowflake, Star, Award, RotateCcw, CheckCircle,
 };
 
 export interface IconEntry {

@@ -9,6 +9,7 @@ import { StreakTimeline } from './StreakTimeline';
 import { CompletionDistribution } from './CompletionDistribution';
 import { YearComparison } from './YearComparison';
 import { ColorPicker } from './ColorPicker';
+import { IconPicker } from './IconPicker';
 import { getHabitLogs, deleteHabit, updateHabit, getCategories } from '../db';
 import { getGridStartDate } from '../utils/grid-math';
 import { formatDate, addDays } from '../utils/date-utils';
@@ -37,6 +38,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onArchive, 
   const [editUnit, setEditUnit] = useState('');
   const [editTargetFrequency, setEditTargetFrequency] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [editTargetValue, setEditTargetValue] = useState(1);
+  const [editIcon, setEditIcon] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -60,7 +62,8 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onArchive, 
       setEditValueType(habit!.valueType || 'boolean');
       setEditUnit(habit!.unit || '');
       setEditTargetFrequency(habit!.targetFrequency || 'daily');
-      setEditTargetValue(habit!.targetValue ?? 1);
+        setEditTargetValue(habit!.targetValue ?? 1);
+        setEditIcon(habit!.icon || '');
       setCategories(await getCategories());
       setIsLoading(false);
     }
@@ -101,6 +104,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onArchive, 
     await updateHabit(habit.id, {
       category: editCategory,
       color: editColor,
+      icon: editIcon || undefined,
       valueType: editValueType,
       unit: editValueType === 'numeric' ? editUnit : '',
       targetFrequency: editTargetFrequency,
@@ -108,7 +112,7 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onArchive, 
     });
     setEditing(false);
     onRefresh?.();
-  }, [habit, editCategory, editColor, editValueType, editUnit, editTargetFrequency, editTargetValue, onRefresh]);
+  }, [habit, editCategory, editColor, editIcon, editValueType, editUnit, editTargetFrequency, editTargetValue, onRefresh]);
 
   if (!isOpen || !habit) return null;
 
@@ -193,12 +197,13 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onArchive, 
                   {!editing && (
                     <button
                       onClick={() => {
-                        setEditCategory(habit.category || 'uncategorized');
-                        setEditColor(habit.color || '#2BA8A2');
-                        setEditValueType(habit.valueType || 'boolean');
-                        setEditUnit(habit.unit || '');
-                        setEditTargetFrequency(habit.targetFrequency || 'daily');
-                        setEditTargetValue(habit.targetValue ?? 1);
+    setEditCategory(habit.category || 'uncategorized');
+        setEditColor(habit.color || '#2BA8A2');
+        setEditValueType(habit.valueType || 'boolean');
+        setEditUnit(habit.unit || '');
+        setEditTargetFrequency(habit.targetFrequency || 'daily');
+        setEditTargetValue(habit.targetValue ?? 1);
+        setEditIcon(habit.icon || '');
                         setEditing(true);
                       }}
                       className="text-xs text-primary font-semibold hover:opacity-80 transition-opacity"
@@ -291,6 +296,10 @@ export function HabitDetailSheet({ habit, isOpen, onClose, onDelete, onArchive, 
                     <div>
                       <label className="mb-1 block text-[10px] text-text-muted">Color</label>
                       <ColorPicker value={editColor} onChange={setEditColor} />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-[10px] text-text-muted">Icon</label>
+                      <IconPicker value={editIcon} onChange={setEditIcon} />
                     </div>
                     <div className="flex gap-2">
                       <button

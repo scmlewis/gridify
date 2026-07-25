@@ -3,6 +3,7 @@ import { Trophy, Filter, Lock, CheckCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { getAllAchievements } from '../utils/gamification';
 import { getUserProfile } from '../db';
+import { HabitIcon } from './icons';
 import type { Achievement } from '../utils/gamification';
 import { staggerContainer, staggerItem } from '../utils/animations';
 
@@ -101,7 +102,7 @@ export function AchievementsView() {
                 <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-primary/10 blur-2xl" />
               )}
               <div className="relative z-10">
-                <div className="mb-2 text-2xl">{achievement.icon}</div>
+                <div className="mb-2 text-accent-gold"><HabitIcon name={achievement.icon} size={28} /></div>
                 <div className="text-sm font-bold text-text-primary font-display">
                   {achievement.name}
                 </div>

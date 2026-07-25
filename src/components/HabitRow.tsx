@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Check, Circle } from 'lucide-react';
+import { Check, Circle, Flame } from 'lucide-react';
 import { getHabitLogs, logCheckIn, removeCheckIn } from '../db';
 import { formatDate, addDays, parseDate } from '../utils/date-utils';
 import { calculateStreak } from '../utils/streak';
@@ -203,7 +203,7 @@ export function HabitRow({ habit, onCheckIn, onTap, onDragStart, onDragOver, onD
           <span className="truncate text-sm font-medium text-text-primary">{habit.name}</span>
           {streak > 0 && (
             <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold text-accent-orange bg-accent-orange/10">
-              🔥 {streak}
+              <Flame className="inline h-3 w-3" /> {streak}
             </span>
           )}
         </div>

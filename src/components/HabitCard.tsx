@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Check, Circle, Snowflake, Archive } from 'lucide-react';
+import { Check, Circle, Snowflake, Archive, Flame } from 'lucide-react';
 import { ContributionGrid } from './ContributionGrid';
 import { Confetti } from './Confetti';
 import { Toast } from './Toast';
@@ -298,7 +298,7 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
             <div className="flex items-center gap-2 text-xs font-medium">
               {streak > 0 ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-accent-orange/10 px-2 py-0.5 text-accent-orange">
-                  <span className={streakAnimating ? 'animate-bounce' : ''}>🔥</span>
+                  <span className={streakAnimating ? 'animate-bounce' : ''}><Flame className="inline h-3.5 w-3.5" /></span>
                   <span>{streak}</span>
                 </span>
               ) : momentum.completed > 0 ? (
