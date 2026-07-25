@@ -70,11 +70,11 @@ function hslToHex(h: number, s: number, l: number): string {
 function generateColorScale(baseColor: string): string[] {
   const { h, s } = hexToHsl(baseColor);
   return [
-    hslToHex(h, s * 0.3, 0.92),
-    hslToHex(h, s * 0.6, 0.72),
-    hslToHex(h, s * 0.8, 0.55),
-    hslToHex(h, s, 0.45),
-    hslToHex(h, Math.min(1, s * 1.1), 0.35),
+    hslToHex(h, s * 0.15, 0.13),
+    hslToHex(h, s * 0.4, 0.22),
+    hslToHex(h, s * 0.7, 0.35),
+    hslToHex(h, s, 0.48),
+    hslToHex(h, Math.min(1, s * 1.1), 0.6),
   ];
 }
 
