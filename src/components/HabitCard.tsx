@@ -268,12 +268,17 @@ export function HabitCard({ habit, onArchived, onCheckIn, onTap, onDragStart, on
               toggleToday();
             }}
             className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 active:scale-90 ${
-              todayChecked && justChecked
-                ? 'animate-glow-pulse border-primary bg-primary text-surface-base shadow-teal-glow'
-                : todayChecked
-                  ? 'border-primary bg-primary text-surface-base shadow-teal-glow'
-                  : 'border-border bg-transparent text-text-muted hover:border-primary/60 hover:text-primary hover:shadow-sm hover:shadow-primary/10'
+              justChecked ? 'animate-check-pulse' : ''
+            } ${
+              todayChecked
+                ? 'text-white'
+                : 'border-border bg-transparent text-text-muted hover:border-primary/60 hover:text-primary hover:shadow-sm hover:shadow-primary/10'
             }`}
+            style={todayChecked ? {
+              backgroundColor: habit.color ?? '#10b981',
+              borderColor: habit.color ?? '#10b981',
+              boxShadow: `0 4px 20px ${habit.color ?? '#10b981'}40`,
+            } : undefined}
             title={todayChecked ? 'Uncheck in' : 'Check in'}
           >
             <span className="ripple-container absolute inset-0 flex items-center justify-center overflow-hidden rounded-full">

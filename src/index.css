@@ -308,6 +308,16 @@ button:focus-visible {
   animation: bounce 0.4s ease-in-out;
 }
 
+/* Check pulse animation */
+@keyframes check-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.animate-check-pulse {
+  animation: check-pulse 0.3s ease-in-out;
+}
+
 /* Glow pulse for checked state */
 @keyframes glow-pulse {
   0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 0%, transparent); }
