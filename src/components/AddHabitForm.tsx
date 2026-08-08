@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react';
 
+const MAX_NAME_LENGTH = 100;
+
 interface AddHabitFormProps {
   onAdd: (name: string) => void;
 }
@@ -11,7 +13,7 @@ export function AddHabitForm({ onAdd }: AddHabitFormProps) {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) return;
-    onAdd(trimmed);
+    onAdd(trimmed.slice(0, MAX_NAME_LENGTH));
     setName('');
   };
 
@@ -22,6 +24,7 @@ export function AddHabitForm({ onAdd }: AddHabitFormProps) {
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="New habit..."
+        maxLength={MAX_NAME_LENGTH}
         className="flex-1 rounded-md bg-surface-elevated px-4 py-2.5 text-sm text-text-primary placeholder-text-muted outline-none border border-border focus:border-primary transition-colors"
       />
       <button

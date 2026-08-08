@@ -11,6 +11,8 @@ import { AchievementsView } from './components/AchievementsView';
 import { SettingsPanel } from './components/SettingsPanel';
 import { AboutSheet } from './components/AboutSheet';
 import { UpdatePrompt } from './components/UpdatePrompt';
+import { BackupReminder } from './components/BackupReminder';
+import { AppLock } from './components/AppLock';
 
 type Tab = 'today' | 'grids' | 'analytics' | 'achievements' | 'settings';
 
@@ -19,6 +21,11 @@ function App() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showCategories, setShowCategories] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
+
+  if (!unlocked) {
+    return <AppLock onUnlock={() => setUnlocked(true)} />;
+  }
 
   return (
     <div className="min-h-screen bg-surface-base pb-24 flex flex-col">
@@ -68,6 +75,7 @@ function App() {
       </main>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       <UpdatePrompt />
+      <BackupReminder />
     </div>
   );
 }

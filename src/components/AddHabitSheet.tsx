@@ -8,6 +8,8 @@ import type { Category } from '../types';
 import { bottomSheet, backdrop, springTransition } from '../utils/animations';
 import { haptic } from '../utils/haptics';
 
+const MAX_NAME_LENGTH = 100;
+
 interface AddHabitSheetProps {
   isOpen: boolean;
   onClose: () => void;
@@ -52,7 +54,7 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
     if (!trimmed) return;
     haptic.success();
     onAdd({
-      name: trimmed,
+      name: trimmed.slice(0, MAX_NAME_LENGTH),
       category,
       valueType,
       unit: valueType === 'numeric' ? unit : '',
@@ -104,9 +106,15 @@ export function AddHabitSheet({ isOpen, onClose, onAdd, onShowCategories }: AddH
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Exercise, Read, Meditate"
+              maxLength={MAX_NAME_LENGTH}
               className="w-full rounded-md bg-surface-elevated px-4 py-2.5 text-sm text-text-primary placeholder-text-muted outline-none border border-border focus:border-primary transition-colors"
               autoFocus
             />
+            {name.length > MAX_NAME_LENGTH - 20 && (
+              <p className="mt-1 text-[10px] text-text-muted text-right">
+                {name.length}/{MAX_NAME_LENGTH}
+              </p>
+            )}
           </div>
 
           <div>

@@ -41,6 +41,9 @@ export interface UserProfile {
   createdAt: string;
   onboardingCompleted: boolean;
   categories: Category[];
+  lastBackupReminder?: string;
+  lockEnabled?: boolean;
+  pinHash?: string;
 }
 
 const db = new Dexie('HabitTrackerDB');
@@ -115,6 +118,16 @@ db.version(7).stores({
     if (habit.icon) {
       habit.icon = migrateIcon(habit.icon) ?? '';
     }
+  });
+});
+
+db.version(8).stores({
+  habits: 'id, archived, sortOrder, category',
+  habitLogs: 'id, habitId, date, [habitId+date]',
+  userProfile: 'id'
+}).upgrade(async (tx) => {
+  await tx.table('userProfile').toCollection().modify((profile: Partial<UserProfile>) => {
+    profile.lastBackupReminder = profile.lastBackupReminder ?? undefined;
   });
 });
 
@@ -395,4 +408,56 @@ export async function getHabitDailyTotals(habitId: string): Promise<Map<string, 
     totals.set(log.date, (totals.get(log.date) || 0) + log.value);
   }
   return totals;
+}
+
+const BACKUP_REMINDER_INTERVAL_DAYS = 30;
+
+export async function shouldShowBackupReminder(): Promise<boolean> {
+  const profile = await getUserProfile();
+  if (!profile.lastBackupReminder) return true;
+  const lastReminder = new Date(profile.lastBackupReminder);
+  const now = new Date();
+  const daysSince = Math.floor((now.getTime() - lastReminder.getTime()) / (1000 * 60 * 60 * 24));
+  return daysSince >= BACKUP_REMINDER_INTERVAL_DAYS;
+}
+
+export async function markBackupReminderShown(): Promise<void> {
+  await db.table('userProfile').update('default', {
+    lastBackupReminder: new Date().toISOString()
+  });
+}
+
+async function hashPin(pin: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(pin + 'gridify-salt-v1');
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+export async function setPin(pin: string): Promise<void> {
+  const pinHash = await hashPin(pin);
+  await db.table('userProfile').update('default', {
+    pinHash,
+    lockEnabled: true
+  });
+}
+
+export async function removePin(): Promise<void> {
+  await db.table('userProfile').update('default', {
+    pinHash: undefined,
+    lockEnabled: false
+  });
+}
+
+export async function verifyPin(pin: string): Promise<boolean> {
+  const profile = await getUserProfile();
+  if (!profile.pinHash || !profile.lockEnabled) return true;
+  const pinHash = await hashPin(pin);
+  return pinHash === profile.pinHash;
+}
+
+export async function isLockEnabled(): Promise<boolean> {
+  const profile = await getUserProfile();
+  return profile.lockEnabled === true && !!profile.pinHash;
 }
